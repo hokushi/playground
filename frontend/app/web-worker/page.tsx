@@ -1,3 +1,6 @@
+import HeavyDemoNoWorker from "./_components/HeavyDemoNoWorker";
+import HeavyDemoWithWorker from "./_components/HeavyDemoWithWorker";
+
 export default function WebWorkerPage() {
   return (
     <main className="flex flex-1 flex-col gap-10 px-10 py-12 max-w-4xl">
@@ -41,6 +44,17 @@ export default function WebWorkerPage() {
 
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          実際に体験してみる（Worker 無し）
+        </h2>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          ここまでの話を実際にブラウザで体験できるデモです。重い処理（10 億回のループ加算）をメインスレッドで走らせ、
+          その間 UI がどれだけ固まるかを確認できます。
+        </p>
+        <HeavyDemoNoWorker />
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
           Web Worker を使うと
         </h2>
         <p className="text-zinc-700 dark:text-zinc-300">
@@ -75,6 +89,11 @@ export default function WebWorkerPage() {
           ]}
           note="Main は UI 描画を続け、Worker は裏で計算。postMessage で値を受け渡す"
         />
+        <p className="text-zinc-700 dark:text-zinc-300">
+          同じ「1 から 10 億まで足す」計算を、今度は Worker に投げてみます。実行中もタイマーや適当なボタンが
+          固まらないことを確認してください。
+        </p>
+        <HeavyDemoWithWorker />
       </section>
 
       <section className="flex flex-col gap-4">
