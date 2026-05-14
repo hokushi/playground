@@ -3,7 +3,7 @@ import HeavyDemoWithWorker from "./_components/HeavyDemoWithWorker";
 
 export default function WebWorkerPage() {
   return (
-    <main className="flex flex-1 flex-col gap-10 px-10 py-12 max-w-4xl">
+    <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-10 px-10 py-12">
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
           Web Worker
