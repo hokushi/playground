@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/web-worker", label: "Web Worker" },
+  { href: "/threads", label: "Threads & Memory" },
 ];
 
 export default function Sidebar() {
