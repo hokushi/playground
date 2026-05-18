@@ -19,6 +19,7 @@ const navGroups: NavGroup[] = [
     label: "ネットワーク",
     items: [
       { href: "/network", label: "有線と無線" },
+      { href: "/network/internet", label: "インターネットの裏側" },
     ],
   },
 ];
