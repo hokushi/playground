@@ -16,8 +16,10 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "AWS",
-    items: [],
+    label: "ネットワーク",
+    items: [
+      { href: "/network", label: "有線と無線" },
+    ],
   },
 ];
 
