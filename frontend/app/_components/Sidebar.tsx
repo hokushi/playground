@@ -40,7 +40,7 @@ export default function Sidebar() {
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
 
   return (
-    <aside className="w-60 shrink-0 border-r border-black/10 bg-white dark:border-white/10 dark:bg-black">
+    <aside className="w-60 shrink-0 overflow-y-auto border-r border-black/10 bg-white dark:border-white/10 dark:bg-black">
       <div className="px-6 py-6">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
           Playground
