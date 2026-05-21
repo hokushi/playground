@@ -22,6 +22,10 @@ const navGroups: NavGroup[] = [
       { href: "/network/internet", label: "インターネットの裏側" },
     ],
   },
+  {
+    label: "Web 通信",
+    items: [{ href: "/communication/sse", label: "SSE" }],
+  },
 ];
 
 export default function Sidebar() {
