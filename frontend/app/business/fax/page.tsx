@@ -12,6 +12,9 @@ export default function FaxPage() {
       </header>
 
       <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          全体の流れ
+        </h2>
         <p className="text-zinc-700 dark:text-zinc-300">
           ファックスは突き詰めると <strong>「紙の絵を、電話で読み上げて、相手に書き取ってもらう」</strong> 装置です。
           ただし読むのも書くのも機械なので、ものすごく速い。流れは 5 ステップに分けられます。
@@ -65,7 +68,384 @@ export default function FaxPage() {
           だからファックスを PDF で受け取っても、そのままでは <strong>検索できない</strong> (OCR が必要)。
         </p>
       </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          送信から受信までの実際のフロー
+        </h2>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          ファックスは <strong>電話の上で動く</strong>仕組みなので、流れも「電話をかける」のとほぼ同じです。
+          違うのは <strong>両端が機械</strong>で、人間のように「もしもし」とは言わず、
+          代わりに <strong>音のサインで自己紹介</strong>するところ。
+        </p>
+
+        <FaxCallDiagram />
+
+        <ol className="flex flex-col gap-3 rounded-lg border border-zinc-200 bg-white px-5 py-4 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+          <li>
+            <strong>1. 発信</strong>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              送信者が原稿をセットし、相手のファックス番号を入力してスタート。
+              送信機が <strong>普通の電話と同じ要領でダイヤル</strong>する。
+            </p>
+          </li>
+          <li>
+            <strong>2. 電話局を経由して接続</strong>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              電話会社の交換機が宛先番号にルーティング。
+              <strong>相手のファックス機が呼び出される</strong> (普通の電話の着信と同じ)。
+            </p>
+          </li>
+          <li>
+            <strong>3. 受信側が自動応答 → 「ピー」</strong>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              受信機は呼び出しを検知すると、<strong>人を介さず</strong>自分で受話。
+              直後に <strong>CED 音 (2100 Hz)</strong> を流して「私はファックスです」と宣言。
+            </p>
+          </li>
+          <li>
+            <strong>4. 送信側が「私もファックスです」と返答</strong>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              送信機が <strong>CNG 音 (1100 Hz)</strong> で応答。これでお互い「相手は機械」と確認できる。
+            </p>
+          </li>
+          <li>
+            <strong>5. 能力交渉 (DIS → DCS)</strong>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              受信機が <strong>「対応している解像度・速度・圧縮方式」のリスト (DIS)</strong> を送る。
+              送信機が「じゃあこの設定で送ります」と確定 (DCS)。これが「ヒョロロ」の正体。
+            </p>
+          </li>
+          <li>
+            <strong>6. 回線テスト (TCF)</strong>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              短い既知のパターンを実際に流して、<strong>その回線で本当にその速度が出るか</strong>確認。
+              ダメなら 1 段階遅い速度に落として再試行。
+            </p>
+          </li>
+          <li>
+            <strong>7. 画像本体を送信 (「ガー…」)</strong>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              圧縮済みのビットを音に変調して流す。A4 1 枚で <strong>30 秒〜1 分</strong>程度。
+            </p>
+          </li>
+          <li>
+            <strong>8. ページ終了通知 (EOP / MPS)</strong>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              「1 ページ終わり」「次のページあり」を送信機が通知。
+            </p>
+          </li>
+          <li>
+            <strong>9. 受信確認 (MCF)</strong>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              受信機が「ちゃんと受け取った」と応答。エラーがあれば再送要求 (PPR)。
+            </p>
+          </li>
+          <li>
+            <strong>10. 切断</strong>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              両者が電話を切る。送信機には <strong>「正常終了」の通信レポート</strong>が印字されることが多い。
+            </p>
+          </li>
+        </ol>
+
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          ここまでが <strong>T.30 プロトコル</strong>と呼ばれる仕様で決められた手順。
+          人間が「もしもし」「あ、こんにちは、では○○の件で」と話し始めるのと同じことを、
+          機械が <strong>音のパターン</strong>でやっていると考えると分かりやすいです。
+        </p>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          同時に送られた場合はどうなる?
+        </h2>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          ここが重要なポイント。ファックスは <strong>電話回線の上で動いている</strong>ので、
+          回線の <strong>「1 つの電話番号 = 同時 1 通話」</strong>という制約をそのまま受け継ぎます。
+        </p>
+
+        <BusySignalDiagram />
+
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-5 py-4 dark:border-rose-900/50 dark:bg-rose-950/30">
+          <p className="text-sm font-medium text-rose-900 dark:text-rose-200">
+            シンプルな構成 (1 回線) の場合: 後発は「話中」になる
+          </p>
+          <p className="mt-2 text-sm text-rose-900/80 dark:text-rose-300">
+            A さんが送信中に B さんが同じ番号にダイヤルすると、
+            <strong>普通の電話と同じく「ツーツーツー」の話中音</strong>が返る。
+            B さんの送信機は通信を諦めるか、<strong>自動リダイヤル機能</strong>で
+            数分後にもう一度試す (これが標準的な動作)。
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+            病院・企業の構成: 「代表番号 + 複数回線」(ハントグループ)
+          </p>
+          <p className="mt-2 text-sm text-emerald-900/80 dark:text-emerald-300">
+            実際の病院や企業では、<strong>1 つの代表番号の裏に複数の物理回線</strong>を束ねていることが多い。
+            電話会社の交換機が <strong>空いている回線に自動で振り分け</strong>てくれる仕組み (ハントグループ)。
+          </p>
+          <ul className="mt-2 flex flex-col gap-1 text-sm text-emerald-900/80 dark:text-emerald-300">
+            <li>
+              ・例: 代表 <strong>03-XXXX-1234</strong> の裏に物理回線 4 本 → <strong>同時に 4 件</strong>まで受信可能
+            </li>
+            <li>
+              ・5 件目は話中になり、1 件終わった瞬間に繋がる
+            </li>
+            <li>
+              ・送信側からは <strong>1 つの番号</strong>に見えるので意識する必要がない
+            </li>
+          </ul>
+        </div>
+
+        <div className="rounded-lg border border-zinc-200 bg-white px-5 py-4 dark:border-zinc-800 dark:bg-zinc-950">
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            インターネット FAX (FoIP / クラウド FAX) の場合
+          </p>
+          <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+            受信側がクラウドサービス経由でファックスを <strong>「メール / PDF」として受け取る</strong>方式なら、
+            サービス側のサーバーが <strong>並列で大量に受信できる</strong>ので「同時送信で話中」にはほぼならない。
+          </p>
+          <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+            ただし、最終的に <strong>物理ファックス機で印刷</strong>する運用ならボトルネックは結局回線数に戻る。
+            「クラウド FAX に変えたら受信漏れが減った」というのは、この
+            <strong>受信側の同時並列処理能力が上がった</strong>のが理由。
+          </p>
+        </div>
+
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          ちなみに <strong>送信が失敗した場合の挙動はファックス機ごとに違う</strong>。
+          多くは数分間隔で 3〜5 回リトライしてダメなら諦め、<strong>「送信エラー」のレポートを印刷</strong>する。
+          送信者が気付かないと「送ったつもりが届いてない」というトラブルになりがちなのが、この仕組みの弱点です。
+        </p>
+      </section>
     </main>
+  );
+}
+
+function FaxCallDiagram() {
+  const phases: { time: string; left?: string; right?: string; note?: string; color: string }[] = [
+    { time: "0:00", left: "ダイヤル", color: "zinc" },
+    { time: "0:03", right: "着信応答", color: "zinc" },
+    { time: "0:04", right: "CED (ピー) 「私はFAX」", color: "amber" },
+    { time: "0:05", left: "CNG (ピー) 「私もFAX」", color: "amber" },
+    { time: "0:07", right: "DIS 「対応能力」", color: "amber" },
+    { time: "0:08", left: "DCS 「ではこの設定で」", color: "amber" },
+    { time: "0:09", left: "TCF (テスト信号)", color: "amber" },
+    { time: "0:11", left: "画像データ (ガー…)", color: "emerald" },
+    { time: "0:41", left: "EOP 「ページ終わり」", color: "amber" },
+    { time: "0:42", right: "MCF 「OK」", color: "amber" },
+    { time: "0:43", left: "切断", color: "zinc" },
+  ];
+  const colorClass = (c: string, side: "left" | "right") => {
+    const base = side === "left" ? "ml-0 mr-auto" : "ml-auto mr-0";
+    switch (c) {
+      case "amber":
+        return `${base} bg-amber-50 border-amber-300 text-amber-900 dark:bg-amber-950/30 dark:border-amber-700 dark:text-amber-200`;
+      case "emerald":
+        return `${base} bg-emerald-50 border-emerald-300 text-emerald-900 dark:bg-emerald-950/30 dark:border-emerald-700 dark:text-emerald-200`;
+      default:
+        return `${base} bg-zinc-50 border-zinc-300 text-zinc-900 dark:bg-zinc-900 dark:border-zinc-700 dark:text-zinc-100`;
+    }
+  };
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="grid grid-cols-[5rem,1fr,2rem,1fr] gap-2 text-xs">
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-500">
+          経過
+        </div>
+        <div className="text-center text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+          送信機 (A)
+        </div>
+        <div></div>
+        <div className="text-center text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+          受信機 (B)
+        </div>
+
+        {phases.map((p, i) => (
+          <div key={i} className="contents">
+            <div className="self-center font-mono text-[10px] text-zinc-500 dark:text-zinc-500">
+              {p.time}
+            </div>
+            <div className="flex">
+              {p.left && (
+                <div
+                  className={`max-w-full rounded-md border px-2 py-1 text-[11px] ${colorClass(p.color, "left")}`}
+                >
+                  {p.left}
+                </div>
+              )}
+            </div>
+            <div className="self-center text-center text-zinc-400 dark:text-zinc-600">
+              {p.left && !p.right ? "→" : !p.left && p.right ? "←" : "·"}
+            </div>
+            <div className="flex">
+              {p.right && (
+                <div
+                  className={`max-w-full rounded-md border px-2 py-1 text-[11px] ${colorClass(p.color, "right")}`}
+                >
+                  {p.right}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-center text-xs text-zinc-500 dark:text-zinc-500">
+        実時間は機種・回線速度・原稿枚数で変わる。A4 1 枚で 30 秒〜1 分が典型
+      </p>
+    </div>
+  );
+}
+
+function BusySignalDiagram() {
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 600 220" className="mx-auto w-full max-w-2xl">
+        <rect
+          x="20"
+          y="40"
+          width="100"
+          height="50"
+          rx="6"
+          className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700"
+          strokeWidth="1.5"
+        />
+        <text x="70" y="62" textAnchor="middle" className="fill-emerald-800 text-xs font-medium dark:fill-emerald-200">
+          送信者 A
+        </text>
+        <text x="70" y="78" textAnchor="middle" className="fill-emerald-700 text-[10px] dark:fill-emerald-400">
+          先に発信
+        </text>
+
+        <rect
+          x="20"
+          y="130"
+          width="100"
+          height="50"
+          rx="6"
+          className="fill-rose-50 stroke-rose-400 dark:fill-rose-950/30 dark:stroke-rose-700"
+          strokeWidth="1.5"
+        />
+        <text x="70" y="152" textAnchor="middle" className="fill-rose-800 text-xs font-medium dark:fill-rose-200">
+          送信者 B
+        </text>
+        <text x="70" y="168" textAnchor="middle" className="fill-rose-700 text-[10px] dark:fill-rose-400">
+          同時に発信
+        </text>
+
+        <rect
+          x="260"
+          y="85"
+          width="100"
+          height="50"
+          rx="6"
+          className="fill-zinc-100 stroke-zinc-400 dark:fill-zinc-800 dark:stroke-zinc-600"
+          strokeWidth="1.5"
+        />
+        <text x="310" y="107" textAnchor="middle" className="fill-zinc-700 text-xs font-medium dark:fill-zinc-300">
+          電話局
+        </text>
+        <text x="310" y="123" textAnchor="middle" className="fill-zinc-500 text-[10px] dark:fill-zinc-500">
+          1 番号 = 1 通話
+        </text>
+
+        <rect
+          x="480"
+          y="85"
+          width="100"
+          height="50"
+          rx="6"
+          className="fill-zinc-100 stroke-zinc-400 dark:fill-zinc-800 dark:stroke-zinc-600"
+          strokeWidth="1.5"
+        />
+        <text x="530" y="107" textAnchor="middle" className="fill-zinc-700 text-xs font-medium dark:fill-zinc-300">
+          受信機
+        </text>
+        <text x="530" y="123" textAnchor="middle" className="fill-zinc-500 text-[10px] dark:fill-zinc-500">
+          03-XXXX-1234
+        </text>
+
+        <line
+          x1="120"
+          y1="65"
+          x2="260"
+          y2="100"
+          className="stroke-emerald-500"
+          strokeWidth="2"
+          markerEnd="url(#busy-arrow-ok)"
+        />
+        <text x="190" y="78" textAnchor="middle" className="fill-emerald-700 text-[10px] font-medium dark:fill-emerald-400">
+          ✓ 接続
+        </text>
+
+        <line
+          x1="360"
+          y1="110"
+          x2="480"
+          y2="110"
+          className="stroke-emerald-500"
+          strokeWidth="2"
+          markerEnd="url(#busy-arrow-ok)"
+        />
+
+        <line
+          x1="120"
+          y1="155"
+          x2="260"
+          y2="120"
+          className="stroke-rose-500"
+          strokeWidth="2"
+          strokeDasharray="4 3"
+        />
+        <line
+          x1="260"
+          y1="120"
+          x2="120"
+          y2="155"
+          className="stroke-rose-500"
+          strokeWidth="2"
+          markerEnd="url(#busy-arrow-ng)"
+        />
+        <text x="190" y="148" textAnchor="middle" className="fill-rose-700 text-[10px] font-medium dark:fill-rose-400">
+          ✕ 話中
+        </text>
+        <text x="190" y="162" textAnchor="middle" className="fill-rose-700 text-[10px] dark:fill-rose-400">
+          (ツーツーツー)
+        </text>
+
+        <text x="300" y="200" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
+          A の通信が終わるまで B は繋がれない。B の送信機は自動リダイヤルで再試行することが多い
+        </text>
+
+        <defs>
+          <marker
+            id="busy-arrow-ok"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" className="fill-emerald-500" />
+          </marker>
+          <marker
+            id="busy-arrow-ng"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="5"
+            markerHeight="5"
+            orient="auto"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" className="fill-rose-500" />
+          </marker>
+        </defs>
+      </svg>
+    </div>
   );
 }
 

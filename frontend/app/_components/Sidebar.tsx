@@ -39,12 +39,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(
-      navGroups.map((g) => [
-        g.label,
-        g.items.some((i) => i.href === pathname) || g.items.length > 0,
-      ]),
-    ),
+    Object.fromEntries(navGroups.map((g) => [g.label, false])),
   );
 
   const toggle = (label: string) =>
