@@ -26,6 +26,10 @@ const navGroups: NavGroup[] = [
     label: "Web 通信",
     items: [{ href: "/communication/sse", label: "SSE" }],
   },
+  {
+    label: "業務",
+    items: [{ href: "/business/hospital", label: "病院の組織と用語" }],
+  },
 ];
 
 export default function Sidebar() {
