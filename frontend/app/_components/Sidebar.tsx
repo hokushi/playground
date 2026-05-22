@@ -28,7 +28,10 @@ const navGroups: NavGroup[] = [
   },
   {
     label: "業務",
-    items: [{ href: "/business/fax", label: "ファックス" }],
+    items: [
+      { href: "/business/hospital", label: "病院の組織と用語" },
+      { href: "/business/fax", label: "ファックス" },
+    ],
   },
 ];
 
