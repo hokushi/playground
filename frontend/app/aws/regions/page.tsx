@@ -229,6 +229,69 @@ export default function AwsRegionsPage() {
           </div>
         </div>
 
+        <div className="rounded-lg border border-blue-200 bg-blue-50 px-5 py-4 dark:border-blue-900/50 dark:bg-blue-950/30">
+          <p className="text-sm font-medium text-blue-900 dark:text-blue-200">
+            「AZ 間でも同じ問題があるのでは?」 ── 鋭い指摘
+          </p>
+          <p className="mt-2 text-sm text-blue-900/80 dark:text-blue-300">
+            原理としては同じですが、<strong>AZ 間と Region 間でレイテンシが桁違い</strong>なので、
+            書き込み同期の選択肢が変わり、結果として難易度が大きく違います。
+          </p>
+
+          <div className="mt-3 overflow-hidden rounded-md border border-blue-200 dark:border-blue-800">
+            <table className="w-full text-xs">
+              <thead className="bg-white text-blue-900 dark:bg-blue-950/60 dark:text-blue-200">
+                <tr>
+                  <th className="px-3 py-2 text-left font-semibold">観点</th>
+                  <th className="px-3 py-2 text-left font-semibold">AZ 間 (同一リージョン内)</th>
+                  <th className="px-3 py-2 text-left font-semibold">Region 間</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-blue-200 bg-white text-blue-900/90 dark:divide-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
+                <tr>
+                  <td className="px-3 py-2 font-medium">レイテンシ</td>
+                  <td className="px-3 py-2"><strong>1〜数 ms</strong></td>
+                  <td className="px-3 py-2"><strong>10〜100ms+</strong> (TYO-OSA で 10ms、TYO-USA で 100ms 超)</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 font-medium">レプリケーション方式</td>
+                  <td className="px-3 py-2">
+                    <strong>同期</strong>: 書き込み完了を返す前に両方の AZ に書く
+                  </td>
+                  <td className="px-3 py-2">
+                    <strong>非同期</strong>: 100ms の往復を毎回待てないので、後追いで複製
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 font-medium">書き込み競合</td>
+                  <td className="px-3 py-2">
+                    起きない (片方が primary、片方が standby のことが多い)
+                  </td>
+                  <td className="px-3 py-2">
+                    アクティブ/アクティブ構成では <strong>起きうる</strong> (ラグ中に両側で書かれる)
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 font-medium">運用の手間</td>
+                  <td className="px-3 py-2">
+                    AWS が裏で全部やる。<strong>RDS の Multi-AZ オプションを ON にするだけ</strong>
+                  </td>
+                  <td className="px-3 py-2">
+                    自前で設計が必要 (DynamoDB Global Tables など一部例外あり)
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p className="mt-3 text-sm text-blue-900/80 dark:text-blue-300">
+            ポイント: AZ 間は <strong>「書き込みのたびにもう片方にも書き込む」が実用速度</strong>で可能。
+            だから一貫性問題は <strong>構造的に発生させない</strong>設計ができる。
+            Region 間は同じことをすると毎リクエストが 100ms 待ちになるので、
+            <strong>非同期にせざるを得ず、結果としてラグや競合が発生する</strong> ── ここが本質的な違いです。
+          </p>
+        </div>
+
         <div className="rounded-lg border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-900/50 dark:bg-amber-950/30">
           <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
             Multi-Region は安くないし、簡単でもない
