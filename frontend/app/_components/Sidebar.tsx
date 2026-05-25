@@ -41,6 +41,10 @@ const navGroups: NavGroup[] = [
     label: "用語集",
     items: [{ href: "/glossary", label: "IT・AI・セキュリティ" }],
   },
+  {
+    label: "AWS",
+    items: [{ href: "/aws/regions", label: "リージョン と データセンター" }],
+  },
 ];
 
 export default function Sidebar() {

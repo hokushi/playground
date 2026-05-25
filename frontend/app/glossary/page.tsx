@@ -38,6 +38,17 @@ const terms: Term[] = [
       </>
     ),
   },
+  {
+    term: "レイテンシ",
+    reading: "Latency",
+    body: (
+      <>
+        通信や処理の <strong>「お願いしてから返ってくるまでの遅延時間」</strong>のこと。単位は ms (ミリ秒) が普通。
+        スループット (一定時間に流せる量) とは別物で、<strong>1 回のやり取りがどれだけ待たされるか</strong>を表す。
+        東京〜大阪で 10ms 前後、東京〜米国で 100ms 超、というのが目安。
+      </>
+    ),
+  },
 ];
 
 export default function GlossaryPage() {
