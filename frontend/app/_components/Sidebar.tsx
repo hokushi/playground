@@ -20,6 +20,7 @@ const navGroups: NavGroup[] = [
     items: [
       { href: "/network", label: "有線と無線" },
       { href: "/network/internet", label: "インターネットの裏側" },
+      { href: "/network/firewall", label: "ファイアウォール / FortiGate" },
     ],
   },
   {
