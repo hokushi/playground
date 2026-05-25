@@ -25,7 +25,10 @@ const navGroups: NavGroup[] = [
   },
   {
     label: "Web 通信",
-    items: [{ href: "/communication/sse", label: "SSE" }],
+    items: [
+      { href: "/communication/http", label: "HTTP / TLS / HTTPS" },
+      { href: "/communication/sse", label: "SSE" },
+    ],
   },
   {
     label: "業務",
