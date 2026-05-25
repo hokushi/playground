@@ -28,7 +28,10 @@ const navGroups: NavGroup[] = [
   },
   {
     label: "業務",
-    items: [{ href: "/business/hospital", label: "病院の組織と用語" }],
+    items: [
+      { href: "/business/hospital", label: "病院の組織と用語" },
+      { href: "/business/fax", label: "ファックス" },
+    ],
   },
 ];
 
@@ -36,12 +39,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(
-      navGroups.map((g) => [
-        g.label,
-        g.items.some((i) => i.href === pathname) || g.items.length > 0,
-      ]),
-    ),
+    Object.fromEntries(navGroups.map((g) => [g.label, false])),
   );
 
   const toggle = (label: string) =>
