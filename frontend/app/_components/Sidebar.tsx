@@ -34,6 +34,10 @@ const navGroups: NavGroup[] = [
       { href: "/business/fax", label: "ファックス" },
     ],
   },
+  {
+    label: "用語集",
+    items: [{ href: "/glossary", label: "IT・AI・セキュリティ" }],
+  },
 ];
 
 export default function Sidebar() {
