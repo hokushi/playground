@@ -42,3 +42,6 @@ next-env.d.ts
 
 # claude code (personal settings)
 .claude/
+
+# AWS setup screenshots (local only)
+frontend/public/aws/
