@@ -44,8 +44,9 @@ const navGroups: NavGroup[] = [
   {
     label: "AWS",
     items: [
-      { href: "/aws/setup", label: "アカウント準備" },
       { href: "/aws/regions", label: "リージョン と データセンター" },
+      { href: "/aws/setup", label: "アカウント準備" },
+      { href: "/aws/vpc", label: "VPC と サブネット" },
     ],
   },
 ];
