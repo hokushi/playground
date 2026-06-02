@@ -226,75 +226,54 @@ export default function FaxPage() {
 }
 
 function FaxCallDiagram() {
-  const phases: { time: string; left?: string; right?: string; note?: string; color: string }[] = [
-    { time: "0:00", left: "ダイヤル", color: "zinc" },
-    { time: "0:03", right: "着信応答", color: "zinc" },
-    { time: "0:04", right: "CED (ピー) 「私はFAX」", color: "amber" },
-    { time: "0:05", left: "CNG (ピー) 「私もFAX」", color: "amber" },
-    { time: "0:07", right: "DIS 「対応能力」", color: "amber" },
-    { time: "0:08", left: "DCS 「ではこの設定で」", color: "amber" },
-    { time: "0:09", left: "TCF (テスト信号)", color: "amber" },
-    { time: "0:11", left: "画像データ (ガー…)", color: "emerald" },
-    { time: "0:41", left: "EOP 「ページ終わり」", color: "amber" },
-    { time: "0:42", right: "MCF 「OK」", color: "amber" },
-    { time: "0:43", left: "切断", color: "zinc" },
+  const steps: { dir: "→" | "←"; text: string }[] = [
+    { dir: "→", text: "電話をかける (ダイヤル)" },
+    { dir: "←", text: "「私はファックスです」(ピー音)" },
+    { dir: "→", text: "「私もファックスです」(ピー音)" },
+    { dir: "←", text: "「私の対応設定はこれです」" },
+    { dir: "→", text: "「ではこの設定で送ります」" },
+    { dir: "→", text: "画像データ送信 (ガー… 30 秒〜1 分)" },
+    { dir: "←", text: "「OK、受け取りました」" },
+    { dir: "→", text: "電話を切る" },
   ];
-  const colorClass = (c: string, side: "left" | "right") => {
-    const base = side === "left" ? "ml-0 mr-auto" : "ml-auto mr-0";
-    switch (c) {
-      case "amber":
-        return `${base} bg-amber-50 border-amber-300 text-amber-900 dark:bg-amber-950/30 dark:border-amber-700 dark:text-amber-200`;
-      case "emerald":
-        return `${base} bg-emerald-50 border-emerald-300 text-emerald-900 dark:bg-emerald-950/30 dark:border-emerald-700 dark:text-emerald-200`;
-      default:
-        return `${base} bg-zinc-50 border-zinc-300 text-zinc-900 dark:bg-zinc-900 dark:border-zinc-700 dark:text-zinc-100`;
-    }
-  };
+
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="grid grid-cols-[5rem,1fr,2rem,1fr] gap-2 text-xs">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-500">
-          経過
-        </div>
-        <div className="text-center text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
-          送信機 (A)
-        </div>
-        <div></div>
-        <div className="text-center text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
-          受信機 (B)
-        </div>
-
-        {phases.map((p, i) => (
-          <div key={i} className="contents">
-            <div className="self-center font-mono text-[10px] text-zinc-500 dark:text-zinc-500">
-              {p.time}
-            </div>
-            <div className="flex">
-              {p.left && (
-                <div
-                  className={`max-w-full rounded-md border px-2 py-1 text-[11px] ${colorClass(p.color, "left")}`}
-                >
-                  {p.left}
-                </div>
-              )}
-            </div>
-            <div className="self-center text-center text-zinc-400 dark:text-zinc-600">
-              {p.left && !p.right ? "→" : !p.left && p.right ? "←" : "·"}
-            </div>
-            <div className="flex">
-              {p.right && (
-                <div
-                  className={`max-w-full rounded-md border px-2 py-1 text-[11px] ${colorClass(p.color, "right")}`}
-                >
-                  {p.right}
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
+      <div className="mb-5 flex items-center justify-center gap-4 text-xs">
+        <span className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 font-semibold text-emerald-900 dark:border-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200">
+          A 送信機
+        </span>
+        <span className="text-zinc-400 dark:text-zinc-600">⇄</span>
+        <span className="rounded-md border border-blue-300 bg-blue-50 px-3 py-1.5 font-semibold text-blue-900 dark:border-blue-700 dark:bg-blue-950/30 dark:text-blue-200">
+          B 受信機
+        </span>
       </div>
-      <p className="mt-4 text-center text-xs text-zinc-500 dark:text-zinc-500">
-        実時間は機種・回線速度・原稿枚数で変わる。A4 1 枚で 30 秒〜1 分が典型
+
+      <ol className="flex flex-col gap-2">
+        {steps.map((s, i) => {
+          const isAtoB = s.dir === "→";
+          return (
+            <li key={i} className="flex items-center gap-3 text-sm">
+              <span className="w-5 shrink-0 text-right font-mono text-xs text-zinc-400 dark:text-zinc-600">
+                {i + 1}
+              </span>
+              <span
+                className={`shrink-0 rounded px-2 py-0.5 font-mono text-xs font-semibold ${
+                  isAtoB
+                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"
+                    : "bg-blue-100 text-blue-800 dark:bg-blue-950/50 dark:text-blue-200"
+                }`}
+              >
+                A {s.dir} B
+              </span>
+              <span className="text-zinc-700 dark:text-zinc-300">{s.text}</span>
+            </li>
+          );
+        })}
+      </ol>
+
+      <p className="mt-5 text-center text-xs text-zinc-500 dark:text-zinc-500">
+        要点: A が電話をかけて → 互いに「FAX です」と挨拶 → 設定を合わせて → 画像を送って → 切る
       </p>
     </div>
   );
