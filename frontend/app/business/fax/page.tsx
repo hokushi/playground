@@ -221,6 +221,187 @@ export default function FaxPage() {
           送信者が気付かないと「送ったつもりが届いてない」というトラブルになりがちなのが、この仕組みの弱点です。
         </p>
       </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          受信したファックスをあとで紙にするのは可能?
+        </h2>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          結論: <strong>できます</strong>。最近のファックス機 (および複合機) はほぼ全部、受信したものを
+          <strong>「紙にすぐ印刷しない」モード</strong>を持っています。これを
+          <strong>メモリ受信 / 代行受信</strong>と呼びます。
+        </p>
+
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            メモリ受信の仕組み
+          </p>
+          <ol className="mt-2 flex flex-col gap-1 text-sm text-zinc-700 dark:text-zinc-300">
+            <li>
+              <strong>1.</strong> 受信機が画像データを受け取る (ここまではいつも通り)
+            </li>
+            <li>
+              <strong>2.</strong> 復元したビットマップをすぐに紙に印刷せず、
+              <strong>機械内部のメモリ (ストレージ) に保存</strong>
+            </li>
+            <li>
+              <strong>3.</strong> ユーザーが <strong>「印刷ボタン」を押した時 or 後から PC で取り出した時</strong> に紙にする
+            </li>
+          </ol>
+          <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+            受信時に「ピーガー…」が鳴って機械が受け取ること自体は <strong>リアルタイム</strong>。
+            その後の <strong>「紙にする」工程だけ後回しにできる</strong>、というのが正確
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            よく使われるシーン
+          </p>
+          <ul className="mt-2 flex flex-col gap-1.5 text-sm text-zinc-700 dark:text-zinc-300">
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
+              <span>
+                <strong>紙切れ・トナー切れ</strong>: 印刷できない状態でも受信は受け付けて、補充後にまとめて出力
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
+              <span>
+                <strong>夜間・休日</strong>: 営業時間外に届いたものを翌朝まとめて確認・印刷 (用紙節約)
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
+              <span>
+                <strong>プライバシー保護</strong>: パスワード受信モードで、暗証番号を入れた人だけが印刷可能
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
+              <span>
+                <strong>転送・メール化</strong>: 受信したものを <strong>PDF として PC やメールに転送</strong>
+                できる機種も多い (病院・クリニックでよくある運用)
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+            さらに進化: クラウド / インターネットファックス
+          </p>
+          <p className="mt-2 text-sm text-emerald-900/80 dark:text-emerald-300">
+            「メモリ受信」を機械の中ではなく <strong>クラウド上でやる</strong>のが
+            <strong>インターネットファックス (FoIP)</strong>。受信したものはクラウド側に PDF として保存され、
+            <strong>メール通知 → ブラウザでダウンロード → 必要なら印刷</strong>という流れになる。
+            紙がなくても受信できるし、複数人で共有もできる
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-900/50 dark:bg-amber-950/30">
+          <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
+            注意点
+          </p>
+          <ul className="mt-2 flex flex-col gap-1.5 text-sm text-amber-900/80 dark:text-amber-300">
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500 dark:bg-amber-400" />
+              <span>
+                <strong>メモリ容量に上限あり</strong>: 古い機種だと数十ページで溢れる。溢れると新規受信を断る
+                or 古いものから上書きされる
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500 dark:bg-amber-400" />
+              <span>
+                <strong>停電・電源断で消失</strong>するリスクのある機種もある (バッテリーバックアップ有無は機種次第)
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500 dark:bg-amber-400" />
+              <span>
+                <strong>送信側からは届いたかどうか分からない</strong>: メモリ受信でも「MCF (受け取った)」は返るので、
+                送信側のログには「正常終了」と出る。受信側で印刷せずに気付かなければ伝達ミスになる
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          つまり <strong>「受信のリアルタイム性」と「紙にするタイミング」は分けられる</strong>のがポイント。
+          通信そのものは Phase 1〜4 で見たフローを必ずリアルタイムで行うが、最後の「印刷」だけは
+          後回しにする選択肢があります。
+        </p>
+
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-5 py-4 dark:border-rose-900/50 dark:bg-rose-950/30">
+          <p className="text-sm font-medium text-rose-900 dark:text-rose-200">
+            誤解しがち: 「メモリ受信があれば通話中は起きないのでは?」 ← <strong>起きます</strong>
+          </p>
+          <p className="mt-2 text-sm text-rose-900/80 dark:text-rose-300">
+            メモリ受信が解決するのは <strong>「受け取った後どう保管・印刷するか」</strong>だけ。
+            <strong>電話回線の使い方</strong>は何も変わらないので、
+            <strong>「1 番号 = 同時 1 通話」という制約はそのまま残ります</strong>。
+          </p>
+
+          <pre className="mt-3 overflow-x-auto rounded bg-white/60 p-3 font-mono text-[11px] leading-relaxed text-rose-950 dark:bg-rose-950/50 dark:text-rose-100">
+{`A さんが送信中
+   └─ 受信機: 1 つの通信を処理中
+      (画像を音で受け取り → メモリに保存中)
+      ↓
+      この回線は今 A さんで「使用中」
+
+B さんが同時にダイヤル
+   └─ 電話局: 「この番号は通話中です」
+      ↓
+      B さんに「ツーツーツー」(話中音)`}
+          </pre>
+
+          <p className="mt-3 text-sm text-rose-900/80 dark:text-rose-300">
+            ポイント: メモリ受信は <strong>受信機内部</strong>の話。
+            通話中の判定は <strong>電話局 (回線網)</strong>の話なので、レイヤーが違います。
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            では同時に複数受信したい時は?
+          </p>
+          <div className="mt-3 overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+            <table className="w-full text-xs">
+              <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                <tr>
+                  <th className="px-3 py-2 text-left font-semibold">解決策</th>
+                  <th className="px-3 py-2 text-left font-semibold">対応するレイヤー</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                <tr>
+                  <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">
+                    複数の電話回線 + 代表番号 (ハントグループ)
+                  </td>
+                  <td className="px-3 py-2">電話回線 (物理的に入口を増やす)</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">
+                    クラウド / インターネットファックス (FoIP)
+                  </td>
+                  <td className="px-3 py-2">サービス側が大量の回線を持っているので実質同時可</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 font-medium text-zinc-400 line-through dark:text-zinc-600">
+                    メモリ受信
+                  </td>
+                  <td className="px-3 py-2 text-zinc-400 dark:text-zinc-600">関係なし (印刷タイミングだけの話)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+            同時受信を可能にしたければ <strong>「物理的に入口 (回線) を増やす」</strong>しかない。
+            メモリ受信ではどうにもならない部分
+          </p>
+        </div>
+      </section>
     </main>
   );
 }
