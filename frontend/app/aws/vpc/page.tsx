@@ -762,6 +762,171 @@ export default function AwsVpcPage() {
           </p>
         </Step>
       </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+          補足: VPC 一覧に出てくる「Name = -」の VPC は何?
+        </h2>
+        <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+          VPC ダッシュボードで自分の VPC 一覧を開くと、<strong>作った覚えがない VPC</strong>がもう 1 つ並んでいる。
+          Name が空 (ハイフン表示)、CIDR が <Code>172.31.0.0/16</Code> なら、それは
+          <strong> AWS が用意した「デフォルト VPC」</strong>です。
+        </p>
+
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+            デフォルト VPC とは
+          </p>
+          <ul className="mt-2 flex flex-col gap-1.5 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
+              <span>
+                AWS アカウントを作った瞬間に、<strong>全リージョンで自動生成</strong>される VPC
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
+              <span>
+                目的: 「VPC を自分で設計しなくても <strong>すぐ EC2 を立てられる</strong>」初心者向けのクイックスタート用
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
+              <span>
+                <strong>無料</strong>。VPC 自体は何個あっても課金されない (中に EC2 / NAT GW を置いた時だけ)
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
+              <span>
+                残しておくのが推奨。<strong>削除すると戻すのに AWS CLI</strong> (
+                <Code>aws ec2 create-default-vpc</Code>) が必要なので面倒
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+          デフォルト VPC の中身
+        </p>
+        <pre className="overflow-x-auto rounded bg-zinc-100 p-3 font-mono text-[11px] leading-relaxed text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
+{`Default VPC (172.31.0.0/16)
+ ├─ AZ: ap-northeast-1a
+ │   └─ Public Subnet (172.31.0.0/20)
+ ├─ AZ: ap-northeast-1c
+ │   └─ Public Subnet (172.31.16.0/20)
+ └─ AZ: ap-northeast-1d
+     └─ Public Subnet (172.31.32.0/20)
+
+ルートテーブル × 1 (メイン RT がそのまま使われる)
+  ・local         → VPC 内
+  ・0.0.0.0/0     → IGW
+  (全 Public サブネットが共有)`}
+        </pre>
+
+        <div className="rounded-lg border border-indigo-200 bg-indigo-50/60 p-4 dark:border-indigo-900/50 dark:bg-indigo-950/20">
+          <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
+            設計のポイント (なぜこういう構造か)
+          </p>
+          <ul className="mt-2 flex flex-col gap-1.5 text-[14px] leading-relaxed text-indigo-900/90 dark:text-indigo-200/90">
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
+              <span>
+                <strong>Public しかない</strong>: 「EC2 を立てて外からアクセスする」が初心者の最大ニーズだから。
+                Private は「隠したい意図がある時」だけ作るもの
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
+              <span>
+                <strong>1 ルートテーブルで共有</strong>: 全 Public で行き先 (IGW) が同じなので、複数作る必要がない。
+                これは <strong>メイン RT がそのまま現役で使われている</strong>状態 (hokushi-vpc では「念のための控え」だったやつ)
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
+              <span>
+                <strong>3 AZ に 1 サブネットずつ</strong>: 全 AZ にとりあえずサブネットを置いておくことで、
+                「どの AZ に EC2 を作ってもいい」状態にしている
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+          自作の VPC との比較
+        </p>
+        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <table className="w-full text-sm">
+            <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+              <tr>
+                <th className="px-3 py-2 text-left font-semibold">項目</th>
+                <th className="px-3 py-2 text-left font-semibold">デフォルト VPC</th>
+                <th className="px-3 py-2 text-left font-semibold">hokushi-vpc (自作)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+              <tr>
+                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">CIDR</td>
+                <td className="px-3 py-2 font-mono">172.31.0.0/16</td>
+                <td className="px-3 py-2 font-mono">10.0.0.0/16</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">AZ 数</td>
+                <td className="px-3 py-2">3</td>
+                <td className="px-3 py-2">2</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">サブネット</td>
+                <td className="px-3 py-2">Public × 3 (Private なし)</td>
+                <td className="px-3 py-2">Public × 2 + Private × 2 = 4</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">ルートテーブル</td>
+                <td className="px-3 py-2">1 (メイン RT が現役)</td>
+                <td className="px-3 py-2">4 (メイン + Public + Private × 2)</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">設計思想</td>
+                <td className="px-3 py-2">初心者がすぐ使える</td>
+                <td className="px-3 py-2">本番想定の最小構成</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">Private リソースを置ける?</td>
+                <td className="px-3 py-2">❌ Public しかない</td>
+                <td className="px-3 py-2">✅ DB / ECS を Private に隠せる</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+          いつデフォルト VPC で済むか
+        </p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+            <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
+              OK なケース
+            </p>
+            <ul className="mt-2 flex flex-col gap-1 text-sm text-emerald-900/90 dark:text-emerald-200/90">
+              <li>・学習・検証</li>
+              <li>・シンプルな個人用 Web サイト</li>
+              <li>・とにかく動けばいい PoC</li>
+            </ul>
+          </div>
+          <div className="rounded-lg border border-rose-200 bg-rose-50/60 p-4 dark:border-rose-900/50 dark:bg-rose-950/20">
+            <p className="text-sm font-semibold text-rose-900 dark:text-rose-200">
+              自分で VPC を切る理由
+            </p>
+            <ul className="mt-2 flex flex-col gap-1 text-sm text-rose-900/90 dark:text-rose-200/90">
+              <li>・DB を隠したい (Private 必要)</li>
+              <li>・本番運用 (セキュリティ層を分けたい)</li>
+              <li>・Multi-tier 構成 (Web / App / DB)</li>
+              <li>・カスタム CIDR を使いたい</li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
