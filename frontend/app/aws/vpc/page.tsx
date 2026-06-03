@@ -763,15 +763,30 @@ export default function AwsVpcPage() {
         </Step>
       </section>
 
-      <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-          補足: VPC 一覧に出てくる「Name = -」の VPC は何?
+      <div className="my-2 flex items-center gap-3">
+        <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+        <span className="rounded-full bg-zinc-200 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+          補足 (オプション)
+        </span>
+        <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+      </div>
+
+      <section className="flex flex-col gap-4 rounded-xl bg-zinc-50/60 px-6 py-5 ring-1 ring-zinc-200/80 dark:bg-zinc-900/40 dark:ring-zinc-800/80">
+        <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-300">
+          VPC 一覧に出てくる「Name = -」の VPC は何?
         </h2>
         <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
           VPC ダッシュボードで自分の VPC 一覧を開くと、<strong>作った覚えがない VPC</strong>がもう 1 つ並んでいる。
           Name が空 (ハイフン表示)、CIDR が <Code>172.31.0.0/16</Code> なら、それは
           <strong> AWS が用意した「デフォルト VPC」</strong>です。
         </p>
+
+        <Screenshot
+          src="/aws/スクリーンショット 2026-06-03 14.40.10.png"
+          alt="VPC 一覧 - デフォルト VPC (Name 空) と hokushi-vpc が並ぶ"
+          width={2560}
+          height={1440}
+        />
 
         <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
           <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
@@ -823,6 +838,17 @@ export default function AwsVpcPage() {
   ・0.0.0.0/0     → IGW
   (全 Public サブネットが共有)`}
         </pre>
+
+        <p className="text-xs text-zinc-500 dark:text-zinc-500">
+          実際のリソースマップでも、サブネット 3 つに対して <strong>ルートテーブルが 1 つだけ</strong>になっているのが見える:
+        </p>
+
+        <Screenshot
+          src="/aws/スクリーンショット 2026-06-03 14.45.43.png"
+          alt="デフォルト VPC のリソースマップ - 1 つのルートテーブルを全サブネットが共有"
+          width={2560}
+          height={1440}
+        />
 
         <div className="rounded-lg border border-indigo-200 bg-indigo-50/60 p-4 dark:border-indigo-900/50 dark:bg-indigo-950/20">
           <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
