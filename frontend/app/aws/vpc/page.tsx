@@ -718,7 +718,9 @@ export default function AwsVpcPage() {
             <li className="flex gap-2">
               <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500 dark:bg-amber-400" />
               <span>
-                <strong>ルートテーブル (3)</strong>
+                <strong>ルートテーブル (4)</strong>
+                <br />
+                ・<Code>rtb-...</Code> (メイン RT) ── VPC 作成時に自動でできる「もしもの時の控え」。何にも関連付かない
                 <br />
                 ・<Code>hokushi-rtb-public</Code> ── 2 つの Public サブネットが共有
                 <br />
@@ -737,9 +739,17 @@ export default function AwsVpcPage() {
 
           <div className="rounded-lg border border-indigo-200 bg-indigo-50/60 p-4 dark:border-indigo-900/50 dark:bg-indigo-950/20">
             <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
-              ルートテーブルが Public 1 + Private 2 = 3 つになっている理由
+              ルートテーブルが 4 つになっている理由
             </p>
             <ul className="mt-2 flex flex-col gap-1.5 text-[14px] leading-relaxed text-indigo-900/90 dark:text-indigo-200/90">
+              <li className="flex gap-2">
+                <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
+                <span>
+                  <strong>メイン RT (1 つ)</strong>: VPC を作ると <strong>自動的に 1 つ生成</strong>される。
+                  サブネットに明示的にルートテーブルを関連付けない場合のデフォルトとして残るが、今回はウィザードが
+                  全サブネットに専用 RT を関連付けるので実質使われない (「念のための控え」状態)
+                </span>
+              </li>
               <li className="flex gap-2">
                 <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
                 <span>
@@ -754,6 +764,10 @@ export default function AwsVpcPage() {
                 </span>
               </li>
             </ul>
+            <p className="mt-3 text-xs text-indigo-700 dark:text-indigo-400">
+              ※ Step 03 の作成完了画面で「ルートテーブル × 3」と出るのは <strong>ウィザードが作った数</strong>。
+              リソースマップ (Step 04) はメイン RT も含めて表示するので 4 になる、という関係
+            </p>
           </div>
 
           <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
