@@ -2,10 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type NavItem = { href: string; label: string };
 type NavGroup = { label: string; items: NavItem[] };
+
+const SIDEBAR_WIDTH_MIN = 180;
+const SIDEBAR_WIDTH_MAX = 480;
+const SIDEBAR_WIDTH_DEFAULT = 240;
+const SIDEBAR_STORAGE_KEY = "playground:sidebar-width";
 
 const navGroups: NavGroup[] = [
   {
@@ -47,6 +52,7 @@ const navGroups: NavGroup[] = [
       { href: "/aws/regions", label: "リージョン と データセンター" },
       { href: "/aws/setup", label: "アカウント準備" },
       { href: "/aws/vpc", label: "VPC と サブネット" },
+      { href: "/aws/ec2", label: "EC2 を立てる" },
     ],
   },
 ];
@@ -61,8 +67,46 @@ export default function Sidebar() {
   const toggle = (label: string) =>
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
 
+  const [width, setWidth] = useState(SIDEBAR_WIDTH_DEFAULT);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(SIDEBAR_STORAGE_KEY);
+    if (saved) {
+      const w = parseInt(saved, 10);
+      if (!Number.isNaN(w) && w >= SIDEBAR_WIDTH_MIN && w <= SIDEBAR_WIDTH_MAX) {
+        setWidth(w);
+      }
+    }
+  }, []);
+
+  const onResizeStart = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+
+    const clamp = (x: number) =>
+      Math.max(SIDEBAR_WIDTH_MIN, Math.min(SIDEBAR_WIDTH_MAX, x));
+
+    const onMove = (ev: PointerEvent) => {
+      setWidth(clamp(ev.clientX));
+    };
+    const onUp = (ev: PointerEvent) => {
+      const final = clamp(ev.clientX);
+      setWidth(final);
+      setIsDragging(false);
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, String(final));
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onUp);
+    };
+
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onUp);
+  }, []);
+
   return (
-    <aside className="w-60 shrink-0 overflow-y-auto border-r border-black/10 bg-white dark:border-white/10 dark:bg-black">
+    <aside
+      style={{ width: `${width}px` }}
+      className="relative shrink-0 overflow-y-auto border-r border-black/10 bg-white dark:border-white/10 dark:bg-black">
       <div className="px-6 py-6">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
           Playground
@@ -128,6 +172,25 @@ export default function Sidebar() {
           })}
         </ul>
       </nav>
+
+      <div
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="サイドバーの幅を調整"
+        onPointerDown={onResizeStart}
+        className={`group absolute right-0 top-0 h-full w-1.5 cursor-col-resize touch-none select-none ${
+          isDragging ? "bg-indigo-400/60" : "hover:bg-indigo-300/50"
+        }`}
+        style={{ transform: "translateX(50%)" }}
+      >
+        <div
+          aria-hidden
+          className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-[2px] rounded-full bg-zinc-300 transition-opacity dark:bg-zinc-600 ${
+            isDragging ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          }`}
+          style={{ width: 4, height: 32 }}
+        />
+      </div>
     </aside>
   );
 }
