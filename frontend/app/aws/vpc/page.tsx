@@ -50,7 +50,7 @@ export default function AwsVpcPage() {
           </p>
 
           <Screenshot
-            src="/aws/スクリーンショット 2026-05-27 18.03.29.png"
+            src="/aws/vpc/スクリーンショット 2026-05-27 18.03.29.png"
             alt="VPC 作成ウィザード - 基本設定とプレビュー"
             width={2560}
             height={1440}
@@ -549,7 +549,7 @@ export default function AwsVpcPage() {
           </p>
 
           <Screenshot
-            src="/aws/スクリーンショット 2026-05-29 10.02.18.png"
+            src="/aws/vpc/スクリーンショット 2026-05-29 10.02.18.png"
             alt="VPC 作成ウィザード - 画面下半分 (NAT GW / VPC エンドポイント / DNS / 作成ボタン)"
             width={2560}
             height={1440}
@@ -595,7 +595,7 @@ export default function AwsVpcPage() {
           </p>
 
           <Screenshot
-            src="/aws/スクリーンショット 2026-05-29 11.15.37.png"
+            src="/aws/vpc/スクリーンショット 2026-05-29 11.15.37.png"
             alt="VPC 作成完了画面 - 各リソースに緑のチェックマーク"
             width={2560}
             height={1440}
@@ -655,7 +655,7 @@ export default function AwsVpcPage() {
           </p>
 
           <Screenshot
-            src="/aws/スクリーンショット 2026-05-29 11.20.08.png"
+            src="/aws/vpc/スクリーンショット 2026-05-29 11.20.08.png"
             alt="VPC 詳細ページ - リソースマップタブ"
             width={2560}
             height={1440}
@@ -796,7 +796,7 @@ export default function AwsVpcPage() {
         </p>
 
         <Screenshot
-          src="/aws/スクリーンショット 2026-06-03 14.40.10.png"
+          src="/aws/vpc/スクリーンショット 2026-06-03 14.40.10.png"
           alt="VPC 一覧 - デフォルト VPC (Name 空) と hokushi-vpc が並ぶ"
           width={2560}
           height={1440}
@@ -858,7 +858,7 @@ export default function AwsVpcPage() {
         </p>
 
         <Screenshot
-          src="/aws/スクリーンショット 2026-06-03 14.45.43.png"
+          src="/aws/vpc/スクリーンショット 2026-06-03 14.45.43.png"
           alt="デフォルト VPC のリソースマップ - 1 つのルートテーブルを全サブネットが共有"
           width={2560}
           height={1440}

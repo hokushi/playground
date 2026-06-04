@@ -13,7 +13,7 @@ export default function AwsSetupPage() {
         </h2>
 
         <Screenshot
-          src="/aws/スクリーンショット 2026-05-26 18.01.57.png"
+          src="/aws/setup/スクリーンショット 2026-05-26 18.01.57.png"
           alt="AWS Console Home - 右上のドロップダウンを開いた状態"
           width={2560}
           height={1440}
@@ -146,7 +146,7 @@ export default function AwsSetupPage() {
             </li>
           </ul>
           <Screenshot
-            src="/aws/スクリーンショット 2026-05-26 18.19.12.png"
+            src="/aws/setup/スクリーンショット 2026-05-26 18.19.12.png"
             alt="IAM ダッシュボード"
             width={2560}
             height={1440}
@@ -185,7 +185,7 @@ export default function AwsSetupPage() {
             </li>
           </ul>
           <Screenshot
-            src="/aws/スクリーンショット 2026-05-26 18.26.00.png"
+            src="/aws/setup/スクリーンショット 2026-05-26 18.26.00.png"
             alt="ユーザー詳細 - カスタムパスワード入力済み"
             width={2560}
             height={1440}
@@ -277,7 +277,7 @@ export default function AwsSetupPage() {
             </li>
           </ul>
           <Screenshot
-            src="/aws/スクリーンショット 2026-05-26 18.27.36.png"
+            src="/aws/setup/スクリーンショット 2026-05-26 18.27.36.png"
             alt="許可ポリシー選択 - AdministratorAccess にチェック"
             width={2560}
             height={1440}
@@ -310,7 +310,7 @@ export default function AwsSetupPage() {
             </li>
           </ul>
           <Screenshot
-            src="/aws/スクリーンショット 2026-05-26 18.30.08.png"
+            src="/aws/setup/スクリーンショット 2026-05-26 18.30.08.png"
             alt="ユーザー作成完了画面"
             width={2560}
             height={1440}

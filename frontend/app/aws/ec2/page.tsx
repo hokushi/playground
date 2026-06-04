@@ -97,7 +97,7 @@ export default function AwsEc2Page() {
             オレンジボタン <strong>「インスタンスを起動」</strong> をクリック
           </Li>
           <Screenshot
-            src="/aws/スクリーンショット 2026-06-03 16.01.16.png"
+            src="/aws/ec2/スクリーンショット 2026-06-03 16.01.16.png"
             alt="EC2 ダッシュボード"
             width={2560}
             height={1440}
@@ -131,7 +131,7 @@ export default function AwsEc2Page() {
             </p>
           </Details>
           <Screenshot
-            src="/aws/スクリーンショット 2026-06-03 16.10.14.png"
+            src="/aws/ec2/スクリーンショット 2026-06-03 16.10.14.png"
             alt="名前 / AMI / インスタンスタイプを設定済みのフォーム"
             width={2560}
             height={1440}
@@ -160,7 +160,7 @@ export default function AwsEc2Page() {
             <strong>ストレージ</strong>: 8 GiB / gp3 のままで OK
           </Li>
           <Screenshot
-            src="/aws/スクリーンショット 2026-06-03 16.12.11.png"
+            src="/aws/ec2/スクリーンショット 2026-06-03 16.12.11.png"
             alt="フォーム下半分 - キーペア / ネットワーク / SG / ストレージ"
             width={2560}
             height={1440}
@@ -185,7 +185,7 @@ export default function AwsEc2Page() {
             一覧で <strong>状態 = 実行中</strong> + <strong>ステータスチェック 2/2</strong> を待つ (1〜2 分)
           </Li>
           <Screenshot
-            src="/aws/スクリーンショット 2026-06-03 17.01.38.png"
+            src="/aws/ec2/スクリーンショット 2026-06-03 17.01.38.png"
             alt="EC2 起動成功画面"
             width={2560}
             height={1440}
@@ -203,7 +203,7 @@ export default function AwsEc2Page() {
             VPC が <Code>hokushi-vpc</Code>、サブネットが Public 用になっているか念のため確認
           </Li>
           <Screenshot
-            src="/aws/スクリーンショット 2026-06-03 17.04.08.png"
+            src="/aws/ec2/スクリーンショット 2026-06-03 17.04.08.png"
             alt="EC2 インスタンス詳細"
             width={2560}
             height={1440}
@@ -273,7 +273,7 @@ export default function AwsEc2Page() {
           </div>
 
           <Screenshot
-            src="/aws/スクリーンショット 2026-06-03 17.22.20.png"
+            src="/aws/ec2/スクリーンショット 2026-06-03 17.22.20.png"
             alt="正しい launch-wizard-1 (hokushi-vpc) の詳細画面"
             width={2560}
             height={1440}
@@ -352,7 +352,7 @@ export default function AwsEc2Page() {
           </Li>
 
           <Screenshot
-            src="/aws/スクリーンショット 2026-06-03 17.49.50.png"
+            src="/aws/ec2/スクリーンショット 2026-06-03 17.49.50.png"
             alt="EC2 Instance Connect 接続成功 - Amazon Linux 2023"
             width={2560}
             height={1440}
@@ -370,7 +370,7 @@ sudo systemctl enable nginx     # 再起動時も自動起動`}
           </pre>
 
           <Screenshot
-            src="/aws/スクリーンショット 2026-06-03 17.53.36.png"
+            src="/aws/ec2/スクリーンショット 2026-06-03 17.53.36.png"
             alt="dnf install nginx + systemctl status - active (running)"
             width={2560}
             height={1440}
@@ -386,7 +386,7 @@ sudo systemctl enable nginx     # 再起動時も自動起動`}
           </pre>
 
           <Screenshot
-            src="/aws/スクリーンショット 2026-06-03 18.02.54.png"
+            src="/aws/ec2/スクリーンショット 2026-06-03 18.02.54.png"
             alt="ブラウザで Welcome to nginx! ページが表示される"
             width={2560}
             height={1440}
