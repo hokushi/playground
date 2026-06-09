@@ -143,6 +143,125 @@ export default function AwsEc2Page() {
             <strong>キーペア</strong>: 「新しいキーペアの作成」→ 名前を入れて <Code>.pem</Code> をダウンロード。
             <span className="text-rose-700 dark:text-rose-400">再ダウンロード不可なので失くさない</span>
           </Li>
+
+          <Details summary="SSH ってなに? なぜ EC2 でキーペアが要るの?">
+            <p>
+              <strong>SSH = Secure Shell</strong> ──{" "}
+              <strong>「遠くにあるコンピュータの中に入って、ターミナル (黒い画面) を操作する仕組み」</strong>。
+              通信は常に暗号化されている。
+            </p>
+            <p>
+              EC2 は東京のデータセンターにある仮想マシンで、目の前にはない。
+              でも nginx をインストールしたり、ファイルを書き換えたり、ログを見たりはしたい。
+              → <strong>SSH で「入って」、ターミナルで遠隔操作する</strong>のが標準。
+            </p>
+
+            <p className="font-semibold text-zinc-800 dark:text-zinc-200">
+              ブラウザ (HTTP) と SSH の対比
+            </p>
+            <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+              <table className="w-full text-xs">
+                <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                  <tr>
+                    <th className="px-3 py-1.5 text-left font-medium"></th>
+                    <th className="px-3 py-1.5 text-left font-medium">ブラウザ (HTTP)</th>
+                    <th className="px-3 py-1.5 text-left font-medium">SSH</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                  <tr>
+                    <td className="px-3 py-1.5">何をする</td>
+                    <td className="px-3 py-1.5">Web ページを見る</td>
+                    <td className="px-3 py-1.5">遠くのターミナル操作</td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-1.5">何が見える</td>
+                    <td className="px-3 py-1.5">HTML</td>
+                    <td className="px-3 py-1.5">
+                      コマンドプロンプト <Code>$ _</Code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-1.5">ポート</td>
+                    <td className="px-3 py-1.5 font-mono">80 / 443</td>
+                    <td className="px-3 py-1.5 font-mono">22</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="mt-3 font-semibold text-zinc-800 dark:text-zinc-200">
+              認証は「鍵 (キーペア)」で行う
+            </p>
+            <p>
+              SSH はパスワードではなく <strong>鍵</strong>で認証するのが標準:
+            </p>
+            <ul className="ml-1 flex flex-col gap-0.5">
+              <li>
+                ・<strong>公開鍵 (<Code>.pub</Code>)</strong> = 南京錠みたいなもの。EC2 側に置いておく
+              </li>
+              <li>
+                ・<strong>秘密鍵 (<Code>.pem</Code>)</strong> = 物理鍵。<strong>自分の Mac だけに保管</strong>
+              </li>
+            </ul>
+            <p>
+              EC2 立ち上げ時にダウンロードした <Code>hokushi-ec2-key.pem</Code> が秘密鍵。
+              ターミナルから <Code>ssh -i hokushi-ec2-key.pem ec2-user@&lt;Public IP&gt;</Code> で繋ぐと、
+              EC2 のターミナルが開く。
+            </p>
+            <p className="text-zinc-600 dark:text-zinc-400">
+              → なぜパスワードじゃなく鍵?: パスワードは盗まれるしブルートフォースされる。
+              鍵は数千文字の暗号文なので実質破られない
+            </p>
+
+            <p className="mt-3 font-semibold text-zinc-800 dark:text-zinc-200">
+              EC2 で SSH を使う 2 つの方法
+            </p>
+            <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+              <table className="w-full text-xs">
+                <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                  <tr>
+                    <th className="px-3 py-1.5 text-left font-medium"></th>
+                    <th className="px-3 py-1.5 text-left font-medium">① ターミナル SSH</th>
+                    <th className="px-3 py-1.5 text-left font-medium">② EC2 Instance Connect</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                  <tr>
+                    <td className="px-3 py-1.5">ツール</td>
+                    <td className="px-3 py-1.5">Mac のターミナル + <Code>ssh</Code></td>
+                    <td className="px-3 py-1.5">AWS コンソール (ブラウザ)</td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-1.5">鍵</td>
+                    <td className="px-3 py-1.5">
+                      <Code>.pem</Code> ファイルを使う
+                    </td>
+                    <td className="px-3 py-1.5">AWS が裏で一時鍵を発行</td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-1.5">通信元</td>
+                    <td className="px-3 py-1.5">自分の家の IP</td>
+                    <td className="px-3 py-1.5">AWS の中継サーバー</td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-1.5">SG ルール</td>
+                    <td className="px-3 py-1.5 font-mono">
+                      SSH 22 / マイ IP
+                    </td>
+                    <td className="px-3 py-1.5 font-mono">
+                      SSH 22 / 3.112.23.0/29
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-zinc-600 dark:text-zinc-400">
+              → SG に SSH 22 のルールが <strong>2 つあるのはこのため</strong>。
+              どちらも宛先は同じ EC2 の 22 番だが、<strong>「誰から来るか」</strong>が違う。
+              片方だけでも作業可能 (両方残すと冗長性が上がる)
+            </p>
+          </Details>
           <Li>
             <strong>ネットワーク (要編集)</strong>: サーバを <strong>どこに置くか / 外から到達できるか</strong>をまとめて決める
             <span className="mt-1.5 ml-1 block text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400">
