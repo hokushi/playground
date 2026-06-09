@@ -226,21 +226,122 @@ export default function NetworkDomainUrlPage() {
           普段は一瞬で終わるけど、この裏で電話帳引きが走っている。
         </p>
 
-        <Faq q="DNS の電話帳って 1 つだけ? 世界中の?">
-          <p>
-            実は <strong>世界に何百万もの DNS サーバー</strong>がある。「世界 1 個の電話帳」じゃなくて、
-            <strong>分担管理</strong>している。
-          </p>
-          <p className="mt-2">
-            例えば <code className="font-mono">example.com</code> の答えは、
-            <code className="font-mono">example.com</code> の持ち主が借りている DNS サーバーが持っている。
-            この「特定のドメインの答えを持っているサーバー」を <strong>権威 DNS</strong> と呼ぶ。
-          </p>
-          <p className="mt-2">
-            AWS の <strong>Route 53 の Hosted Zone</strong> はこの「権威 DNS」そのもの。
-            「<code className="font-mono">your-app.com</code> に何か聞かれたら、Route 53 が答えてね」と任せる
-          </p>
-        </Faq>
+        <details className="group mt-6 rounded-lg border-2 border-emerald-300 bg-emerald-50/40 dark:border-emerald-800 dark:bg-emerald-950/20" open>
+          <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-base font-semibold text-emerald-900 transition-colors hover:bg-emerald-100/50 dark:text-emerald-100 dark:hover:bg-emerald-900/20">
+            <svg
+              className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90"
+              viewBox="0 0 12 12"
+              fill="none"
+              aria-hidden
+            >
+              <path
+                d="M4 3l4 3-4 3"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span>📚 もっと深く: じつは DNS には 2 種類ある (権威 DNS)</span>
+          </summary>
+
+          <div className="flex flex-col gap-4 border-t border-emerald-200 px-5 pb-5 pt-4 dark:border-emerald-900/50">
+            <p className="text-zinc-700 dark:text-zinc-300">
+              ここまで「DNS」と一言で説明してきたけど、実は <strong>役割が違う 2 種類</strong>がある:
+            </p>
+
+            <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+              <table className="w-full text-sm">
+                <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                  <tr>
+                    <th className="px-4 py-2 text-left font-semibold">種類</th>
+                    <th className="px-4 py-2 text-left font-semibold">役割</th>
+                    <th className="px-4 py-2 text-left font-semibold">例</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                  <tr>
+                    <td className="px-4 py-2 font-medium">フルリゾルバ</td>
+                    <td className="px-4 py-2">「調べてくれる人」。<br />名前を渡されたら答えを探しに行く</td>
+                    <td className="px-4 py-2">ISP の DNS / Google 8.8.8.8 / Cloudflare 1.1.1.1</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-2 font-medium text-amber-700 dark:text-amber-400">権威 DNS ⭐</td>
+                    <td className="px-4 py-2">「答えを持っている人」。<br />そのドメインの「公式回答」をする</td>
+                    <td className="px-4 py-2"><strong>Route 53 の Hosted Zone</strong> / Cloudflare DNS</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h4 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+              比喩で言うと: 図書館
+            </h4>
+            <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
+              <ul className="flex flex-col gap-2 text-[15px] text-zinc-700 dark:text-zinc-300">
+                <li>
+                  <strong>あなた</strong> = 図書館に「『吾輩は猫である』のあらすじ知りたい」と聞きに来た客
+                </li>
+                <li>
+                  <strong>フルリゾルバ</strong> = 図書館の <strong>司書 (探してくれる人)</strong>。
+                  本がどこにあるか調べて取ってきてくれる
+                </li>
+                <li>
+                  <strong>権威 DNS</strong> = <strong>その本そのもの</strong>。
+                  答えが書かれている (司書じゃない、本の中身が答え)
+                </li>
+              </ul>
+            </div>
+
+            <h4 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+              なぜ「権威」と呼ぶ?
+            </h4>
+            <p className="text-zinc-700 dark:text-zinc-300">
+              英語で <strong>authoritative</strong>。「公式の」「最終回答」というニュアンス。
+              つまり <strong>そのドメインに関しては、ここが言うことが絶対</strong>という意味。
+            </p>
+            <p className="text-zinc-700 dark:text-zinc-300">
+              例: <code className="font-mono">hokushi-aws.click</code> の権威 DNS は Route 53。
+              世界中のどんな DNS サーバーが何と言おうと、<strong>Route 53 が「IP は X」と言ったらそれが正解</strong>。
+              それ以外は「キャッシュした古い答え」とか「噂」扱い。
+            </p>
+
+            <h4 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+              全体の関係図
+            </h4>
+
+            <DnsAuthoritativeDiagram />
+
+            <p className="text-zinc-700 dark:text-zinc-300">
+              ポイント:
+            </p>
+            <ul className="ml-5 flex list-disc flex-col gap-1.5 text-[15px] text-zinc-700 dark:text-zinc-300">
+              <li>
+                あなたが直接 <strong>権威 DNS に聞きに行くわけじゃない</strong>。間にフルリゾルバ (図書館の司書) が入る
+              </li>
+              <li>
+                フルリゾルバは <strong>権威 DNS から取ってきた答えを少しの間キャッシュ</strong>する。
+                同じドメインに次にアクセスする時は権威 DNS まで行かずに即答できる
+              </li>
+              <li>
+                <strong>Route 53 の Hosted Zone は権威 DNS そのもの</strong>。
+                「<code className="font-mono">hokushi-aws.click</code> に何か聞かれたら、Route 53 が公式回答しますよ」と任せている状態
+              </li>
+            </ul>
+
+            <Faq q="フルリゾルバはどこにある? 自分で意識しないといけない?">
+              <p>
+                意識しなくて OK。家の Wi-Fi に繋ぐと、ルーターが ISP のフルリゾルバを自動で OS に教えてくれる。
+                ブラウザは何も指定しなくても勝手に使ってくれる。
+              </p>
+              <p className="mt-2">
+                手動で変えたい時は OS の DNS 設定で <code className="font-mono">8.8.8.8</code> (Google) や
+                <code className="font-mono">1.1.1.1</code> (Cloudflare) を入れる。
+                ISP の DNS より速いとか、検閲を回避したい時に
+              </p>
+            </Faq>
+          </div>
+        </details>
       </section>
 
       {/* 5. レコード */}
@@ -515,6 +616,117 @@ function DnsActorsDiagram() {
 
   ★ DNS は「住所案内」だけ。実際のページは別のサーバーから来る`}
       </pre>
+    </div>
+  );
+}
+
+function DnsAuthoritativeDiagram() {
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      {/* 3 アクターのカード */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {/* あなた (Indigo) */}
+        <div className="flex flex-col items-center rounded-lg border-2 border-indigo-300 bg-indigo-50 p-4 text-center dark:border-indigo-700 dark:bg-indigo-950/40">
+          <div className="text-3xl">🌐</div>
+          <div className="mt-2 text-sm font-bold text-indigo-900 dark:text-indigo-200">
+            あなた
+          </div>
+          <div className="text-xs text-indigo-700 dark:text-indigo-300">
+            (ブラウザ)
+          </div>
+          <div className="mt-3 text-[11px] text-indigo-800/70 dark:text-indigo-200/70">
+            名前を入れて
+            <br />
+            繋ぎたいだけの人
+          </div>
+        </div>
+
+        {/* フルリゾルバ (Amber) */}
+        <div className="flex flex-col items-center rounded-lg border-2 border-amber-300 bg-amber-50 p-4 text-center dark:border-amber-700 dark:bg-amber-950/40">
+          <div className="text-3xl">🔍</div>
+          <div className="mt-2 text-sm font-bold text-amber-900 dark:text-amber-200">
+            フルリゾルバ
+          </div>
+          <div className="text-xs text-amber-700 dark:text-amber-300">
+            (図書館の司書 役)
+          </div>
+          <div className="mt-3 space-y-0.5 text-[11px] text-amber-800/70 dark:text-amber-200/70">
+            <div>ISP の DNS</div>
+            <div>Google 8.8.8.8</div>
+            <div>Cloudflare 1.1.1.1</div>
+          </div>
+        </div>
+
+        {/* 権威 DNS (Emerald) */}
+        <div className="flex flex-col items-center rounded-lg border-2 border-emerald-400 bg-emerald-50 p-4 text-center dark:border-emerald-600 dark:bg-emerald-950/40">
+          <div className="text-3xl">📚</div>
+          <div className="mt-2 text-sm font-bold text-emerald-900 dark:text-emerald-200">
+            権威 DNS ⭐
+          </div>
+          <div className="text-xs text-emerald-700 dark:text-emerald-300">
+            (本そのもの = 答え)
+          </div>
+          <div className="mt-3 space-y-0.5 text-[11px] font-medium text-emerald-800/80 dark:text-emerald-200/80">
+            <div>Route 53</div>
+            <div>Hosted Zone</div>
+          </div>
+        </div>
+      </div>
+
+      {/* やりとりの 4 ステップ */}
+      <div className="mt-6 flex flex-col gap-2">
+        <div className="flex items-center gap-3 rounded-md border border-zinc-200 bg-zinc-50/60 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">
+            ①
+          </span>
+          <span className="text-xs text-zinc-700 dark:text-zinc-300">
+            <strong className="text-indigo-700 dark:text-indigo-400">あなた</strong> →{" "}
+            <strong className="text-amber-700 dark:text-amber-400">フルリゾルバ</strong>: 「<code className="font-mono">hokushi-aws.click</code> の IP 教えて」
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-md border border-zinc-200 bg-zinc-50/60 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-600 text-xs font-bold text-white">
+            ②
+          </span>
+          <span className="text-xs text-zinc-700 dark:text-zinc-300">
+            <strong className="text-amber-700 dark:text-amber-400">フルリゾルバ</strong> →{" "}
+            <strong className="text-emerald-700 dark:text-emerald-400">権威 DNS</strong>: 「公式の答え持ってる?」 (キャッシュになければ問い合わせ)
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-md border border-zinc-200 bg-zinc-50/60 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">
+            ③
+          </span>
+          <span className="text-xs text-zinc-700 dark:text-zinc-300">
+            <strong className="text-emerald-700 dark:text-emerald-400">権威 DNS</strong> →{" "}
+            <strong className="text-amber-700 dark:text-amber-400">フルリゾルバ</strong>: 「IP は <code className="font-mono">52.x.x.x</code> ですよ」 (公式回答)
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-md border border-zinc-200 bg-zinc-50/60 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-600 text-xs font-bold text-white">
+            ④
+          </span>
+          <span className="text-xs text-zinc-700 dark:text-zinc-300">
+            <strong className="text-amber-700 dark:text-amber-400">フルリゾルバ</strong> →{" "}
+            <strong className="text-indigo-700 dark:text-indigo-400">あなた</strong>: 「<code className="font-mono">52.x.x.x</code> です」 (キャッシュにも保存)
+          </span>
+        </div>
+      </div>
+
+      {/* キーポイント */}
+      <div className="mt-5 space-y-2 rounded-md border border-emerald-200 bg-emerald-50/60 px-4 py-3 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+        <div className="text-xs font-semibold text-emerald-900 dark:text-emerald-200">
+          ⭐ ここを覚えればいい
+        </div>
+        <div className="text-xs leading-relaxed text-emerald-900/80 dark:text-emerald-300">
+          <strong>権威 DNS</strong> = そのドメインの<strong>「公式回答」</strong>を持っている DNS。
+          <br />
+          君が買ったドメインなら <strong>Route 53 の Hosted Zone がこれ</strong>。
+        </div>
+      </div>
     </div>
   );
 }
