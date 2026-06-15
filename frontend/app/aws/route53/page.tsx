@@ -174,7 +174,7 @@ export default function AwsRoute53Page() {
           </Details>
 
           {/* === Phase A: 入口を開く === */}
-          <details open className="group mt-2 rounded-lg border-2 border-indigo-300 bg-indigo-50/30 dark:border-indigo-700 dark:bg-indigo-950/20">
+          <details className="group mt-2 rounded-lg border-2 border-indigo-300 bg-indigo-50/30 dark:border-indigo-700 dark:bg-indigo-950/20">
             <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-indigo-900 transition-colors hover:bg-indigo-100/30 dark:text-indigo-100 dark:hover:bg-indigo-900/30">
               <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
                 <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -263,7 +263,7 @@ export default function AwsRoute53Page() {
           </details>
 
           {/* === Phase B: 検索 → カート → 罠回避 === */}
-          <details open className="group mt-3 rounded-lg border-2 border-amber-300 bg-amber-50/30 dark:border-amber-700 dark:bg-amber-950/20">
+          <details className="group mt-3 rounded-lg border-2 border-amber-300 bg-amber-50/30 dark:border-amber-700 dark:bg-amber-950/20">
             <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-amber-900 transition-colors hover:bg-amber-100/30 dark:text-amber-100 dark:hover:bg-amber-900/30">
               <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
                 <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -348,7 +348,7 @@ export default function AwsRoute53Page() {
           </details>
 
           {/* === Phase C: チェックアウト 3 ステップ === */}
-          <details open className="group mt-3 rounded-lg border-2 border-violet-300 bg-violet-50/30 dark:border-violet-700 dark:bg-violet-950/20">
+          <details className="group mt-3 rounded-lg border-2 border-violet-300 bg-violet-50/30 dark:border-violet-700 dark:bg-violet-950/20">
             <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-violet-900 transition-colors hover:bg-violet-100/30 dark:text-violet-100 dark:hover:bg-violet-900/30">
               <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
                 <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -467,7 +467,7 @@ export default function AwsRoute53Page() {
           </details>
 
           {/* === Phase D: 反映を待つ + メール認証 === */}
-          <details open className="group mt-3 rounded-lg border-2 border-emerald-300 bg-emerald-50/30 dark:border-emerald-700 dark:bg-emerald-950/20">
+          <details className="group mt-3 rounded-lg border-2 border-emerald-300 bg-emerald-50/30 dark:border-emerald-700 dark:bg-emerald-950/20">
             <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-emerald-900 transition-colors hover:bg-emerald-100/30 dark:text-emerald-100 dark:hover:bg-emerald-900/30">
               <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
                 <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -584,7 +584,7 @@ export default function AwsRoute53Page() {
           </div>
 
           {/* === Phase A: ホストゾーン一覧を見る === */}
-          <details open className="group mt-3 rounded-lg border-2 border-indigo-300 bg-indigo-50/30 dark:border-indigo-700 dark:bg-indigo-950/20">
+          <details className="group mt-3 rounded-lg border-2 border-indigo-300 bg-indigo-50/30 dark:border-indigo-700 dark:bg-indigo-950/20">
             <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-indigo-900 transition-colors hover:bg-indigo-100/30 dark:text-indigo-100 dark:hover:bg-indigo-900/30">
               <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
                 <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -651,7 +651,7 @@ export default function AwsRoute53Page() {
           </details>
 
           {/* === Phase B: 中を覗く === */}
-          <details open className="group mt-3 rounded-lg border-2 border-emerald-300 bg-emerald-50/30 dark:border-emerald-700 dark:bg-emerald-950/20">
+          <details className="group mt-3 rounded-lg border-2 border-emerald-300 bg-emerald-50/30 dark:border-emerald-700 dark:bg-emerald-950/20">
             <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-emerald-900 transition-colors hover:bg-emerald-100/30 dark:text-emerald-100 dark:hover:bg-emerald-900/30">
               <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
                 <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -766,9 +766,525 @@ ns-905.awsdns-48.net       ← .net`}</code>
         </Step>
 
         <Step n="03" title="ACM で SSL 証明書を発行する">
+
+          {/* 一言で言うと */}
+          <div className="rounded-lg border border-indigo-200 bg-indigo-50/40 px-5 py-4 dark:border-indigo-900/50 dark:bg-indigo-950/20">
+            <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
+              💡 一言で言うと
+            </p>
+            <p className="mt-2 text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+              <strong>
+                ACM で証明書を発行 = 自分のサイトを HTTPS (鍵マーク付きの安全な通信)
+                にするための「身分証明書」を無料でもらう
+              </strong>
+              作業。これがないとブラウザに「保護されていない通信」と警告される。
+            </p>
+          </div>
+
+          {/* なんのために発行するのか */}
+          <h4 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            なんのために発行するのか
+          </h4>
           <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            (実際に進めながら手順を埋めていく)
+            サイトを <Code>http://</Code> ではなく <Code>https://</Code> にするため。
+            HTTPS 化すると次の 3 つが手に入る:
           </p>
+          <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+            <table className="w-full text-sm">
+              <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                <tr>
+                  <th className="px-3 py-2 text-left font-semibold">役割</th>
+                  <th className="px-3 py-2 text-left font-semibold">中身</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                <tr>
+                  <td className="px-3 py-2 font-semibold">① 暗号化</td>
+                  <td className="px-3 py-2">
+                    ブラウザ ↔ サーバー間の通信を暗号化。パスワードやカード番号を盗み見されない
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 font-semibold">② なりすまし防止</td>
+                  <td className="px-3 py-2">
+                    「この <Code>hokushi-aws.click</Code> は本物ですよ」と第三者が保証する
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 font-semibold">③ 警告回避</td>
+                  <td className="px-3 py-2">
+                    証明書が無いと Chrome 等が「保護されていない通信」と警告。今や HTTPS は必須
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+            証明書は、この「暗号化と本人証明」を成立させるための
+            <strong>サイトの身分証明書</strong>のようなもの。
+          </p>
+
+          <Details summary="普通に証明書を買うのと何が違う? (なぜ ACM)">
+            <p>
+              通常 SSL 証明書は認証局 (CA) からお金を払って買い、
+              <strong>1 年ごとに手動で更新</strong>する必要があって面倒。
+              ACM はそれを AWS が肩代わりしてくれるサービス:
+            </p>
+            <ul className="ml-1 flex flex-col gap-0.5">
+              <li>・<strong>無料</strong> ── AWS 内 (ALB / CloudFront) で使う限りタダ</li>
+              <li>・<strong>自動更新</strong> ── 期限切れの事故が起きない (これが一番大きい)</li>
+              <li>・<strong>ボタン 1 つで紐付け</strong> ── ALB に証明書を割り当てるだけ</li>
+            </ul>
+          </Details>
+
+          {/* この後の流れ */}
+          <h4 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            発行の流れ (Route 53 とセットで)
+          </h4>
+          <pre className="overflow-x-auto rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3 text-[12px] leading-relaxed text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
+            <code>{`① ACM に「hokushi-aws.click の証明書が欲しい」とリクエスト
+       ↓
+② ACM「本当にこのドメインの持ち主か確認させて」
+   → DNS 検証を選ぶと Hosted Zone に確認用レコードを自動追加
+       ↓
+③ 数分待つと検証完了 → 証明書が発行される
+       ↓
+④ その証明書を ALB の HTTPS リスナーに紐付け (= Step 04)`}</code>
+          </pre>
+          <Li>
+            <strong>リージョン注意</strong>: ALB で使う証明書は
+            <strong>ALB と同じリージョン (東京 ap-northeast-1)</strong> で発行する
+            (CloudFront 用だけは例外でバージニア北部 us-east-1)
+          </Li>
+          <Li>
+            検証方法は <strong>DNS 検証</strong>を選ぶ。Route 53 と同じアカウントなら
+            <strong>確認用の CNAME レコードを Hosted Zone にワンクリックで自動追加</strong>でき、
+            あとは放置で発行される (メール検証より楽 & 自動更新も効く)
+          </Li>
+
+          <Note>
+            Step 02 の最後で予告した「TXT レコードを追加」は、正確には ACM の DNS 検証用の
+            <strong>CNAME レコード</strong>。ACM が「この名前でこの値を入れて」と指示してくれる
+          </Note>
+
+          {/* === Phase A: ACM を開いてリクエスト開始 === */}
+          <details className="group mt-3 rounded-lg border-2 border-indigo-300 bg-indigo-50/30 dark:border-indigo-700 dark:bg-indigo-950/20">
+            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-indigo-900 transition-colors hover:bg-indigo-100/30 dark:text-indigo-100 dark:hover:bg-indigo-900/30">
+              <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
+                <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>🚪 Phase A — ACM を開いてリクエスト開始 (① 〜 ③)</span>
+            </summary>
+            <div className="flex flex-col gap-3 border-t border-indigo-200 px-5 pb-5 pt-4 dark:border-indigo-900/50">
+
+              <Note>
+                <strong>必ず右上のリージョンが「東京 (ap-northeast-1)」</strong>か確認。
+                ALB と同じリージョンで発行しないと後で紐付けられない (CloudFront 用だけ us-east-1)
+              </Note>
+
+              <h4 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                ① ACM を検索して開く
+              </h4>
+              <Li>
+                コンソール上部の検索バーに <Code>ACM</Code> と入力 →
+                サービス候補の <strong>「Certificate Manager」</strong>
+                (SSL/TLS 証明書のプロビジョニング…) をクリック
+              </Li>
+
+              <Screenshot
+                src="/aws/route53/スクリーンショット 2026-06-15 17.28.15.png"
+                alt="コンソール検索で ACM → Certificate Manager が候補に出ている"
+                width={2560}
+                height={1440}
+              />
+
+              <h4 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                ② ACM トップ → 「証明書をリクエスト」
+              </h4>
+              <Li>
+                ACM のトップ画面。右側の <strong>「証明書をリクエスト」</strong>
+                (オレンジボタン) をクリック
+              </Li>
+              <Li>
+                下の <strong>「仕組み」</strong>に今からやることが 3 ステップで書いてある:
+                ①リクエスト → ②ドメイン所有権を検証 → ③ALB/CloudFront にデプロイ
+              </Li>
+
+              <Screenshot
+                src="/aws/route53/スクリーンショット 2026-06-15 17.28.42.png"
+                alt="AWS Certificate Manager トップ - 右側に「証明書をリクエスト」ボタン"
+                width={2560}
+                height={1440}
+              />
+
+              <h4 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                ③ 証明書タイプ = パブリック
+              </h4>
+              <Li>
+                <strong>「パブリック証明書をリクエスト」</strong>を選択
+                (= インターネット公開用。ブラウザ/OS に信頼される標準の証明書)
+              </Li>
+              <Li>
+                「プライベート証明書」はグレーアウトでOK
+                (社内ネット専用の用途。今回は使わない) → 右下 <strong>「次へ」</strong>
+              </Li>
+
+              <Screenshot
+                src="/aws/route53/スクリーンショット 2026-06-15 17.29.00.png"
+                alt="証明書タイプ選択 - パブリック証明書をリクエストを選択"
+                width={2560}
+                height={1440}
+              />
+            </div>
+          </details>
+
+          {/* === Phase B: リクエスト内容を入力 === */}
+          <details className="group mt-3 rounded-lg border-2 border-amber-300 bg-amber-50/30 dark:border-amber-700 dark:bg-amber-950/20">
+            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-amber-900 transition-colors hover:bg-amber-100/30 dark:text-amber-100 dark:hover:bg-amber-900/30">
+              <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
+                <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>📝 Phase B — リクエスト内容を入力 (④)</span>
+            </summary>
+            <div className="flex flex-col gap-3 border-t border-amber-200 px-5 pb-5 pt-4 dark:border-amber-900/50">
+
+              <h4 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                ④ ドメイン名・検証方法を埋める
+              </h4>
+              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                「パブリック証明書をリクエスト」画面。上から順に 3 か所を設定する。
+              </p>
+
+              <Screenshot
+                src="/aws/route53/スクリーンショット 2026-06-15 17.29.18.png"
+                alt="パブリック証明書をリクエスト - ドメイン名・エクスポート・検証方法"
+                width={2560}
+                height={1440}
+              />
+
+              <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+                <table className="w-full text-sm">
+                  <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                    <tr>
+                      <th className="px-3 py-2 text-left font-semibold">項目</th>
+                      <th className="px-3 py-2 text-left font-semibold">設定</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">完全修飾ドメイン名</td>
+                      <td className="px-3 py-2">
+                        <Code>hokushi-aws.click</Code> を入力。
+                        「別の名前を追加」で <Code>*.hokushi-aws.click</Code>
+                        (ワイルドカード) も足すと <Code>www.</Code> 等もこの 1 枚でカバー ⭐
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">エクスポートを許可</td>
+                      <td className="px-3 py-2">
+                        <strong>「エクスポートを無効にする」</strong>のまま (デフォルト)。
+                        ALB で使うだけなら証明書を外に持ち出す必要はない
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">検証方法</td>
+                      <td className="px-3 py-2">
+                        <strong>「DNS 検証 - 推奨」</strong>を選択 ⭐
+                        (Route 53 にレコードを自動追加でき、自動更新も効く)
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">キーアルゴリズム</td>
+                      <td className="px-3 py-2">
+                        <Code>RSA 2048</Code> のまま (デフォルトでOK)
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                ↓ 実際に <Code>hokushi-aws.click</Code> を入れた状態
+              </p>
+
+              <Screenshot
+                src="/aws/route53/スクリーンショット 2026-06-15 17.33.27.png"
+                alt="完全修飾ドメイン名に hokushi-aws.click を入力・DNS 検証を選択した状態"
+                width={2560}
+                height={1440}
+              />
+
+              <Li>
+                埋めたら右下の <strong>「リクエスト」</strong>をクリック
+              </Li>
+
+              <Note>
+                ワイルドカード <Code>*.hokushi-aws.click</Code> は
+                <Code>a.hokushi-aws.click</Code> など 1 階層のサブドメインをまとめてカバーする。
+                ただし apex (<Code>hokushi-aws.click</Code> そのもの) は含まないので、
+                <strong>両方書く</strong>のが定番
+              </Note>
+            </div>
+          </details>
+
+          {/* === Phase C: リクエスト送信 → 保留中の検証 === */}
+          <details className="group mt-3 rounded-lg border-2 border-violet-300 bg-violet-50/30 dark:border-violet-700 dark:bg-violet-950/20">
+            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-violet-900 transition-colors hover:bg-violet-100/30 dark:text-violet-100 dark:hover:bg-violet-900/30">
+              <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
+                <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>⏳ Phase C — リクエスト送信 → 「保留中の検証」(⑤)</span>
+            </summary>
+            <div className="flex flex-col gap-3 border-t border-violet-200 px-5 pb-5 pt-4 dark:border-violet-900/50">
+
+              <h4 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                ⑤ 証明書が作られた (まだ発行はされてない)
+              </h4>
+              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                「リクエスト」を押すと証明書の詳細画面に移る。上部に青いバナーで
+                <strong>「ID のある証明書が正常にリクエストされました」</strong>と出る。
+                ただし下にある通り <strong>ステータスは「保留中の検証」</strong>
+                ── まだ発行されていない状態。
+              </p>
+
+              <Screenshot
+                src="/aws/route53/スクリーンショット 2026-06-15 17.34.38.png"
+                alt="証明書詳細 - ステータス「保留中の検証」、追加アクションが必要"
+                width={2560}
+                height={1440}
+              />
+
+              <div className="rounded-lg border border-rose-200 bg-rose-50 px-5 py-4 dark:border-rose-900/50 dark:bg-rose-950/30">
+                <p className="text-sm font-semibold text-rose-900 dark:text-rose-200">
+                  ⚠️ まだ終わってない ── 「追加のアクションが必要」
+                </p>
+                <p className="mt-2 text-sm text-rose-900/80 dark:text-rose-300">
+                  青バナーに「証明書の検証および要求を完了するには、
+                  <strong>追加のアクションが必要です</strong>」とある。これは
+                  <strong>「あなたがこのドメインの持ち主か」をまだ確認できていない</strong>から。
+                  次に検証用レコードを Route 53 に追加すると発行される
+                </p>
+              </div>
+
+              <h4 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                この画面で見ておく項目
+              </h4>
+              <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+                <table className="w-full text-sm">
+                  <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                    <tr>
+                      <th className="px-3 py-2 text-left font-semibold">項目</th>
+                      <th className="px-3 py-2 text-left font-semibold">値 / 意味</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">ステータス</td>
+                      <td className="px-3 py-2">
+                        <strong>保留中の検証</strong> ← 検証が済めば「発行済み」に変わる
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">識別子 / ARN</td>
+                      <td className="px-3 py-2">
+                        この証明書の ID。ARN は <Code>arn:aws:acm:ap-northeast-1:...</Code>
+                        の形で、後で ALB に紐付けるとき内部的に使われる
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">タイプ</td>
+                      <td className="px-3 py-2">Amazon により発行済み (= ACM 管理。無料・自動更新の対象)</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">使用中ですか?</td>
+                      <td className="px-3 py-2">いいえ (まだ ALB 等に紐付けてないので正常)</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">ドメイン (0)</td>
+                      <td className="px-3 py-2">ロード中。少し待つとドメインと検証ステータスが出る</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          {/* === Phase D: 検証用レコードを作成 === */}
+          <details className="group mt-3 rounded-lg border-2 border-emerald-300 bg-emerald-50/30 dark:border-emerald-700 dark:bg-emerald-950/20">
+            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-emerald-900 transition-colors hover:bg-emerald-100/30 dark:text-emerald-100 dark:hover:bg-emerald-900/30">
+              <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
+                <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>🌱 Phase D — 検証用レコードを Route 53 に作成 (⑥ 〜 ⑦)</span>
+            </summary>
+            <div className="flex flex-col gap-3 border-t border-emerald-200 px-5 pb-5 pt-4 dark:border-emerald-900/50">
+
+              <h4 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                ⑥ 「Route 53 でレコードを作成」を押す
+              </h4>
+              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                証明書詳細の <strong>「Route 53 でレコードを作成」</strong>ボタンから、
+                検証用レコードを入れる確認画面 (2/2) に進む。ここは
+                <strong>最終確認 → 「レコードを作成」を押すだけ</strong>。
+              </p>
+              <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+                <table className="w-full text-sm">
+                  <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                    <tr>
+                      <th className="px-3 py-2 text-left font-semibold">確認項目</th>
+                      <th className="px-3 py-2 text-left font-semibold">あるべき状態</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                    <tr>
+                      <td className="px-3 py-2">ドメイン</td>
+                      <td className="px-3 py-2">
+                        <Code>hokushi-aws.click</Code> と <Code>*.hokushi-aws.click</Code> の 2 つ
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2">ドメインは Route 53 にありますか?</td>
+                      <td className="px-3 py-2">
+                        <strong>はい</strong> ⭐ ← これが「はい」だから自動でレコードを入れられる
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2">チェックボックス</td>
+                      <td className="px-3 py-2">2 つともチェック</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <Li>
+                確認できたら右下のオレンジ <strong>「レコードを作成」</strong>をクリック
+              </Li>
+
+              <Screenshot
+                src="/aws/route53/スクリーンショット 2026-06-15 17.45.35.png"
+                alt="Route 53 で DNS レコードを作成 (2/2) - 2 ドメインが「Route 53 にありますか=はい」"
+                width={2560}
+                height={1440}
+              />
+
+              <Note>
+                「はい」なので CNAME を手でコピペする必要なし。ACM が Hosted Zone に
+                <strong>検証用 CNAME を自動で 2 本追加</strong>してくれる
+              </Note>
+
+              <h4 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                ⑦ レコード作成成功 → まだ「保留中の検証」
+              </h4>
+              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                緑バナー <strong>「DNS レコードが正常に作成されました」</strong>が出る。
+                ドメイン欄が <strong>(2)</strong> になり、それぞれに <strong>CNAME 名</strong>
+                (<Code>_xxxx.hokushi-aws.click</Code> → <Code>...acm-validations.aws.</Code>) が入った。
+              </p>
+              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                ただし <strong>ステータスはまだ「保留中の検証」</strong>。
+                レコードは入ったが、ACM がそれを読み取って検証完了するまで少しかかる。
+              </p>
+
+              <Screenshot
+                src="/aws/route53/スクリーンショット 2026-06-15 17.47.07.png"
+                alt="DNS レコード作成成功の緑バナー - ドメイン(2)に CNAME が入り、まだ保留中の検証"
+                width={2560}
+                height={1440}
+              />
+
+              <Details summary="CNAME 検証ってどういう仕組み?">
+                <p>
+                  ACM は「<strong>この特定の名前 (<Code>_xxxx.hokushi-aws.click</Code>) を引いたら、
+                  ACM が指定したこの値が返ってくる</strong>」状態を作れるか確認する。
+                </p>
+                <p>
+                  その名前を設定できるのは <strong>そのドメインの DNS を管理している人 = 持ち主だけ</strong>。
+                  だから「レコードを入れられた = あなたが持ち主」と証明できる。これが DNS 検証の中身。
+                </p>
+                <p>
+                  しかもこの CNAME を<strong>消さずに残しておく</strong>と、ACM は
+                  毎年の更新時にも同じ方法で自動チェックできる ── だから
+                  <strong>自動更新が効く</strong>(メール検証だと毎回手作業が要る)
+                </p>
+              </Details>
+            </div>
+          </details>
+
+          {/* === Phase E: 発行済み (Issued) === */}
+          <details className="group mt-3 rounded-lg border-2 border-teal-300 bg-teal-50/30 dark:border-teal-700 dark:bg-teal-950/20">
+            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-teal-900 transition-colors hover:bg-teal-100/30 dark:text-teal-100 dark:hover:bg-teal-900/30">
+              <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
+                <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>✅ Phase E — 発行済み (Issued) になった (⑧)</span>
+            </summary>
+            <div className="flex flex-col gap-3 border-t border-teal-200 px-5 pb-5 pt-4 dark:border-teal-900/50">
+
+              <h4 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                ⑧ 検証完了 → 証明書が使える状態に
+              </h4>
+              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                数分待つと、ACM が検証用 CNAME を読み取って検証完了。
+                証明書のステータスが <strong>「発行済み」🟢</strong> に変わり、
+                ドメイン (2) の各行も <strong>「成功」</strong>になった。これで証明書が
+                <strong>実際に使える状態</strong> (ALB に紐付け可能) になった。
+              </p>
+
+              <Screenshot
+                src="/aws/route53/スクリーンショット 2026-06-15 18.04.09.png"
+                alt="証明書のステータスが「発行済み」、2 ドメインとも検証「成功」"
+                width={2560}
+                height={1440}
+              />
+
+              <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+                <table className="w-full text-sm">
+                  <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                    <tr>
+                      <th className="px-3 py-2 text-left font-semibold">項目</th>
+                      <th className="px-3 py-2 text-left font-semibold">変化</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">ステータス</td>
+                      <td className="px-3 py-2">保留中の検証 → <strong>発行済み</strong> 🟢</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2 font-semibold">ドメイン (2) の各行</td>
+                      <td className="px-3 py-2">保留中の検証 → <strong>成功</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <Note>
+                検証用 CNAME は <strong>消さずに残す</strong>こと。残しておけば ACM が
+                毎年の更新時にも自動でチェックでき、<strong>証明書が自動更新される</strong>
+              </Note>
+
+              <Note>
+                この時点ではまだ <Code>https://hokushi-aws.click</Code> は開けない。
+                証明書は「用意できた」だけで、ALB に紐付け (Step 04) + ドメインを ALB に向ける
+                (Step 05) のがこの後の作業
+              </Note>
+            </div>
+          </details>
+
+          {/* 完了サマリー */}
+          <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+            <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
+              🎉 Step 03 完了
+            </p>
+            <ul className="mt-2 ml-5 list-disc space-y-1 text-sm text-emerald-900/80 dark:text-emerald-300">
+              <li>ACM で <Code>hokushi-aws.click</Code> + <Code>*.hokushi-aws.click</Code> の証明書をリクエスト</li>
+              <li>DNS 検証を選択 → Route 53 に検証用 CNAME を自動追加</li>
+              <li>ステータスが <strong>発行済み (Issued)</strong> になった (無料・自動更新対象)</li>
+            </ul>
+            <p className="mt-3 text-sm text-emerald-900/80 dark:text-emerald-300">
+              次は <strong>Step 04: ALB に HTTPS リスナーを追加</strong>。今発行した証明書を
+              ALB の 443 ポートに紐付けて、TLS 終端できるようにする
+            </p>
+          </div>
         </Step>
 
         <Step n="04" title="ALB に HTTPS リスナーを追加する">
