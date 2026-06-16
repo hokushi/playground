@@ -74,10 +74,7 @@ export default function AwsVpcPage() {
             個人検証では十分すぎるサイズなので <strong>このままで OK</strong>
           </Field>
 
-          <div className="ml-4 flex flex-col gap-3 rounded-md border-l-2 border-indigo-300 bg-indigo-50/40 p-4 dark:border-indigo-700 dark:bg-indigo-950/20">
-            <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
-              この 65,536 個の IP は何に使われるのか
-            </p>
+          <Details summary="この 65,536 個の IP は何に使われるのか">
             <p className="text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
               VPC 内に作るほぼ全リソースが、この範囲から <strong>1 個ずつ IP をもらいます</strong>。
             </p>
@@ -127,15 +124,20 @@ export default function AwsVpcPage() {
               階層の流れ
             </p>
             <pre className="overflow-x-auto rounded bg-white p-3 font-mono text-[11px] leading-relaxed text-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
-{`VPC: 10.0.0.0/16        (65,536 個の IP 在庫)
+{`VPC: 10.0.0.0/16              (65,536 個の IP 在庫)
  ├─ Subnet public-1a:  10.0.0.0/20    (4,096 個)
  ├─ Subnet public-1c:  10.0.16.0/20   (4,096 個)
  ├─ Subnet private-1a: 10.0.32.0/20   (4,096 個)
+ │     ↓ ここに置いたリソースに 1 つずつ配られる
+ │     ECS task     : 10.0.32.10
+ │     RDS primary  : 10.0.32.20
  └─ Subnet private-1c: 10.0.48.0/20   (4,096 個)
-        ↓ ここに置いたリソースに 1 つずつ配られる
-        EC2 i-xxx : 10.0.32.10
-        ECS task  : 10.0.32.55
-        RDS       : 10.0.48.20`}
+       ↓ もう片方の AZ にも同じ顔ぶれを分散して置く
+       ECS task     : 10.0.48.10
+       RDS standby  : 10.0.48.20
+
+ ※ AZ 障害に備え、ECS も RDS も両 AZ に分散させるのが定石
+   (RDS Multi-AZ は primary=1a / standby=1c に自動配置)`}
             </pre>
 
             <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
@@ -189,7 +191,7 @@ export default function AwsVpcPage() {
                 </span>
               </li>
             </ul>
-          </div>
+          </Details>
 
           <Field name="④ IPv4 CIDR の取得方法">
             <strong>「IPv4 CIDR を手動で入力」</strong> を選択 (デフォルト)。
@@ -226,10 +228,7 @@ export default function AwsVpcPage() {
             <strong> Multi-AZ 構成</strong>にする。1 だと冗長性なし、3 にすると AZ × 3 ぶんのコストになる
           </Field>
 
-          <div className="ml-4 flex flex-col gap-3 rounded-md border-l-2 border-indigo-300 bg-indigo-50/40 p-4 dark:border-indigo-700 dark:bg-indigo-950/20">
-            <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
-              サブネットとは
-            </p>
+          <Details summary="サブネットとは">
             <p className="text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
               VPC を <strong>さらに細かく分けた区画</strong>のこと。サーバや DB は
               VPC に直接置かれるのではなく、<strong>必ずどれかのサブネットの中</strong>に置かれる。
@@ -275,12 +274,6 @@ export default function AwsVpcPage() {
                   <strong>Public と Private を分離</strong>するため (公開していいものと、隠したいものを物理的に別エリアに)
                 </span>
               </li>
-              <li className="flex gap-2">
-                <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
-                <span>
-                  <strong>層 (Tier) で分ける</strong>ため (Web 層 / アプリ層 / DB 層 に分けてセキュリティを段階化)
-                </span>
-              </li>
             </ul>
 
             <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
@@ -304,10 +297,6 @@ export default function AwsVpcPage() {
                 </span>
               </li>
             </ul>
-            <p className="text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-              「VPC など」ウィザードが <strong>Public / Private</strong> と呼んでいるのは、それぞれに
-              <strong>適切なルートテーブルを自動でアタッチ</strong>してくれるから。中身は同じ箱です。
-            </p>
 
             <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
               全体構造のイメージ
@@ -321,7 +310,7 @@ export default function AwsVpcPage() {
      ├─ Public  Subnet  10.0.16.0/20   (ルート: 0.0.0.0/0 → IGW)
      └─ Private Subnet  10.0.48.0/20   (ルート: 0.0.0.0/0 → NAT GW)`}
             </pre>
-          </div>
+          </Details>
 
           <Field name="⑧ パブリックサブネット数">
             <strong>2</strong>。各 AZ に 1 つずつ Public サブネットを作る。
@@ -383,10 +372,6 @@ export default function AwsVpcPage() {
               よくある「外に出る」用途
             </p>
             <ul className="flex flex-col gap-1.5 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-              <li className="flex gap-2">
-                <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
-                <span>ECS Fargate が ECR からコンテナイメージを pull する</span>
-              </li>
               <li className="flex gap-2">
                 <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
                 <span>アプリが Stripe / Slack / OpenAI などの外部 API を叩く</span>
@@ -938,33 +923,6 @@ export default function AwsVpcPage() {
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-          いつデフォルト VPC で済むか
-        </p>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
-            <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
-              OK なケース
-            </p>
-            <ul className="mt-2 flex flex-col gap-1 text-sm text-emerald-900/90 dark:text-emerald-200/90">
-              <li>・学習・検証</li>
-              <li>・シンプルな個人用 Web サイト</li>
-              <li>・とにかく動けばいい PoC</li>
-            </ul>
-          </div>
-          <div className="rounded-lg border border-rose-200 bg-rose-50/60 p-4 dark:border-rose-900/50 dark:bg-rose-950/20">
-            <p className="text-sm font-semibold text-rose-900 dark:text-rose-200">
-              自分で VPC を切る理由
-            </p>
-            <ul className="mt-2 flex flex-col gap-1 text-sm text-rose-900/90 dark:text-rose-200/90">
-              <li>・DB を隠したい (Private 必要)</li>
-              <li>・本番運用 (セキュリティ層を分けたい)</li>
-              <li>・Multi-tier 構成 (Web / App / DB)</li>
-              <li>・カスタム CIDR を使いたい</li>
-            </ul>
-          </div>
         </div>
       </section>
     </main>
@@ -1653,5 +1611,36 @@ function Code({ children }: { children: React.ReactNode }) {
     <code className="rounded bg-indigo-50 px-1.5 py-0.5 font-mono text-xs text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-200">
       {children}
     </code>
+  );
+}
+
+function Details({
+  summary,
+  children,
+}: {
+  summary: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <details className="group ml-4 rounded-md border-l-2 border-indigo-300 bg-indigo-50/40 dark:border-indigo-700 dark:bg-indigo-950/20">
+      <summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-semibold text-indigo-900 transition-colors hover:text-indigo-700 dark:text-indigo-200 dark:hover:text-indigo-100">
+        <svg
+          className="h-3 w-3 shrink-0 transition-transform group-open:rotate-90"
+          viewBox="0 0 12 12"
+          fill="none"
+          aria-hidden
+        >
+          <path
+            d="M4 3l4 3-4 3"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        <span>{summary}</span>
+      </summary>
+      <div className="flex flex-col gap-3 px-4 pb-4 pt-0">{children}</div>
+    </details>
   );
 }
