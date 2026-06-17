@@ -21,18 +21,6 @@ export default function AwsEc2Page() {
           借りた瞬間は OS だけ入った空っぽの Linux マシンで、SSH で繋いで好きなソフト (nginx / Node.js / Python など) を入れて使う。
           Web サーバ・API のバックエンド・開発機など、自宅の Linux と同じ感覚で何でも置ける。
         </p>
-        <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-          起動時には <strong>OS イメージ (AMI) / スペック (インスタンスタイプ) / 配置先 (VPC とサブネット) / 通信ルール (SG) / SSH 鍵 (キーペア)</strong>
-          をまとめて選ぶ。今回はそれぞれ:
-        </p>
-        <ul className="ml-1 flex flex-col gap-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-          <li>・<strong>Amazon Linux 2023</strong> (AWS 最適化、無料枠対象)</li>
-          <li>・<strong>t2.micro</strong> (1 vCPU / 1 GiB、月 750 時間まで無料)</li>
-          <li>・<strong>hokushi-vpc</strong> の <strong>Public サブネット</strong></li>
-          <li>・SSH 通信は <strong>自分の IP からのみ</strong>許可</li>
-          <li>・新規キーペア (<Code>.pem</Code> ダウンロード)</li>
-        </ul>
-
         <Details summary="実用では「同じサーバを 2 つの Private サブネットに置く」">
           <p>
             本番では <strong>同じアプリの EC2 を 2 つの AZ の Private サブネットに 1 台ずつ</strong>置く
