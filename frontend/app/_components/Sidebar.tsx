@@ -25,8 +25,10 @@ const navGroups: NavGroup[] = [
     items: [
       { href: "/network", label: "有線と無線" },
       { href: "/network/internet", label: "インターネットの裏側" },
+      { href: "/network/layers", label: "ネットワークの 7 層 (OSI)" },
       { href: "/network/domain-url", label: "ドメイン と URL" },
       { href: "/network/firewall", label: "ファイアウォール / FortiGate" },
+      { href: "/network/vpn", label: "VPN の種類 (IP-VPN ほか)" },
     ],
   },
   {

@@ -123,78 +123,259 @@ export default function FirewallPage() {
           ルール: 何を許可して何を弾くか
         </SectionH2>
         <p className="text-zinc-700 dark:text-zinc-300">
-          ファイアウォールには <strong>ルールを上から順に並べたリスト</strong>があり、
-          パケットが来たら <strong>上から評価して、最初にマッチしたルールが適用</strong>されます。
-          どれにもマッチしなかったら <strong>暗黙の「拒否」</strong>になるのが基本。
+          門番 (= ファイアウォール) には <strong>「許可リスト」</strong>が渡されています。
+          パケットが来るたびに、そのリストを <strong>上から 1 行ずつ照らし合わせて</strong>、
+          <strong>当てはまる行が 1 つでも見つかれば通す</strong>。<br />
+          <strong>最後まで 1 つも当てはまらなければ → 通さない</strong>。これがファイアウォールの全部です。
         </p>
 
-        <RuleTableDiagram />
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+            会社の門番に例えると
+          </p>
+          <p className="mt-2 text-sm text-emerald-900/90 dark:text-emerald-300">
+            会社の入口に立っている警備員に、こういうリストを渡しているイメージです:
+          </p>
+          <ol className="mt-3 ml-5 flex list-decimal flex-col gap-1 text-sm text-emerald-900/90 dark:text-emerald-300">
+            <li>「社員証を持ってる人 → 通して」</li>
+            <li>「アポありの来客 → 通して」</li>
+            <li>「宅配業者 → 通して」</li>
+            <li>(リストの最後) <strong>上のどれにも当てはまらない人 → 通すな</strong></li>
+          </ol>
+          <p className="mt-3 text-sm text-emerald-900/90 dark:text-emerald-300">
+            → 「許可する人」だけリストに書いて、<strong>書いてない人は全員ブロック</strong>。
+            これがファイアウォールの考え方そのもの。
+          </p>
+        </div>
 
-        <p className="text-zinc-700 dark:text-zinc-300">
-          典型的なオフィスのルール例:
+        <h3 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          ルールの中身は 3 つだけ覚えれば OK
+        </h3>
+        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <table className="w-full text-sm">
+            <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+              <tr>
+                <th className="px-3 py-2 text-left font-semibold">項目</th>
+                <th className="px-3 py-2 text-left font-semibold">意味</th>
+                <th className="px-3 py-2 text-left font-semibold">例</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+              <tr>
+                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">どこから?</td>
+                <td className="px-3 py-2">送信元 (= パケットの差出人)</td>
+                <td className="px-3 py-2 font-mono text-xs">社内 PC</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">どこへ?</td>
+                <td className="px-3 py-2">宛先 (= 行き先)</td>
+                <td className="px-3 py-2 font-mono text-xs">インターネット</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">何を?</td>
+                <td className="px-3 py-2">ポート / プロトコル (= 用途)</td>
+                <td className="px-3 py-2 font-mono text-xs">443 (HTTPS = ウェブ閲覧)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          → 「<strong>どこから</strong>、<strong>どこへ</strong>、<strong>何を</strong>」の組み合わせが
+          リストの行と一致すれば <strong>許可</strong>、一致しなければ次の行へ。
         </p>
 
+        <h3 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          オフィスの実例: たった 3 行のリスト
+        </h3>
         <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
           <table className="w-full text-sm">
             <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
               <tr>
                 <th className="px-3 py-2 text-left font-semibold">#</th>
-                <th className="px-3 py-2 text-left font-semibold">方向</th>
-                <th className="px-3 py-2 text-left font-semibold">送信元</th>
-                <th className="px-3 py-2 text-left font-semibold">宛先</th>
-                <th className="px-3 py-2 text-left font-semibold">ポート</th>
-                <th className="px-3 py-2 text-left font-semibold">動作</th>
+                <th className="px-3 py-2 text-left font-semibold">どこから</th>
+                <th className="px-3 py-2 text-left font-semibold">どこへ</th>
+                <th className="px-3 py-2 text-left font-semibold">何を</th>
+                <th className="px-3 py-2 text-left font-semibold">許可?</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
               <tr>
                 <td className="px-3 py-2">1</td>
-                <td className="px-3 py-2">Out</td>
-                <td className="px-3 py-2 font-mono text-xs">社内 LAN</td>
-                <td className="px-3 py-2 font-mono text-xs">any</td>
-                <td className="px-3 py-2 font-mono text-xs">80, 443</td>
-                <td className="px-3 py-2 text-emerald-700 dark:text-emerald-400">許可</td>
+                <td className="px-3 py-2">社内 PC</td>
+                <td className="px-3 py-2">インターネット</td>
+                <td className="px-3 py-2 font-mono text-xs">443 (ウェブ閲覧)</td>
+                <td className="px-3 py-2 text-emerald-700 dark:text-emerald-400">✓ 通す</td>
               </tr>
               <tr>
                 <td className="px-3 py-2">2</td>
-                <td className="px-3 py-2">Out</td>
-                <td className="px-3 py-2 font-mono text-xs">社内 LAN</td>
-                <td className="px-3 py-2 font-mono text-xs">any</td>
-                <td className="px-3 py-2 font-mono text-xs">53 (DNS)</td>
-                <td className="px-3 py-2 text-emerald-700 dark:text-emerald-400">許可</td>
+                <td className="px-3 py-2">インターネット</td>
+                <td className="px-3 py-2">自社の Web サーバ</td>
+                <td className="px-3 py-2 font-mono text-xs">443 (お客さんがサイトを見る)</td>
+                <td className="px-3 py-2 text-emerald-700 dark:text-emerald-400">✓ 通す</td>
               </tr>
               <tr>
                 <td className="px-3 py-2">3</td>
-                <td className="px-3 py-2">In</td>
-                <td className="px-3 py-2 font-mono text-xs">any</td>
-                <td className="px-3 py-2 font-mono text-xs">Web サーバ</td>
-                <td className="px-3 py-2 font-mono text-xs">443</td>
-                <td className="px-3 py-2 text-emerald-700 dark:text-emerald-400">許可</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2">4</td>
-                <td className="px-3 py-2">In</td>
-                <td className="px-3 py-2 font-mono text-xs">VPN 拠点</td>
-                <td className="px-3 py-2 font-mono text-xs">社内 LAN</td>
-                <td className="px-3 py-2 font-mono text-xs">any</td>
-                <td className="px-3 py-2 text-emerald-700 dark:text-emerald-400">許可</td>
+                <td className="px-3 py-2">自宅 (VPN 経由)</td>
+                <td className="px-3 py-2">社内 LAN</td>
+                <td className="px-3 py-2 font-mono text-xs">全部</td>
+                <td className="px-3 py-2 text-emerald-700 dark:text-emerald-400">✓ 通す</td>
               </tr>
               <tr className="bg-rose-50 dark:bg-rose-950/20">
-                <td className="px-3 py-2">99</td>
-                <td className="px-3 py-2">All</td>
-                <td className="px-3 py-2 font-mono text-xs">any</td>
-                <td className="px-3 py-2 font-mono text-xs">any</td>
-                <td className="px-3 py-2 font-mono text-xs">any</td>
-                <td className="px-3 py-2 text-rose-700 dark:text-rose-400">拒否 (暗黙)</td>
+                <td className="px-3 py-2 font-mono text-xs text-rose-700 dark:text-rose-400">最後</td>
+                <td className="px-3 py-2">それ以外</td>
+                <td className="px-3 py-2">それ以外</td>
+                <td className="px-3 py-2">それ以外</td>
+                <td className="px-3 py-2 text-rose-700 dark:text-rose-400">✕ ブロック</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          ポイント: 「許可ルール」を <strong>必要な分だけ並べて</strong>、それ以外は全部弾く。
-          <strong>「明示的に許可されていないものは拒否」</strong>が基本姿勢 (= デフォルト deny)。
-        </p>
+        <h3 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          実際にパケットが来たときの流れ
+        </h3>
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="rounded-lg border-2 border-emerald-300 bg-emerald-50/40 p-4 dark:border-emerald-700 dark:bg-emerald-950/30">
+            <p className="text-sm font-bold text-emerald-900 dark:text-emerald-200">
+              ✓ ケース A: 社員が Google を見る
+            </p>
+            <p className="mt-2 text-xs text-emerald-900/80 dark:text-emerald-300">
+              パケット = 社内 PC → インターネット → 443
+            </p>
+            <ol className="mt-3 ml-4 flex list-decimal flex-col gap-1 text-sm text-emerald-900/90 dark:text-emerald-300">
+              <li>1 行目を見る → <strong>当たる! → 即「通す」で終了</strong></li>
+            </ol>
+            <p className="mt-2 text-xs text-emerald-900/70 dark:text-emerald-300/80">
+              ※ 当たったら 2 行目以降は見ない (即決)
+            </p>
+          </div>
+          <div className="rounded-lg border-2 border-rose-300 bg-rose-50/40 p-4 dark:border-rose-700 dark:bg-rose-950/30">
+            <p className="text-sm font-bold text-rose-900 dark:text-rose-200">
+              ✕ ケース B: 知らない誰かが社内の DB を直接叩こうとする
+            </p>
+            <p className="mt-2 text-xs text-rose-900/80 dark:text-rose-300">
+              パケット = インターネット → 社内の DB → 3306
+            </p>
+            <ol className="mt-3 ml-4 flex list-decimal flex-col gap-1 text-sm text-rose-900/90 dark:text-rose-300">
+              <li>1 行目 → 当たらない</li>
+              <li>2 行目 → 当たらない (宛先が違う)</li>
+              <li>3 行目 → 当たらない (VPN 経由じゃない)</li>
+              <li><strong>最後 → ブロック</strong></li>
+            </ol>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            一番大事なポイント (これだけ覚えれば OK)
+          </p>
+          <ul className="mt-2 flex flex-col gap-1 text-sm text-zinc-700 dark:text-zinc-300">
+            <li>① <strong>許可することだけ書く</strong> (拒否する理由は書かない)</li>
+            <li>② <strong>書かれていないものは全部ブロック</strong> (= デフォルト deny)</li>
+            <li>③ <strong>上から順</strong>に見て、<strong>当たった瞬間に決定</strong>する</li>
+          </ul>
+        </div>
+
+        <details className="group mt-4 rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+          <summary className="flex cursor-pointer items-center gap-2 px-5 py-3 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            <svg
+              className="h-3 w-3 transition-transform group-open:rotate-90"
+              viewBox="0 0 12 12"
+              fill="none"
+              aria-hidden
+            >
+              <path
+                d="M4 3l4 3-4 3"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            「特定の IP からだけ通す」もできるの? → はい、これがど真ん中の使い方
+          </summary>
+          <div className="flex flex-col gap-4 px-5 pb-5">
+            <p className="text-zinc-700 dark:text-zinc-300">
+              ファイアウォールのルールには <strong>送信元 IP / 宛先 IP</strong>を書く欄があり、ここに
+              <strong>「この範囲からの通信だけ通す」</strong>と指定できます。むしろ
+              ファイアウォールはこれをやるための装置と言っていいくらいの基本機能です。
+            </p>
+
+            <div className="rounded-lg border border-violet-200 bg-violet-50/60 px-5 py-4 dark:border-violet-900/50 dark:bg-violet-950/30">
+              <p className="text-sm font-medium text-violet-900 dark:text-violet-200">
+                書き方: CIDR 表記 (「IP 範囲」をコンパクトに書く記法)
+              </p>
+              <div className="mt-3 overflow-hidden rounded-md border border-violet-200 dark:border-violet-800">
+                <table className="w-full text-xs">
+                  <thead className="bg-white text-violet-900 dark:bg-violet-950/60 dark:text-violet-200">
+                    <tr>
+                      <th className="px-3 py-1.5 text-left font-semibold">書き方</th>
+                      <th className="px-3 py-1.5 text-left font-semibold">意味</th>
+                      <th className="px-3 py-1.5 text-left font-semibold">カバー数</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-violet-200 bg-white text-violet-900/90 dark:divide-violet-800 dark:bg-violet-950/40 dark:text-violet-200">
+                    <tr>
+                      <td className="px-3 py-1.5 font-mono">203.0.113.42/32</td>
+                      <td className="px-3 py-1.5">この 1 個の IP だけ</td>
+                      <td className="px-3 py-1.5 font-mono text-violet-700 dark:text-violet-400">1</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-1.5 font-mono">203.0.113.0/24</td>
+                      <td className="px-3 py-1.5">203.0.113.0 〜 255</td>
+                      <td className="px-3 py-1.5 font-mono text-violet-700 dark:text-violet-400">256</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-1.5 font-mono">192.168.0.0/16</td>
+                      <td className="px-3 py-1.5">192.168.0.0 〜 192.168.255.255 (社内 LAN 全体とか)</td>
+                      <td className="px-3 py-1.5 font-mono text-violet-700 dark:text-violet-400">65,536</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-1.5 font-mono">0.0.0.0/0</td>
+                      <td className="px-3 py-1.5">どこからでも (= any)</td>
+                      <td className="px-3 py-1.5 font-mono text-violet-700 dark:text-violet-400">全 IP</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-3 text-xs text-violet-900/80 dark:text-violet-300">
+                <code className="rounded bg-white/60 px-1 font-mono dark:bg-violet-950/50">/数字</code>{" "}
+                の部分は「ネットワーク部分のビット数」を表していて、
+                <strong>数字が大きいほど範囲は狭い</strong> (/32 が 1 個、/0 が全部) と覚えれば OK。
+              </p>
+            </div>
+
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+              <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+                実用例: 「IP で絞る」が効くシーン
+              </p>
+              <ul className="mt-3 flex flex-col gap-2 text-sm text-emerald-900/90 dark:text-emerald-300">
+                <li>
+                  ・<strong>管理画面 (admin)</strong> は <strong>会社の固定回線</strong> (例:{" "}
+                  <code className="rounded bg-white/60 px-1 font-mono text-xs dark:bg-emerald-950/50">203.0.113.0/24</code>) からのみ許可
+                </li>
+                <li>
+                  ・<strong>SSH (port 22)</strong> は <strong>VPN サブネット</strong> (例:{" "}
+                  <code className="rounded bg-white/60 px-1 font-mono text-xs dark:bg-emerald-950/50">10.8.0.0/24</code>) からのみ
+                </li>
+                <li>
+                  ・<strong>取引先 API への接続</strong>は <strong>その会社の公開 IP リスト</strong>だけ許可
+                  (相手から「うちの送信元 IP はこれです」と通知される)
+                </li>
+                <li>
+                  ・<strong>DB サーバ (3306)</strong> は <strong>同じ VPC 内の Web サーバの IP</strong> からだけ受け付ける
+                </li>
+                <li>
+                  ・<strong>特定の国・地域からのアクセスを丸ごとブロック</strong> (海外からの攻撃が多い場合)
+                </li>
+              </ul>
+              <p className="mt-3 text-xs text-emerald-900/80 dark:text-emerald-300">
+                → これが効くと、SSH ブルートフォースのような攻撃は <strong>そもそも届かなくなる</strong>。
+                「攻撃を検知して防ぐ」より <strong>「物理的に届かなくする」</strong>方が圧倒的に強い。
+              </p>
+            </div>
+          </div>
+        </details>
       </section>
 
       <section className="flex flex-col gap-4">
@@ -561,43 +742,6 @@ function GatekeeperDiagram() {
           </marker>
         </defs>
       </svg>
-    </div>
-  );
-}
-
-function RuleTableDiagram() {
-  return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6">
-        <div className="flex flex-col gap-1 text-xs">
-          <div className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1 font-mono text-emerald-900 dark:border-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200">
-            1. allow 443/tcp
-          </div>
-          <div className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1 font-mono text-emerald-900 dark:border-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200">
-            2. allow 53/udp
-          </div>
-          <div className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1 font-mono text-emerald-900 dark:border-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200">
-            3. allow 80/tcp
-          </div>
-          <div className="rounded-md border border-zinc-300 bg-zinc-50 px-3 py-1 font-mono text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-500">
-            … (続く)
-          </div>
-          <div className="rounded-md border border-rose-300 bg-rose-50 px-3 py-1 font-mono text-rose-900 dark:border-rose-700 dark:bg-rose-950/30 dark:text-rose-200">
-            99. deny any (暗黙)
-          </div>
-        </div>
-
-        <div className="text-xs text-zinc-500 dark:text-zinc-500 sm:max-w-xs">
-          <p>
-            パケットが来ると <strong>1 → 2 → 3 …</strong> と上から順に評価。
-            最初にマッチしたルールで <strong>即決</strong>。
-          </p>
-          <p className="mt-2">
-            どれにも当たらなければ最後の <strong className="text-rose-700 dark:text-rose-400">deny</strong> で
-            拒否 (= 明示的に許可されないものは弾く)。
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
