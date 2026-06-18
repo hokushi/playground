@@ -57,6 +57,7 @@ const navGroups: NavGroup[] = [
       { href: "/aws/vpc", label: "VPC と サブネット" },
       { href: "/aws/ec2", label: "EC2 を立てる" },
       { href: "/aws/alb", label: "ALB を立てる" },
+      { href: "/aws/route53", label: "Route 53 で HTTPS 化" },
     ],
   },
 ];

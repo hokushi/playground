@@ -53,39 +53,6 @@ export default function AwsAlbPage() {
             「2 つのサブネットで動く ALB が 1 個」ができあがる
           </p>
         </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              あなたから見える状態
-            </p>
-            <ul className="mt-2 flex flex-col gap-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-              <li>・ロードバランサ一覧: <strong>1 個</strong>だけ</li>
-              <li>・DNS 名: <strong>1 つ</strong>だけ</li>
-              <li>・削除・設定変更: <strong>1 回で済む</strong></li>
-            </ul>
-          </div>
-          <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              AWS の内部
-            </p>
-            <ul className="mt-2 flex flex-col gap-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-              <li>・選んだ <strong>2 つのサブネットで同時に動いている</strong></li>
-              <li>・1 つの AZ が落ちても残りで継続</li>
-              <li>・(隠してくれているので意識しなくて OK)</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-            なぜ 2 つ以上必要?
-          </p>
-          <p className="mt-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            AWS のルールで <strong>「ALB は最低 2 つのサブネット (= 2 AZ 以上) で動かす」</strong>必要があるから。
-            1 つだけだと、そのサブネット (AZ) が落ちたら ALB ごと止まってしまうので、AWS が冗長化を強制している
-          </p>
-        </div>
       </section>
 
       <section className="flex flex-col gap-4">
@@ -183,10 +150,6 @@ export default function AwsAlbPage() {
           <p className="mt-4 text-[12px] leading-relaxed text-zinc-600 dark:text-zinc-400">
             上のオレンジ箱 (ALB 本体) と 中のオレンジ点線箱 (ENI) は<strong>同じ ALB</strong>。
             <strong>論理的には 1 個</strong>だけど、<strong>物理的には各サブネットに ENI を 1 つずつ生やしている</strong>状態。
-            <br />
-            <span className="text-[11px]">
-              例えると会社が東京本社と大阪支社を持つようなもの ── 会社名は 1 つだが物理オフィスは 2 都市にある
-            </span>
           </p>
         </div>
       </section>
@@ -451,10 +414,6 @@ export default function AwsAlbPage() {
             </table>
           </div>
 
-          <Note>
-            2 台目の Public IP をブラウザで開くと <strong>「I am EC2 1a」</strong>と表示されるのが正常。
-            「2 台とも 1a」 ではなく「AMI 由来のテキストがコピーされている」だけ。これを Step 04 で書き換える
-          </Note>
         </Step>
 
         <Step n="04" title="2 台目の index.html を「I am EC2 1c」に書き換える">
