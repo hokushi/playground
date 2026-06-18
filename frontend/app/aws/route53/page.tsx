@@ -381,11 +381,6 @@ export default function AwsRoute53Page() {
             height={1440}
           />
 
-          <Note>
-            自動更新を OFF にすると <strong>1 年後にドメインが自然失効</strong>する。
-            来年勝手にカード請求されない安心。「やっぱり継続したい」なら有効期限前に手動で更新可能
-          </Note>
-
           <Li>
             右下オレンジ <strong>「次へ」</strong>
           </Li>
@@ -411,19 +406,6 @@ export default function AwsRoute53Page() {
           <Li>
             <strong>プライバシー保護</strong>: ✅ 自動 ON ⭐ (これで WHOIS に個人情報が出ない)
           </Li>
-
-          <div className="rounded-lg border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-900/50 dark:bg-amber-950/30">
-            <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
-              💡 電話番号の形式に注意
-            </p>
-            <p className="mt-2 text-sm text-amber-900/80 dark:text-amber-300">
-              国コード欄に <Code>81</Code> (日本)、電話番号本体は <strong>先頭の <Code>0</Code> を削った形式</strong>{" "}
-              で入れる。<br />
-              ❌ <Code>+ (空) 08019414600</Code> → 検証エラー or 海外番号扱い
-              <br />
-              ✅ <Code>+ 81  8019414600</Code> ← 国際表記の作法 (先頭 0 を消す)
-            </p>
-          </div>
 
           <Li>
             「次へ」で Step 3 へ
@@ -519,10 +501,6 @@ export default function AwsRoute53Page() {
             登録メールアドレス (例: <Code>hokushi97@gmail.com</Code>) を確認
           </Li>
           <Li>
-            件名は英語のこともある (例: <Code>Domain Contact Information Verification</Code>)。
-            差出人: <Code>noreply@registrar.amazon.com</Code>
-          </Li>
-          <Li>
             メール内の <strong>「Verify」リンクをクリック</strong>
           </Li>
           <Li>
@@ -537,9 +515,6 @@ export default function AwsRoute53Page() {
             height={1440}
           />
 
-          <Note>
-            これでドメイン停止リスクなし。次にドメインを買う時もこのメール認証は毎回必要 (一度メアドが認証済みなら以降は省略されることもある)
-          </Note>
             </div>
           </details>
 
@@ -709,7 +684,40 @@ export default function AwsRoute53Page() {
                 </table>
               </div>
 
-              <h4 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+              <details className="group rounded-md border border-zinc-200 bg-zinc-50/60 dark:border-zinc-800 dark:bg-zinc-900/40">
+                <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm font-semibold text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50">
+                  <svg className="h-3 w-3 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
+                    <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span>そもそもネームサーバーって何?</span>
+                </summary>
+                <div className="flex flex-col gap-3 px-5 pb-4 pt-1">
+                  <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                    <strong>ネームサーバー (NS)</strong> = <strong>「このドメインの住所録を持っている係のサーバー」</strong>。
+                    誰かが <Code>hokushi-aws.click</Code> にアクセスしようとすると「このドメインの IP は?」という
+                    問い合わせが発生し、それに<strong>「このサーバーに聞いてね」と答える担当</strong>がネームサーバー。
+                    Route 53 でドメインを買うと、AWS が自動で <strong>4 台</strong>を割り当てる。
+                    <strong>4 台とも中身 (住所録) は全く同じコピー</strong>で、1 台落ちても残りで答えられるようにしてある。
+                  </p>
+
+                  <div className="rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                      名前の読み方 (例: <span className="font-mono">ns-2003.awsdns-58.co.uk</span>)
+                    </p>
+                    <p className="mt-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                      これは<strong>サーバー 1 台の名前 (ホスト名)</strong>で、あなたのドメインとは別物の
+                      <strong> AWS 側の設備のアドレス</strong>。
+                    </p>
+                    <ul className="mt-2 ml-1 flex flex-col gap-0.5 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                      <li>・<Code>ns-2003</Code> … 何番目のネームサーバーかの識別番号 (AWS が振った通し番号)</li>
+                      <li>・<Code>awsdns-58</Code> … AWS の DNS サービスの何番目のクラスタか</li>
+                      <li>・<Code>.co.uk</Code> … このサーバー自身が住んでいるドメイン (末尾)</li>
+                    </ul>
+                  </div>
+                </div>
+              </details>
+
+              <h4 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
                 ⭐ 4 つのネームサーバーが「別々の TLD」になってる理由
               </h4>
               <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
@@ -722,10 +730,15 @@ ns-188.awsdns-23.com       ← .com
 ns-905.awsdns-48.net       ← .net`}</code>
               </pre>
               <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-                これは <strong>耐障害性のため</strong>。もし <Code>.com</Code> 全体が大規模障害で
-                ダウンしても、<Code>.org</Code> や <Code>.net</Code> や <Code>.co.uk</Code> の
-                ネームサーバーが生きてればドメインは引き続き名前解決できる。
-                <strong>AWS の細やかな設計</strong>がここに見える。
+                これは <strong>耐障害性のため</strong>。<Code>ns-188.awsdns-23.com</Code> という名前の
+                サーバーにたどり着くには、まず<strong>「<Code>.com</Code> を管理する仕組み」が動いている</strong>必要がある。
+                もし 4 台とも <Code>.com</Code> だったら、<Code>.com</Code> が大規模障害を起こすと
+                <strong>4 台まとめて到達不能</strong>になってしまう。
+              </p>
+              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                でも末尾を <Code>.com / .org / .net / .co.uk</Code> と<strong>わざと散らしてある</strong>ので、
+                <Code>.com</Code> が落ちても残り 3 台 (<Code>.org / .net / .co.uk</Code> 経由) で
+                ちゃんと名前解決できる。<strong>AWS の細やかな設計</strong>がここに見える。
               </p>
 
               <details className="group rounded-md border border-zinc-200 bg-zinc-50/60 dark:border-zinc-800 dark:bg-zinc-900/40">
@@ -1166,11 +1179,6 @@ ns-905.awsdns-48.net       ← .net`}</code>
                 height={1440}
               />
 
-              <Note>
-                「はい」なので CNAME を手でコピペする必要なし。ACM が Hosted Zone に
-                <strong>検証用 CNAME を自動で 2 本追加</strong>してくれる
-              </Note>
-
               <h4 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
                 ⑦ レコード作成成功 → まだ「保留中の検証」
               </h4>
@@ -1289,20 +1297,388 @@ ns-905.awsdns-48.net       ← .net`}</code>
 
         <Step n="04" title="ALB に HTTPS リスナーを追加する">
           <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            (実際に進めながら手順を埋めていく)
+            既存の <Code>hokushi-alb</Code> に <strong>「443 番ポートで HTTPS を受ける窓口 (リスナー)」</strong>を
+            1 個足して、そこに Step 03 で発行した <strong>ACM 証明書を貼る</strong>。
+            中身は今までどおり <Code>hokushi-tg</Code> (EC2 2 台) に流す。
           </p>
+
+          <pre className="overflow-x-auto rounded-md bg-zinc-900 px-4 py-3 text-[12px] leading-relaxed text-zinc-100">
+            <code>{`ブラウザ ──HTTPS 443──→ [ALB] ──ここで TLS 終端──→ HTTP 80 ──→ EC2
+                          ↑ ACM 証明書を貼るのがこのリスナー`}</code>
+          </pre>
+
+          <details className="group mt-3 rounded-lg border-2 border-indigo-300 bg-indigo-50/30 dark:border-indigo-700 dark:bg-indigo-950/20">
+            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-indigo-900 transition-colors hover:bg-indigo-100/30 dark:text-indigo-100 dark:hover:bg-indigo-900/30">
+              <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
+                <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>🔒 HTTPS リスナーを追加する手順 (① 〜 ④)</span>
+            </summary>
+            <div className="flex flex-col gap-3 border-t border-indigo-200 px-5 pb-5 pt-4 dark:border-indigo-900/50">
+
+          <h4 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            ① ALB の「リスナーとルール」から追加開始
+          </h4>
+          <Li>
+            EC2 → 左メニュー <strong>「ロードバランサー」</strong> → <Code>hokushi-alb</Code> を選択
+          </Li>
+          <Li>
+            下の <strong>「リスナーとルール」</strong>タブを開く → 今は <Code>HTTP:80</Code> が 1 本だけある
+          </Li>
+          <Li>
+            右の <strong>「リスナーの追加」</strong>をクリック
+          </Li>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-15 18.10.06.png"
+            alt="hokushi-alb の詳細 - リスナーとルールタブに HTTP:80 が 1 本 + リスナーの追加ボタン"
+            width={3006}
+            height={1870}
+          />
+
+          <h4 className="mt-6 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            ② プロトコル / ポートと転送先を設定
+          </h4>
+          <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+            「リスナーの追加」画面が開く。初期値は <Code>HTTP / 81</Code> になっているので、ここを書き換える。
+          </p>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-15 18.10.31.png"
+            alt="リスナーの追加 - 初期状態 HTTP/81"
+            width={3006}
+            height={1870}
+          />
+
+          <Li>
+            <strong>プロトコル: HTTPS</strong> に変更 → ポートが自動で <Code>443</Code> になる
+          </Li>
+          <Li>
+            <strong>デフォルトアクション: ターゲットグループへ転送</strong> → <Code>hokushi-tg</Code> を選択
+            <span className="mt-1 ml-1 block text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+              (TG 側は <Code>HTTP</Code> のまま = ALB で暗号を解いて、中は平文で EC2 に渡す「TLS 終端」)
+            </span>
+          </Li>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-15 18.15.41.png"
+            alt="HTTPS / 443 に変更し、転送先に hokushi-tg を選んだ状態"
+            width={3006}
+            height={1870}
+          />
+
+          <h4 className="mt-6 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            ③ セキュリティポリシー + ACM 証明書を貼る (核心)
+          </h4>
+          <Li>
+            <strong>セキュリティポリシー</strong>: デフォルトの推奨ポリシー
+            (<Code>ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09</Code> 等) のまま
+          </Li>
+          <Li>
+            <strong>デフォルト SSL/TLS サーバー証明書</strong>: <strong>「ACM から」</strong>を選択 →
+            ドロップダウンで <Code>hokushi-aws.click</Code> の証明書を選ぶ
+            <span className="mt-1 ml-1 block text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+              ← Step 03 で発行した証明書。ここで「発行済み」にしておいた意味が回収される
+            </span>
+          </Li>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-15 18.16.36.png"
+            alt="セキュリティポリシーと、ACM から hokushi-aws.click の証明書を選択した状態"
+            width={3006}
+            height={1870}
+          />
+
+          <Note>
+            「相互認証 (mTLS)」はチェック不要。クライアント側にも証明書を要求する特殊用途で、
+            一般的な Web 公開では使わない
+          </Note>
+
+          <h4 className="mt-6 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            ④ 追加 → リスナーが 2 本になる
+          </h4>
+          <Li>
+            右下の <strong>「追加」</strong>をクリック
+          </Li>
+          <Li>
+            ALB 詳細に戻ると <strong>「リスナーとルール (2)」</strong>になり、
+            <Code>HTTPS:443</Code> (→ <Code>hokushi-tg</Code>) と <Code>HTTP:80</Code> の 2 本が並ぶ
+          </Li>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-15 18.19.48.png"
+            alt="リスナーとルールが 2 本に - HTTPS:443 と HTTP:80"
+            width={3006}
+            height={1870}
+          />
+            </div>
+          </details>
+
+          <details className="group mt-3 rounded-lg border-2 border-amber-300 bg-amber-50/30 dark:border-amber-700 dark:bg-amber-950/20">
+            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-amber-900 transition-colors hover:bg-amber-100/30 dark:text-amber-100 dark:hover:bg-amber-900/30">
+              <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
+                <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>🛡 ALB の SG に 443 を開ける (⑤)</span>
+            </summary>
+            <div className="flex flex-col gap-3 border-t border-amber-200 px-5 pb-5 pt-4 dark:border-amber-900/50">
+
+          <div className="rounded-lg border border-rose-200 bg-rose-50 px-5 py-4 dark:border-rose-900/50 dark:bg-rose-950/30">
+            <p className="text-sm font-medium text-rose-900 dark:text-rose-200">
+              ⚠️ リスナーを足しただけでは繋がらない — ALB の SG で 443 を開ける
+            </p>
+            <p className="mt-2 text-sm text-rose-900/80 dark:text-rose-300">
+              <Code>hokushi-alb-sg</Code> は今 <strong>HTTP 80 しか開けていない</strong>。
+              443 のリスナーを作っても SG が 443 を通さなければ HTTPS は繋がらないので、
+              インバウンドに <strong>HTTPS / 443</strong> を 1 本足す (次の ⑤)。
+            </p>
+          </div>
+
+          <h4 className="mt-6 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            ⑤ ALB の SG に HTTPS 443 を追加
+          </h4>
+          <Li>
+            EC2 → 左メニュー <strong>「セキュリティグループ」</strong> → <Code>hokushi-alb-sg</Code> を選択
+          </Li>
+          <Li>
+            <strong>「インバウンドルール」</strong>タブ → 今は <Code>HTTP / TCP / 80</Code> が 1 本だけ →
+            右の <strong>「インバウンドのルールを編集」</strong>をクリック
+          </Li>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-15 18.27.42.png"
+            alt="hokushi-alb-sg のインバウンドルール - HTTP 80 が 1 本だけの状態"
+            width={3006}
+            height={1870}
+          />
+
+          <Li>
+            <strong>「ルールを追加」</strong>で行を 1 つ増やす:
+            <span className="mt-1 ml-1 block text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+              ・タイプ: <strong>HTTPS</strong> (→ プロトコル TCP / ポート 443 が自動で入る)
+              <br />
+              ・ソース: <strong>Anywhere-IPv4</strong> (<Code>0.0.0.0/0</Code>)
+            </span>
+          </Li>
+          <Li>
+            右下の <strong>「ルールを保存」</strong>をクリック
+          </Li>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-15 18.28.22.png"
+            alt="インバウンドルール編集 - HTTPS/443/0.0.0.0/0 を追加した状態"
+            width={3006}
+            height={1870}
+          />
+
+          <Note>
+            <Code>0.0.0.0/0</Code> = 「誰でもインターネットから来ていい」。Web 公開する ALB の
+            80/443 はこれで正しい (黄色の警告バナーが出るが、公開窓口なので問題なし)。
+            EC2 側の SG はこれとは別で、ALB からだけ受けるよう絞るのが理想 (ALB ページ参照)
+          </Note>
+
+          <Li>
+            保存後、ALB の <strong>「リスナーとルール」</strong>に戻ると <Code>HTTPS:443</Code> と
+            <Code>HTTP:80</Code> の 2 本が揃った状態になっている
+          </Li>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-15 18.31.20.png"
+            alt="hokushi-alb のリスナーとルール - HTTPS:443 と HTTP:80 の 2 本"
+            width={3006}
+            height={1870}
+          />
+
+          <Note>
+            この時点ではまだ <Code>https://hokushi-aws.click</Code> では繋がらない。
+            ドメインを ALB に向ける Alias レコード (Step 05) がまだないため。
+            <Code>https://&lt;ALB の DNS 名&gt;</Code> で開くと証明書のドメイン不一致警告が出るのが正常
+          </Note>
+            </div>
+          </details>
         </Step>
 
         <Step n="05" title="Route 53 で Alias レコードを作成する">
           <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            (実際に進めながら手順を埋めていく)
+            いまの状態と、足りないものを整理すると:
           </p>
+
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
+            <ul className="flex flex-col gap-1.5 text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+              <li>✅ ALB が <strong>HTTPS:443 で証明書付きで待ち受けている</strong></li>
+              <li>✅ SG も <strong>443 を開けた</strong></li>
+              <li>
+                ❌ でも <Code>hokushi-aws.click</Code> という名前が、
+                <strong>どの ALB を指すか</strong> がまだ未設定
+              </li>
+            </ul>
+          </div>
+
+          <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+            そこで「ドメイン名 → ALB」の案内板 (DNS レコード) を Route 53 に 1 本立てる。
+            これで初めて <Code>https://hokushi-aws.click</Code> で繋がるようになる。
+          </p>
+
+          <details className="group mt-3 rounded-lg border-2 border-violet-300 bg-violet-50/30 dark:border-violet-700 dark:bg-violet-950/20">
+            <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-violet-900 transition-colors hover:bg-violet-100/30 dark:text-violet-100 dark:hover:bg-violet-900/30">
+              <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
+                <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>🧭 Alias レコードを作る手順</span>
+            </summary>
+            <div className="flex flex-col gap-3 border-t border-violet-200 px-5 pb-5 pt-4 dark:border-violet-900/50">
+
+          <h4 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            ① レコード作成画面を開く
+          </h4>
+          <Li>
+            Route 53 → <strong>「ホストゾーン」</strong> → <Code>hokushi-aws.click</Code> を開く
+          </Li>
+          <Li>
+            <strong>「レコードを作成」</strong>をクリック (クイック作成のフォームが開く)
+          </Li>
+
+          <h4 className="mt-6 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            ② A レコード + エイリアスで ALB を指す (核心)
+          </h4>
+          <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+            フォームを以下で埋める:
+          </p>
+          <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+            <table className="w-full text-sm">
+              <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                <tr>
+                  <th className="px-3 py-2 text-left font-semibold">項目</th>
+                  <th className="px-3 py-2 text-left font-semibold">値</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                <tr>
+                  <td className="px-3 py-2">レコード名</td>
+                  <td className="px-3 py-2">
+                    <strong>空のまま</strong>{" "}
+                    <span className="text-xs text-zinc-500">(= <Code>hokushi-aws.click</Code> そのもの)</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2">レコードタイプ</td>
+                  <td className="px-3 py-2 font-mono">A</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2">エイリアス</td>
+                  <td className="px-3 py-2"><strong>オン</strong> ⭐</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2">ルーティング先</td>
+                  <td className="px-3 py-2">Application/Classic Load Balancer へのエイリアス</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2">リージョン</td>
+                  <td className="px-3 py-2 font-mono">ap-northeast-1 (東京)</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2">ロードバランサー</td>
+                  <td className="px-3 py-2 font-mono">hokushi-alb</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2">ルーティングポリシー</td>
+                  <td className="px-3 py-2">シンプルルーティング</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-18 10.53.00.png"
+            alt="レコード作成 - A / エイリアス オン / ALB (hokushi-alb) を指定した状態"
+            width={2546}
+            height={1392}
+          />
+
+          <h4 className="mt-6 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            ③ 作成 → レコード一覧に A が増える
+          </h4>
+          <Li>
+            右下の <strong>「レコードを作成」</strong>をクリック
+          </Li>
+          <Li>
+            ホストゾーンのレコード一覧に <strong>A レコード</strong>が 1 本増える
+            (値が <Code>dualstack.hokushi-alb-XXXX...</Code> になっている)
+          </Li>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-18 10.54.10.png"
+            alt="ホストゾーンのレコード一覧 - A (Alias) / NS / SOA / 検証用 CNAME の 4 本"
+            width={2546}
+            height={1392}
+          />
+
+          <Note>
+            これで <Code>hokushi-aws.click</Code> → <Code>hokushi-alb</Code> の案内板が完成。
+            NS / SOA / 検証用 CNAME は元からある基本レコードなので触らない
+          </Note>
+
+            </div>
+          </details>
+
+          <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+            <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
+              🎉 Step 05 完了
+            </p>
+            <p className="mt-2 text-sm text-emerald-900/80 dark:text-emerald-300">
+              ドメインが ALB を指すようになった。あとは反映を待って{" "}
+              <Code>https://hokushi-aws.click</Code> で繋がるか確認するだけ (Step 06)
+            </p>
+          </div>
         </Step>
 
-        <Step n="06" title="動作確認 — https://your-domain.com で繋がる">
+        <Step n="06" title="動作確認 — https://hokushi-aws.click で繋がる">
           <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            (実際に進めながら手順を埋めていく)
+            レコード作成後、<strong>数分〜十数分</strong> (DNS 反映待ち) おいてから、ブラウザで
+            アドレスバーに <Code>https://hokushi-aws.click</Code> を入力して開く。
           </p>
+
+          <Screenshot
+            src="/aws/route53/スクリーンショット 2026-06-18 10.54.55.png"
+            alt="https://hokushi-aws.click が鍵マーク付きで開き、I am EC2 1a が表示された状態"
+            width={2546}
+            height={1392}
+          />
+
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+            <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
+              ✅ 成功の 3 点セット
+            </p>
+            <ul className="mt-2 ml-5 list-disc space-y-1 text-sm text-emerald-900/80 dark:text-emerald-300">
+              <li>
+                アドレスバーが <Code>https://</Code> + <strong>🔒 鍵マーク</strong>
+                ── 証明書が効いている (ALB で TLS 終端できている)
+              </li>
+              <li>
+                <strong>I am EC2 1a</strong> / <strong>1c</strong> が表示
+                ── ALB が EC2 にちゃんと振り分けている
+              </li>
+              <li>
+                <strong>Shift + Cmd + R 連打</strong>で 1a ↔ 1c が交互に切り替わる
+                ── HTTPS 経由でもラウンドロビン振り分けが動いている証拠
+              </li>
+            </ul>
+          </div>
+
+          <div className="mt-2 rounded-lg border border-indigo-200 bg-indigo-50/40 px-5 py-4 dark:border-indigo-900/50 dark:bg-indigo-950/20">
+            <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
+              🎉 全 Step 完了
+            </p>
+            <p className="mt-2 text-sm text-indigo-900/80 dark:text-indigo-300">
+              Route 53 でドメイン取得 → ACM で証明書 → ALB に HTTPS リスナー → SG 443 開放 →
+              Alias レコードで ALB に接続、までが繋がり、
+              <strong>独自ドメイン + HTTPS で ALB 経由 EC2 に届く</strong>構成が完成した。
+            </p>
+            <p className="mt-2 text-sm text-indigo-900/80 dark:text-indigo-300">
+              発展: <Code>http://</Code> で来た人を <Code>https://</Code> に自動転送したいなら、
+              ALB の <strong>HTTP:80 リスナーを「リダイレクト → HTTPS:443」に変更</strong>すると完璧
+            </p>
+          </div>
         </Step>
       </section>
     </main>
