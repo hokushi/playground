@@ -59,6 +59,7 @@ const navGroups: NavGroup[] = [
   {
     label: "AWS",
     items: [
+      { href: "/aws/overview", label: "全体像 (フロント/バック/インフラ)" },
       { href: "/aws/regions", label: "リージョン と データセンター" },
       { href: "/aws/setup", label: "アカウント準備" },
       { href: "/aws/vpc", label: "VPC と サブネット" },
