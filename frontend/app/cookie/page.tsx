@@ -203,6 +203,101 @@ function Mark({ ok, children }: { ok: boolean; children: ReactNode }) {
   );
 }
 
+/** Domain の書き方 1 パターンぶん。保存されるか → どう保存されるか → どこに送られるか の順で見せる */
+function DomainCase({
+  header,
+  caption,
+  stored,
+  record,
+  sends,
+}: {
+  header: string;
+  caption: string;
+  stored: { ok: boolean; text: string };
+  record: { field: string; value: string; note?: string }[] | null;
+  sends: { host: string; ok: boolean; note: string }[];
+}) {
+  return (
+    <div
+      className={`flex flex-col gap-3 rounded-lg border px-4 py-3 ${
+        stored.ok
+          ? "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950/40"
+          : "border-rose-200 bg-rose-50/60 dark:border-rose-900/50 dark:bg-rose-950/20"
+      }`}
+    >
+      <div>
+        <p className="break-all font-mono text-[12px] text-zinc-700 dark:text-zinc-300">
+          {header}
+        </p>
+        <p className="mt-0.5 text-[12px] text-zinc-500 dark:text-zinc-400">{caption}</p>
+      </div>
+
+      <div className="flex flex-col gap-2 border-t border-zinc-200 pt-2.5 dark:border-zinc-800">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span className="w-40 shrink-0 text-[12px] font-semibold text-zinc-700 dark:text-zinc-300">
+            ブラウザに保存される？
+          </span>
+          <span className="text-[12.5px]">
+            <Mark ok={stored.ok}>{stored.text}</Mark>
+          </span>
+        </div>
+
+        {record ? (
+          <div className="rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2.5 dark:border-zinc-800 dark:bg-zinc-900/60">
+            <p className="mb-1.5 text-[11.5px] text-zinc-500 dark:text-zinc-400">
+              DevTools → Application → Cookies での見え方
+            </p>
+            <div className="flex flex-col gap-1">
+              {record.map((r) => (
+                <div key={r.field} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span className="w-16 shrink-0 text-[11.5px] text-zinc-500 dark:text-zinc-400">
+                    {r.field}
+                  </span>
+                  <span className="font-mono text-[12px] font-semibold text-zinc-800 dark:text-zinc-200">
+                    {r.value}
+                  </span>
+                  {r.note && (
+                    <span className="text-[11.5px] text-zinc-500 dark:text-zinc-400">
+                      ← {r.note}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2.5 dark:border-rose-900/50 dark:bg-rose-950/30">
+            <p className="text-[11.5px] text-zinc-500 dark:text-zinc-400">
+              DevTools → Application → Cookies での見え方
+            </p>
+            <p className="mt-1 text-[12.5px] text-rose-900 dark:text-rose-200">
+              一覧に<strong>行そのものが作られない</strong>
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="border-t border-zinc-200 pt-2.5 dark:border-zinc-800">
+        <p className="mb-1.5 text-[12px] font-semibold text-zinc-700 dark:text-zinc-300">
+          この URL を呼ぶとき、Cookie は付く？
+        </p>
+        <div className="flex flex-col gap-1">
+          {sends.map((s) => (
+            <div key={s.host} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <span className="w-52 shrink-0 font-mono text-[12px] text-zinc-600 dark:text-zinc-400">
+                {s.host}
+              </span>
+              <span className="text-[12.5px]">
+                <Mark ok={s.ok}>{s.note}</Mark>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CookiePage() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-8 py-12">
@@ -216,44 +311,6 @@ export default function CookiePage() {
         </p>
       </header>
 
-      {/* 結論 */}
-      <section className="flex flex-col gap-3 rounded-lg border border-l-4 border-indigo-100 border-l-indigo-400 bg-indigo-50/40 px-5 py-4 dark:border-indigo-950 dark:border-l-indigo-600 dark:bg-indigo-950/15">
-        <h2 className="text-lg font-semibold text-indigo-800 dark:text-indigo-300">
-          先に結論
-        </h2>
-        <div className="grid gap-2 sm:grid-cols-3">
-          <div className="rounded-lg border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-950/40">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              サーバがやること
-            </p>
-            <p className="mt-0.5 text-[13px] text-zinc-600 dark:text-zinc-400">
-              <Code>Set-Cookie</Code> で「これ持っといて」と渡す
-            </p>
-          </div>
-          <div className="rounded-lg border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-950/40">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              ブラウザがやること
-            </p>
-            <p className="mt-0.5 text-[13px] text-zinc-600 dark:text-zinc-400">
-              保存して、条件に合うリクエストに自動で付ける
-            </p>
-          </div>
-          <div className="rounded-lg border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-950/40">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              条件を決めるもの
-            </p>
-            <p className="mt-0.5 text-[13px] text-zinc-600 dark:text-zinc-400">
-              <Code>Domain</Code> / <Code>Path</Code> / <Code>Secure</Code> /{" "}
-              <Code>SameSite</Code>
-            </p>
-          </div>
-        </div>
-        <P>
-          CORS と同じで、<strong>判断しているのはブラウザ</strong>。 サーバは「こういう条件で持っておいて」と
-          お願いするだけで、実際にどのリクエストへ Cookie を付けるかはブラウザが決める。
-        </P>
-      </section>
-
       {/* Cookie とは */}
       <Card tone="sky" title="そもそも Cookie とは？">
         <P>
@@ -262,28 +319,129 @@ export default function CookiePage() {
           そこで <strong>ブラウザ側に小さなメモを預けておいて、毎回それを見せてもらう</strong>
           のが Cookie。
         </P>
-        <Flow caption="ログイン 1 回 → 以降のリクエストに自動で付く">
-          <Box actor="browser" label="ブラウザ" sub="ログインフォームを送信" />
-          <Arrow text="① ログインリクエスト" header="POST /login" />
-          <Box actor="server" label="サーバ" sub="本人確認 OK → セッション ID を発行" />
+        <P>
+          ここでは <strong>フロントとバックエンドの URL が違う</strong>ケースで見ていく。
+          実際の構成でよくある形で、Cookie が「どっちに紐づくのか」が分かりやすい。
+        </P>
+
+        {/* 登場人物 */}
+        <div className="grid gap-2 sm:grid-cols-2">
+          <div className="rounded-lg border border-indigo-200 bg-indigo-50/70 px-4 py-3 dark:border-indigo-900/50 dark:bg-indigo-950/25">
+            <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">
+              フロント（画面）
+            </p>
+            <p className="mt-1 font-mono text-[12.5px] text-zinc-700 dark:text-zinc-300">
+              https://app.example.com
+            </p>
+            <p className="mt-1 text-[12.5px] text-zinc-600 dark:text-zinc-400">
+              ページを表示している側
+            </p>
+          </div>
+          <div className="rounded-lg border border-violet-200 bg-violet-50/70 px-4 py-3 dark:border-violet-900/50 dark:bg-violet-950/25">
+            <p className="text-sm font-semibold text-violet-900 dark:text-violet-200">
+              バックエンド（API）
+            </p>
+            <p className="mt-1 font-mono text-[12.5px] text-zinc-700 dark:text-zinc-300">
+              https://api.example.com
+            </p>
+            <p className="mt-1 text-[12.5px] text-zinc-600 dark:text-zinc-400">
+              Cookie を発行する側
+            </p>
+          </div>
+        </div>
+
+        <Flow caption="ログイン 1 回 → 以降 api.example.com へのリクエストに自動で付く">
+          <Box
+            actor="browser"
+            label="ブラウザ（app.example.com のページを表示中）"
+            sub="ログインフォームを送信"
+          />
           <Arrow
-            text="② 「これ持っといて」"
+            text="① ログインリクエスト（宛先はバックエンド）"
+            header="POST https://api.example.com/login"
+          />
+          <Box
+            actor="server"
+            label="バックエンド api.example.com"
+            sub="本人確認 OK → セッション ID を発行"
+          />
+          <Arrow
+            text="② 「これ持っといて」（Domain に共通の親ドメインを指定）"
             up
-            header="Set-Cookie: session=abc123; HttpOnly"
+            header="Set-Cookie: session=abc123; Domain=example.com; HttpOnly"
           />
           <Box
             actor="storage"
             label="ブラウザの Cookie 置き場に保存"
-            sub="ドメインごとに整理して保管される"
-            note="DevTools → Application → Cookies で中身が見られる"
+            sub="「example.com 用の Cookie」として保管される"
+            note="Domain=example.com なので、example.com 配下のホストすべてに紐づく"
           />
-          <Arrow text="③ 次のリクエスト（何もしなくても勝手に付く）" header="Cookie: session=abc123" />
+          <Arrow
+            text="③ 次のリクエスト（何もしなくても勝手に付く）"
+            header="GET https://api.example.com/me + Cookie: session=abc123"
+          />
           <Verdict
             kind="ok"
-            label="サーバ「abc123 = さっきの人だ」と分かる"
+            label="バックエンド「abc123 = さっきの人だ」と分かる"
             sub="これでログイン状態が保てる"
           />
         </Flow>
+
+        <div>
+          <p className="mb-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            この Cookie（<Code>Domain=example.com</Code>）は、どこを叩いたときに付く？
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[520px] border-collapse text-[13.5px]">
+              <thead>
+                <tr className="border-b border-zinc-200 text-left text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                  <th className="py-2 pr-3 font-medium">リクエスト先</th>
+                  <th className="py-2 pr-3 font-medium">誰？</th>
+                  <th className="py-2 font-medium">Cookie は付く？</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-700 dark:text-zinc-300">
+                <tr className="border-b border-zinc-100 dark:border-zinc-900">
+                  <td className="py-2 pr-3 font-mono text-[12.5px]">
+                    https://api.example.com/me
+                  </td>
+                  <td className="py-2 pr-3">バックエンド（くれた本人）</td>
+                  <td className="py-2">
+                    <Mark ok>付く</Mark>
+                  </td>
+                </tr>
+                <tr className="border-b border-zinc-100 dark:border-zinc-900">
+                  <td className="py-2 pr-3 font-mono text-[12.5px]">
+                    https://app.example.com/...
+                  </td>
+                  <td className="py-2 pr-3">フロント（同じ example.com 配下）</td>
+                  <td className="py-2">
+                    <Mark ok>付く</Mark>
+                  </td>
+                </tr>
+                <tr className="border-b border-zinc-100 dark:border-zinc-900">
+                  <td className="py-2 pr-3 font-mono text-[12.5px]">
+                    https://admin.example.com/...
+                  </td>
+                  <td className="py-2 pr-3">別のサブドメイン</td>
+                  <td className="py-2">
+                    <Mark ok>付く（意図しなくても届く）</Mark>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-3 font-mono text-[12.5px]">
+                    https://other.com/...
+                  </td>
+                  <td className="py-2 pr-3">無関係な他人</td>
+                  <td className="py-2">
+                    <Mark ok={false}>付かない</Mark>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <div className="grid gap-2 sm:grid-cols-2">
           <div className="rounded-lg border border-zinc-200 bg-white px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-950/40">
             <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
@@ -355,99 +513,11 @@ export default function CookiePage() {
         </div>
       </Card>
 
-      {/* Domain はどっちの URL を見るか */}
-      <Card tone="violet" title="Domain は「どっちの URL」を見ている？">
-        <div className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-3 dark:border-violet-900/50 dark:bg-violet-950/30">
-          <p className="text-sm text-violet-900/90 dark:text-violet-200/90">
-            答え：<strong>どちらも「バックエンド（API）側の URL」だけを見ている</strong>。
-            表示しているフロントのページ URL は、Domain の判定に
-            <strong>一切関係しない</strong>。
-          </p>
-        </div>
-        <P>
-          Domain が出てくる場面は 2 つある。<strong>保存するとき</strong>と
-          <strong>送るとき</strong>。どちらも比べる相手は「叩いた / これから叩く API の URL のホスト」。
-        </P>
-
-        <div className="flex flex-col gap-2">
-          <div className="rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/40">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              ① 保存するとき（<Code>Set-Cookie</Code> を受け取った瞬間）
-            </p>
-            <p className="mt-1 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-              ブラウザは <strong>そのレスポンスを返してきたホスト</strong>（＝ 今叩いた API の URL
-              のホスト）と、書かれている <Code>Domain</Code> を照合する。
-              「自分自身か、自分の親ドメイン」なら受理。 それ以外なら
-              <strong>Cookie ごと捨てる</strong>。
-            </p>
-          </div>
-          <div className="rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/40">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              ② 送るとき（リクエストを組み立てる瞬間）
-            </p>
-            <p className="mt-1 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-              ブラウザは <strong>これから叩く URL のホスト</strong>を見て、保存済み Cookie の
-              <Code>Domain</Code> にマッチするものを探し、自動で付ける。
-              ここでもページの URL は見ていない。
-            </p>
-          </div>
-        </div>
-
-        <Flow caption="フロント app.example.com から API api.example.com を叩く場合">
-          <Box
-            actor="browser"
-            label="ページは https://app.example.com"
-            sub="← この URL は Domain の判定に出てこない"
-          />
-          <Arrow text="fetch する宛先だけが判定材料" header="POST https://api.example.com/login" />
-          <Box
-            actor="server"
-            label="api.example.com が Set-Cookie を返す"
-            sub="ブラウザは「返してきたのは api.example.com」として Domain を照合"
-          />
-          <div className="grid w-full gap-2 pt-2">
-            <Verdict
-              kind="ok"
-              label="Domain=api.example.com（自分自身）→ 受理"
-              sub="Domain 省略でも同じ範囲（host-only）になる"
-            />
-            <Verdict
-              kind="ok"
-              label="Domain=example.com（自分の親）→ 受理"
-              sub="app / api どちらのサブドメインにも届くようになる"
-            />
-            <Verdict
-              kind="ng"
-              label="Domain=app.example.com（フロントのホスト）→ 拒否"
-              sub="api.example.com から見て自分でも親でもない。「フロントの URL を書く」は間違い"
-            />
-          </div>
-        </Flow>
-
-        <P>
-          つまり「バックエンドがフロントの URL を見て Domain を決める」という発想は成り立たない。
-          バックエンドが書けるのは <strong>自分のホストか、その親ドメイン</strong>だけ。
-          フロントにも Cookie を効かせたいなら、
-          <strong>共通の親ドメインを指定する</strong>のが唯一の方法になる。
-        </P>
-
-        <div className="rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/40">
-          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-            じゃあフロントのページ URL はどこで効くの？
-          </p>
-          <p className="mt-1 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-            <Code>SameSite</Code> と CORS。 <Code>SameSite</Code> は
-            「ページのサイト」と「宛先のサイト」を比べて付ける / 付けないを決めるし、 CORS は
-            <Code>Origin</Code> としてページの URL をサーバに伝える。
-            <strong>ページの URL を見るのはこの 2 つで、Domain は別の話</strong>。
-          </p>
-        </div>
-      </Card>
-
       {/* Domain 本題 */}
       <Card tone="amber" title="本題：Domain の書き方でどう変わる？">
         <P>
-          Cookie の一番ややこしいところ。ポイントは 2 つだけ。
+          Cookie の一番ややこしいところ。書ける値のルールは 2 つだけで、
+          それ以外は<strong>そもそも書けない（保存されない）</strong>。
         </P>
         <div className="grid gap-2 sm:grid-cols-2">
           <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-900/50 dark:bg-amber-950/30">
@@ -474,118 +544,145 @@ export default function CookiePage() {
           「<strong>example.com 以下ぜんぶ</strong>」という意味になる。
         </P>
 
-        <Flow caption="app.example.com が発行した Cookie が、どこに付くか">
+        {/* 保存先はページごとではない */}
+        <div className="flex flex-col gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-4 dark:border-zinc-800 dark:bg-zinc-950/40">
+          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            前提：Cookie は「ページごと」に保存されるわけではない
+          </p>
+          <P>
+            <Code>app.example.com</Code> の引き出しに入る、というイメージだと混乱する。 実際は
+            <strong>ブラウザに Cookie 置き場が 1 つ</strong>あって、そこに 1 行ずつ入るだけ。
+            その行に <Code>Domain</Code> というラベルが付いている。
+          </P>
+          <Snippet
+            title="ブラウザの Cookie 置き場（1 つ）"
+            lines={[
+              "Domain: api.example.com    s=1",
+              "Domain: .example.com       t=2",
+              "Domain: google.com         ...",
+            ]}
+          />
+          <P>
+            受理するかどうかを決める材料は
+            <strong>「その Set-Cookie を返してきたのは誰か」だけ</strong>。 今回返したのは
+            <Code>api.example.com</Code> なので、ブラウザはこう判定する。
+          </P>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[480px] border-collapse text-[13.5px]">
+              <thead>
+                <tr className="border-b border-zinc-200 text-left text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                  <th className="py-2 pr-3 font-medium">書いた Domain</th>
+                  <th className="py-2 pr-3 font-medium">api.example.com から見て</th>
+                  <th className="py-2 font-medium">結果</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-700 dark:text-zinc-300">
+                <tr className="border-b border-zinc-100 dark:border-zinc-900">
+                  <td className="py-2 pr-3 font-mono text-[12.5px]">api.example.com</td>
+                  <td className="py-2 pr-3">
+                    <strong>自分自身</strong>
+                  </td>
+                  <td className="py-2">
+                    <Mark ok>受理</Mark>
+                  </td>
+                </tr>
+                <tr className="border-b border-zinc-100 dark:border-zinc-900">
+                  <td className="py-2 pr-3 font-mono text-[12.5px]">example.com</td>
+                  <td className="py-2 pr-3">
+                    <strong>自分の親</strong>
+                  </td>
+                  <td className="py-2">
+                    <Mark ok>受理</Mark>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-3 font-mono text-[12.5px]">hoge.com</td>
+                  <td className="py-2 pr-3">無関係な他人</td>
+                  <td className="py-2">
+                    <Mark ok={false}>破棄</Mark>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[13px] text-zinc-500 dark:text-zinc-400">
+            ※ ページの <Code>app.example.com</Code> は、この判定に
+            <strong>一度も登場しない</strong>。 「api の Cookie が app に保存できるのはなぜ？」ではなく、
+            <strong>「api.example.com が自分の名前で 1 行書いた」</strong>だけ。
+            ページはたまたま app を開いていた、という関係でしかない。
+          </p>
+        </div>
+
+        <Flow caption="api.example.com が発行した Cookie が、保存されるか / どこに付くか">
           <Box
             actor="server"
-            label="app.example.com がログイン成功時に Set-Cookie"
-            sub="Domain をどう書くかで、届く範囲が変わる"
+            label="バックエンド api.example.com がログイン成功時に Set-Cookie"
+            sub="ページを表示しているフロントは app.example.com（判定には関係しない）"
+            note="Domain をどう書くかで、保存されるかどうかから変わる"
           />
-          <div className="grid w-full gap-3 pt-3 sm:grid-cols-2">
-            <div className="flex flex-col gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/40">
-              <p className="font-mono text-[12px] text-zinc-700 dark:text-zinc-300">
-                Set-Cookie: s=1
-              </p>
-              <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
-                Domain 省略 → host-only
-              </p>
-              <div className="flex flex-col gap-1 text-[12.5px]">
-                <Mark ok>app.example.com</Mark>
-                <Mark ok={false}>api.example.com</Mark>
-                <Mark ok={false}>example.com</Mark>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/40">
-              <p className="font-mono text-[12px] text-zinc-700 dark:text-zinc-300">
-                Set-Cookie: s=1; Domain=example.com
-              </p>
-              <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
-                親ドメイン指定 → 配下ぜんぶ
-              </p>
-              <div className="flex flex-col gap-1 text-[12.5px]">
-                <Mark ok>app.example.com</Mark>
-                <Mark ok>api.example.com</Mark>
-                <Mark ok>example.com</Mark>
-              </div>
-            </div>
+          <div className="flex w-full flex-col gap-3 pt-3">
+            <DomainCase
+              header="Set-Cookie: s=1"
+              caption="Domain 省略 → host-only（くれた本人だけ）"
+              stored={{ ok: true, text: "保存される" }}
+              record={[
+                { field: "Name", value: "s" },
+                { field: "Value", value: "1" },
+                {
+                  field: "Domain",
+                  value: "api.example.com",
+                  note: "先頭に . が付かない = このホスト限定の印",
+                },
+                { field: "Path", value: "/", note: "Set-Cookie を返した URL から決まる" },
+              ]}
+              sends={[
+                { host: "api.example.com（API）", ok: true, note: "発行元そのものなので付く" },
+                { host: "app.example.com（フロント）", ok: false, note: "別ホストなので付かない" },
+                { host: "example.com", ok: false, note: "親でも付かない" },
+              ]}
+            />
+            <DomainCase
+              header="Set-Cookie: s=1; Domain=example.com"
+              caption="親ドメイン指定 → example.com 配下ぜんぶ"
+              stored={{ ok: true, text: "保存される" }}
+              record={[
+                { field: "Name", value: "s" },
+                { field: "Value", value: "1" },
+                {
+                  field: "Domain",
+                  value: ".example.com",
+                  note: "先頭に . が付く = 配下すべてに送る印",
+                },
+                { field: "Path", value: "/" },
+              ]}
+              sends={[
+                { host: "api.example.com（API）", ok: true, note: "配下なので付く" },
+                { host: "app.example.com（フロント）", ok: true, note: "配下なので付く" },
+                { host: "example.com", ok: true, note: "本体にも付く" },
+              ]}
+            />
+            <DomainCase
+              header="Set-Cookie: s=1; Domain=hoge.com"
+              caption="他人のドメイン → そもそも書けない"
+              stored={{ ok: false, text: "保存されない（受信した瞬間に破棄）" }}
+              record={null}
+              sends={[
+                { host: "api.example.com（API）", ok: false, note: "Cookie が存在しないので付けようがない" },
+                { host: "app.example.com（フロント）", ok: false, note: "同上" },
+                { host: "hoge.com", ok: false, note: "同上" },
+              ]}
+            />
           </div>
         </Flow>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[620px] border-collapse text-[13.5px]">
-            <thead>
-              <tr className="border-b border-zinc-200 text-left text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                <th className="py-2 pr-3 font-medium">発行元</th>
-                <th className="py-2 pr-3 font-medium">Set-Cookie の Domain</th>
-                <th className="py-2 pr-3 font-medium">送信先</th>
-                <th className="py-2 font-medium">結果</th>
-              </tr>
-            </thead>
-            <tbody className="text-zinc-700 dark:text-zinc-300">
-              <tr className="border-b border-zinc-100 dark:border-zinc-900">
-                <td className="py-2 pr-3 font-mono text-[12.5px]">app.example.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">（省略）</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">app.example.com</td>
-                <td className="py-2">
-                  <Mark ok>付く</Mark>
-                </td>
-              </tr>
-              <tr className="border-b border-zinc-100 dark:border-zinc-900">
-                <td className="py-2 pr-3 font-mono text-[12.5px]">app.example.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">（省略）</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">api.example.com</td>
-                <td className="py-2">
-                  <Mark ok={false}>付かない</Mark>
-                </td>
-              </tr>
-              <tr className="border-b border-zinc-100 dark:border-zinc-900">
-                <td className="py-2 pr-3 font-mono text-[12.5px]">app.example.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">example.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">api.example.com</td>
-                <td className="py-2">
-                  <Mark ok>付く（サブドメイン共有）</Mark>
-                </td>
-              </tr>
-              <tr className="border-b border-zinc-100 dark:border-zinc-900">
-                <td className="py-2 pr-3 font-mono text-[12.5px]">example.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">app.example.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">—</td>
-                <td className="py-2">
-                  <Mark ok={false}>Cookie 自体が拒否される（子ドメインは指定不可）</Mark>
-                </td>
-              </tr>
-              <tr className="border-b border-zinc-100 dark:border-zinc-900">
-                <td className="py-2 pr-3 font-mono text-[12.5px]">app.example.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">other.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">—</td>
-                <td className="py-2">
-                  <Mark ok={false}>拒否（他人のドメインには書けない）</Mark>
-                </td>
-              </tr>
-              <tr className="border-b border-zinc-100 dark:border-zinc-900">
-                <td className="py-2 pr-3 font-mono text-[12.5px]">app.example.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">.example.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">api.example.com</td>
-                <td className="py-2">
-                  <Mark ok>付く（先頭の . は無視され example.com と同じ）</Mark>
-                </td>
-              </tr>
-              <tr>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">app.example.com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">com</td>
-                <td className="py-2 pr-3 font-mono text-[12.5px]">—</td>
-                <td className="py-2">
-                  <Mark ok={false}>拒否（公開サフィックスは指定不可）</Mark>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
         <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-900/50 dark:bg-amber-950/30">
           <p className="text-sm text-amber-900/90 dark:text-amber-200/90">
-            ルールを一言でまとめると <strong>「自分自身か、自分の親ドメインしか指定できない」</strong>。
-            さらに <Code>.com</Code> や <Code>.co.jp</Code> のような
-            <strong>公開サフィックス</strong>は指定できない（できたら全 .com サイトに Cookie を撒けてしまう）。
+            <Code>Domain=hoge.com</Code> のポイントは、
+            <strong>「API を呼ぶときに付かない」のではなく「そもそも保存されていない」</strong>こと。
+            ブラウザは <Code>Set-Cookie</Code> を受け取った瞬間に
+            「返してきた <Code>api.example.com</Code> は <Code>hoge.com</Code> 自身か、その子孫か？」を判定し、
+            違うので Cookie ごと捨てる。 DevTools → Application → Cookies を見ても
+            <strong>行自体が無い</strong>（Network タブの <Code>Set-Cookie</Code> には警告アイコンが付く）。
           </p>
         </div>
       </Card>
@@ -692,139 +789,18 @@ export default function CookiePage() {
         </p>
       </Card>
 
-      {/* SameSite */}
-      <Card tone="violet" title="SameSite：別サイトからのリクエストに付けるか">
-        <P>
-          「Cookie が勝手に送られる」性質を悪用するのが CSRF。
-          <Code>SameSite</Code> は<strong>他サイトが起点のリクエストに Cookie を付けない</strong>
-          ことでそれを防ぐ。
-        </P>
-        <div className="flex flex-col gap-2">
-          <div className="rounded-lg border border-zinc-200 bg-white px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-950/40">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              SameSite=Lax（多くのブラウザの既定）
-            </p>
-            <p className="mt-0.5 text-[13px] text-zinc-600 dark:text-zinc-400">
-              他サイトからの <strong>普通のリンク遷移（GET）だけ</strong>付く。
-              画像・fetch・form POST には付かない。バランス型
-            </p>
-          </div>
-          <div className="rounded-lg border border-zinc-200 bg-white px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-950/40">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              SameSite=Strict
-            </p>
-            <p className="mt-0.5 text-[13px] text-zinc-600 dark:text-zinc-400">
-              他サイト起点なら<strong>リンク遷移でも付かない</strong>。
-              安全だが「メールのリンクから開いたらログアウト状態」になりがち
-            </p>
-          </div>
-          <div className="rounded-lg border border-zinc-200 bg-white px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-950/40">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              SameSite=None; Secure
-            </p>
-            <p className="mt-0.5 text-[13px] text-zinc-600 dark:text-zinc-400">
-              他サイトからでも付く。<strong>Secure が必須</strong>（付け忘れると Cookie ごと拒否）。
-              フロントと API のドメインが別のときはこれが必要になる
-            </p>
-          </div>
-        </div>
-        <P>
-          ここで言う「サイト」は <strong>eTLD+1</strong>、つまり{" "}
-          <Code>example.com</Code> レベルの単位。
-          <Code>app.example.com</Code> と <Code>api.example.com</Code> は
-          <strong>同じサイト（same-site）</strong>なので、サブドメインをまたぐだけなら
-          <Code>SameSite=None</Code> は要らない。
-        </P>
-      </Card>
-
-      {/* 実務パターン */}
-      <Card tone="emerald" title="実務での構成パターン">
-        <div className="flex flex-col gap-2">
-          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-            ① 同じドメインに揃える（いちばん楽）
-          </p>
-          <P>
-            <Code>app.example.com</Code> の <Code>/api/*</Code> をバックエンドに振り分ける構成。
-            Cookie は host-only のままでよく、<Code>SameSite=Lax</Code> で足りる。CORS も発生しない。
-          </P>
-          <Snippet lines={["Set-Cookie: session=abc; Path=/; Secure; HttpOnly; SameSite=Lax"]} />
-        </div>
-
-        <div className="mt-3 flex flex-col gap-2">
-          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-            ② サブドメインで分ける（app / api）
-          </p>
-          <P>
-            <Code>Domain=example.com</Code> を付けて共有する。同じサイト扱いなので
-            <Code>SameSite=Lax</Code> のままでいける。ただし
-            <strong>配下の全サブドメインに Cookie が届く</strong>点は意識しておく。
-          </P>
-          <Snippet
-            lines={[
-              "Set-Cookie: session=abc; Domain=example.com; Path=/;",
-              "            Secure; HttpOnly; SameSite=Lax",
-            ]}
-          />
-        </div>
-
-        <div className="mt-3 flex flex-col gap-2">
-          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-            ③ ドメインごと別（front.com → api.other.com）
-          </p>
-          <P>
-            クロスサイトなので <Code>SameSite=None; Secure</Code> が必須。 加えてフロント側は
-            <Code>credentials: &quot;include&quot;</Code>、サーバ側は
-            <Code>Access-Control-Allow-Credentials: true</Code> と
-            <strong>ワイルドカードでない具体的なオリジン</strong>が必要。いちばん事故りやすい構成。
-          </P>
-          <Snippet
-            lines={[
-              "// フロント",
-              'fetch("https://api.other.com/me", { credentials: "include" })',
-              "",
-              "// サーバ",
-              "Access-Control-Allow-Origin: https://front.com   // * は不可",
-              "Access-Control-Allow-Credentials: true",
-              "Set-Cookie: session=abc; Path=/; Secure; HttpOnly; SameSite=None",
-            ]}
-          />
-        </div>
-      </Card>
-
-      {/* チェックリスト */}
-      <Card tone="indigo" title="Cookie が付かないときの確認手順">
-        <ul className="ml-1 flex flex-col gap-2 text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-          {[
-            <>
-              <strong>そもそも保存されているか</strong>を DevTools → Application → Cookies
-              で確認。無ければ <Code>Set-Cookie</Code> がブラウザに拒否されている
-            </>,
-            <>
-              Network タブでレスポンスの <Code>Set-Cookie</Code> を見る。 拒否された行には
-              <strong>警告アイコン</strong>が付き、理由まで表示される
-            </>,
-            <>
-              <Code>Secure</Code> なのに http でアクセスしていないか（localhost は例外）
-            </>,
-            <>
-              クロスサイトなのに <Code>SameSite</Code> が <Code>Lax</Code> のままになっていないか
-            </>,
-            <>
-              <Code>Domain</Code> にポートやスキームを書いていないか（
-              <Code>Domain=localhost:3000</Code> は無効）
-            </>,
-            <>
-              fetch に <Code>credentials: &quot;include&quot;</Code> を付け忘れていないか
-              （クロスオリジンでは既定で送られない）
-            </>,
-          ].map((item, i) => (
-            <li key={i} className="flex gap-2">
-              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </Card>
+      {/* TODO */}
+      <section className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-5 py-4 dark:border-zinc-700 dark:bg-zinc-900/40">
+        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          TODO
+        </p>
+        <p className="mt-2 text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+          SameSite について余裕あらば学ぶ
+          <span className="ml-2 text-[13px] text-zinc-500 dark:text-zinc-400">
+            （2026/7/27）
+          </span>
+        </p>
+      </section>
     </main>
   );
 }
