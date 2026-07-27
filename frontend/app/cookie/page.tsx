@@ -304,56 +304,6 @@ export default function CookiePage() {
         </div>
       </Card>
 
-      {/* localStorage との違い */}
-      <Card tone="violet" title="localStorage との一番の違いは「勝手に送られる」こと">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[560px] border-collapse text-[13.5px]">
-            <thead>
-              <tr className="border-b border-zinc-200 text-left text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                <th className="py-2 pr-3 font-medium"></th>
-                <th className="py-2 pr-3 font-medium">Cookie</th>
-                <th className="py-2 font-medium">localStorage</th>
-              </tr>
-            </thead>
-            <tbody className="text-zinc-700 dark:text-zinc-300">
-              <tr className="border-b border-zinc-100 dark:border-zinc-900">
-                <td className="py-2 pr-3">リクエストへの添付</td>
-                <td className="py-2 pr-3">
-                  <Mark ok>ブラウザが自動で付ける</Mark>
-                </td>
-                <td className="py-2">
-                  <Mark ok={false}>自分で付けるコードが必要</Mark>
-                </td>
-              </tr>
-              <tr className="border-b border-zinc-100 dark:border-zinc-900">
-                <td className="py-2 pr-3">スコープ</td>
-                <td className="py-2 pr-3">ドメイン単位（サブドメインに広げられる）</td>
-                <td className="py-2">オリジン単位（スキーム + ホスト + ポート）</td>
-              </tr>
-              <tr className="border-b border-zinc-100 dark:border-zinc-900">
-                <td className="py-2 pr-3">JS から読めるか</td>
-                <td className="py-2 pr-3">
-                  <Code>HttpOnly</Code> を付ければ読めない
-                </td>
-                <td className="py-2">常に読める（XSS で盗まれ得る）</td>
-              </tr>
-              <tr>
-                <td className="py-2 pr-3">有効期限</td>
-                <td className="py-2 pr-3">
-                  <Code>Expires</Code> / <Code>Max-Age</Code> で指定できる
-                </td>
-                <td className="py-2">消すまで残る</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <P>
-          認証トークンを <Code>HttpOnly</Code> Cookie に置くのは、
-          <strong>JS から触れない = XSS で盗まれにくい</strong>から。 代わりに「勝手に送られる」性質が
-          CSRF の入口になるので、<Code>SameSite</Code> とセットで考える。
-        </P>
-      </Card>
-
       {/* Set-Cookie の属性 */}
       <Card tone="emerald" title="Set-Cookie に付ける属性">
         <Snippet
@@ -402,6 +352,95 @@ export default function CookiePage() {
               </p>
             </div>
           ))}
+        </div>
+      </Card>
+
+      {/* Domain はどっちの URL を見るか */}
+      <Card tone="violet" title="Domain は「どっちの URL」を見ている？">
+        <div className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-3 dark:border-violet-900/50 dark:bg-violet-950/30">
+          <p className="text-sm text-violet-900/90 dark:text-violet-200/90">
+            答え：<strong>どちらも「バックエンド（API）側の URL」だけを見ている</strong>。
+            表示しているフロントのページ URL は、Domain の判定に
+            <strong>一切関係しない</strong>。
+          </p>
+        </div>
+        <P>
+          Domain が出てくる場面は 2 つある。<strong>保存するとき</strong>と
+          <strong>送るとき</strong>。どちらも比べる相手は「叩いた / これから叩く API の URL のホスト」。
+        </P>
+
+        <div className="flex flex-col gap-2">
+          <div className="rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/40">
+            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              ① 保存するとき（<Code>Set-Cookie</Code> を受け取った瞬間）
+            </p>
+            <p className="mt-1 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+              ブラウザは <strong>そのレスポンスを返してきたホスト</strong>（＝ 今叩いた API の URL
+              のホスト）と、書かれている <Code>Domain</Code> を照合する。
+              「自分自身か、自分の親ドメイン」なら受理。 それ以外なら
+              <strong>Cookie ごと捨てる</strong>。
+            </p>
+          </div>
+          <div className="rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/40">
+            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              ② 送るとき（リクエストを組み立てる瞬間）
+            </p>
+            <p className="mt-1 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+              ブラウザは <strong>これから叩く URL のホスト</strong>を見て、保存済み Cookie の
+              <Code>Domain</Code> にマッチするものを探し、自動で付ける。
+              ここでもページの URL は見ていない。
+            </p>
+          </div>
+        </div>
+
+        <Flow caption="フロント app.example.com から API api.example.com を叩く場合">
+          <Box
+            actor="browser"
+            label="ページは https://app.example.com"
+            sub="← この URL は Domain の判定に出てこない"
+          />
+          <Arrow text="fetch する宛先だけが判定材料" header="POST https://api.example.com/login" />
+          <Box
+            actor="server"
+            label="api.example.com が Set-Cookie を返す"
+            sub="ブラウザは「返してきたのは api.example.com」として Domain を照合"
+          />
+          <div className="grid w-full gap-2 pt-2">
+            <Verdict
+              kind="ok"
+              label="Domain=api.example.com（自分自身）→ 受理"
+              sub="Domain 省略でも同じ範囲（host-only）になる"
+            />
+            <Verdict
+              kind="ok"
+              label="Domain=example.com（自分の親）→ 受理"
+              sub="app / api どちらのサブドメインにも届くようになる"
+            />
+            <Verdict
+              kind="ng"
+              label="Domain=app.example.com（フロントのホスト）→ 拒否"
+              sub="api.example.com から見て自分でも親でもない。「フロントの URL を書く」は間違い"
+            />
+          </div>
+        </Flow>
+
+        <P>
+          つまり「バックエンドがフロントの URL を見て Domain を決める」という発想は成り立たない。
+          バックエンドが書けるのは <strong>自分のホストか、その親ドメイン</strong>だけ。
+          フロントにも Cookie を効かせたいなら、
+          <strong>共通の親ドメインを指定する</strong>のが唯一の方法になる。
+        </P>
+
+        <div className="rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950/40">
+          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            じゃあフロントのページ URL はどこで効くの？
+          </p>
+          <p className="mt-1 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <Code>SameSite</Code> と CORS。 <Code>SameSite</Code> は
+            「ページのサイト」と「宛先のサイト」を比べて付ける / 付けないを決めるし、 CORS は
+            <Code>Origin</Code> としてページの URL をサーバに伝える。
+            <strong>ページの URL を見るのはこの 2 つで、Domain は別の話</strong>。
+          </p>
         </div>
       </Card>
 
