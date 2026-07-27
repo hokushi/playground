@@ -46,10 +46,11 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "バックエンド",
+    label: "バック・フロント",
     items: [
       { href: "/docker", label: "Docker でローカル DB" },
       { href: "/cors", label: "CORS はブラウザのルール" },
+      { href: "/cookie", label: "Cookie と Domain" },
     ],
   },
   {
