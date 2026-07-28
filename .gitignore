@@ -45,3 +45,6 @@ next-env.d.ts
 
 # AWS setup screenshots (local only)
 frontend/public/aws/
+
+# 読んだ日の記録（各自のローカル記録なので共有しない。無ければ自動で作られる）
+frontend/data/read-log.json
