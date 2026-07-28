@@ -4,73 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-type NavItem = { href: string; label: string };
-type NavGroup = { label: string; items: NavItem[] };
+import { navGroups } from "./nav";
 
 const SIDEBAR_WIDTH_MIN = 180;
 const SIDEBAR_WIDTH_MAX = 480;
 const SIDEBAR_WIDTH_DEFAULT = 240;
 const SIDEBAR_STORAGE_KEY = "playground:sidebar-width";
-
-const navGroups: NavGroup[] = [
-  {
-    label: "並行処理",
-    items: [
-      { href: "/web-worker", label: "Web Worker" },
-      { href: "/threads", label: "Threads & Memory" },
-    ],
-  },
-  {
-    label: "ネットワーク",
-    items: [
-      { href: "/network", label: "有線と無線" },
-      { href: "/network/internet", label: "インターネットの裏側" },
-      { href: "/network/layers", label: "ネットワークの 7 層 (OSI)" },
-      { href: "/network/domain-url", label: "ドメイン と URL" },
-      { href: "/network/firewall", label: "ファイアウォール / FortiGate" },
-      { href: "/network/vpn", label: "VPN の種類 (IP-VPN ほか)" },
-    ],
-  },
-  {
-    label: "Web 通信",
-    items: [
-      { href: "/communication/http", label: "HTTP / TLS / HTTPS" },
-      { href: "/communication/sse", label: "SSE" },
-    ],
-  },
-  {
-    label: "業務",
-    items: [
-      { href: "/business/hospital", label: "病院の組織と用語" },
-      { href: "/business/fax", label: "ファックス" },
-    ],
-  },
-  {
-    label: "バック・フロント",
-    items: [
-      { href: "/docker", label: "Docker でローカル DB" },
-      { href: "/cors", label: "CORS はブラウザのルール" },
-      { href: "/cookie", label: "Cookie と Domain" },
-    ],
-  },
-  {
-    label: "用語集",
-    items: [{ href: "/glossary", label: "IT・AI・セキュリティ" }],
-  },
-  {
-    label: "AWS",
-    items: [
-      { href: "/aws/overview", label: "全体像 (フロント/バック/インフラ)" },
-      { href: "/aws/regions", label: "リージョン と データセンター" },
-      { href: "/aws/setup", label: "アカウント準備" },
-      { href: "/aws/vpc", label: "VPC と サブネット" },
-      { href: "/aws/ec2", label: "EC2 を立てる" },
-      { href: "/aws/alb", label: "ALB を立てる" },
-      { href: "/aws/route53", label: "Route 53 で HTTPS 化" },
-      { href: "/aws/s3", label: "S3 でファイルを置く" },
-    ],
-  },
-];
 
 export default function Sidebar() {
   const pathname = usePathname();
