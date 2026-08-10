@@ -57,6 +57,7 @@ export const navGroups: NavGroup[] = [
       { href: "/aws/alb", label: "ALB を立てる" },
       { href: "/aws/route53", label: "Route 53 で HTTPS 化" },
       { href: "/aws/s3", label: "S3 でファイルを置く" },
+      { href: "/aws/cognito", label: "Cognito でログインを任せる" },
     ],
   },
   {
