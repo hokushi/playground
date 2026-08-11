@@ -223,21 +223,6 @@ E メールアドレス ★ こちら。届いたメールのリンクを踏む�
           これで送信元としても宛先としても使える。
         </p>
 
-        <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-          CLI で確認するなら個別に問い合わせる。
-        </p>
-        <pre className="overflow-x-auto rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3 text-[12px] leading-relaxed text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
-          <code>{`aws sesv2 get-email-identity --email-identity 自分のアドレス \\
-  --region ap-northeast-1 \\
-  --query '{Verified:VerifiedForSendingStatus,Status:VerificationStatus}'
-
-# → { "Verified": true, "Status": "SUCCESS" }`}</code>
-        </pre>
-        <Note>
-          一覧の <Code>list-email-identities</Code> だと
-          <Code>VerifiedForSendingStatus</Code> が <Code>None</Code> のままに見えることがある。
-          <strong>確実に見たいなら個別の <Code>get-email-identity</Code></strong> を使う。
-        </Note>
       </Step>
 
       {/* Step 03 */}
@@ -269,74 +254,7 @@ await ses.send(
           件名と本文の両方に要る。
         </Note>
 
-        <h4 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
-          送信失敗でアプリを止めない
-        </h4>
-        <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-          通知メールは<strong>付随的な処理</strong>であることが多い。
-          「ゲームを作ったら知らせる」なら、
-          <strong>メールが送れなかっただけでゲーム作成まで失敗させるのは筋が悪い</strong>。
-        </p>
-        <pre className="overflow-x-auto rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3 text-[12px] leading-relaxed text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
-          <code>{`const game = await gameRepository.create(input);
-
-try {
-  await sesClient.send({ ... });
-} catch (err) {
-  // 失敗はログに残すだけ。ゲーム作成は成功のままにする
-  console.error(\`通知メールの送信に失敗しました: \${err}\`);
-}
-
-return game;`}</code>
-        </pre>
-        <Note>
-          逆に「パスワード再設定メール」のように<strong>メールが本体</strong>の処理なら、
-          失敗はきちんとエラーにする。<strong>握りつぶすかどうかは処理の性格で決める</strong>。
-        </Note>
       </Step>
-
-      {/* つまずき */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-          つまずきやすいところ
-        </h2>
-        <div className="flex flex-col gap-2">
-          <Details summary="MessageRejected: Email address is not verified">
-            <p>
-              一番よく出る。<strong>送信元か宛先のどちらかが未検証</strong>。
-              サンドボックス中は<strong>両方</strong>が検証済みである必要があるので、
-              「送信元は検証したのに」で止まりやすい。
-            </p>
-            <p>
-              エラーメッセージには<strong>リージョンも書かれている</strong>ので、
-              そこが自分の想定と合っているかも見る。
-            </p>
-          </Details>
-
-          <Details summary="検証したはずのアドレスが一覧に出ない">
-            <p>
-              <strong>別リージョンで検証している</strong>可能性が高い。
-              SES はリージョンごとに独立していて、東京で作った ID は
-              バージニア北部の画面には出ない。コンソール右上のリージョンを確認する。
-            </p>
-          </Details>
-
-          <Details summary="ウィザードのステップ 2 から進めない">
-            <p>
-              ドメインの入力を求められる画面。<strong>独自ドメインを持っていないなら進めない。</strong>
-              キャンセルして ID から個別に登録すればよく、
-              <strong>ウィザードを完走する必要はない</strong>。
-            </p>
-          </Details>
-
-          <Details summary="日本語が文字化けする">
-            <p>
-              <Code>Charset: &quot;UTF-8&quot;</Code> の指定漏れ。
-              件名と本文はそれぞれ別に指定するので、<strong>片方だけ化ける</strong>ことがある。
-            </p>
-          </Details>
-        </div>
-      </section>
 
       {/* 料金 */}
       <section className="flex flex-col gap-3">
@@ -397,35 +315,3 @@ function Code({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Details({
-  summary,
-  children,
-}: {
-  summary: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <details className="group rounded-md border border-zinc-200 bg-zinc-50/60 dark:border-zinc-800 dark:bg-zinc-900/40">
-      <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm font-semibold text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50">
-        <svg
-          className="h-3 w-3 shrink-0 transition-transform group-open:rotate-90"
-          viewBox="0 0 12 12"
-          fill="none"
-          aria-hidden
-        >
-          <path
-            d="M4 3l4 3-4 3"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <span>{summary}</span>
-      </summary>
-      <div className="flex flex-col gap-2 px-5 pb-3 pt-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-        {children}
-      </div>
-    </details>
-  );
-}
