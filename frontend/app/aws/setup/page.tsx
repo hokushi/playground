@@ -27,44 +27,8 @@ export default function AwsSetupPage() {
             <li className="flex gap-2">
               <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
               <span>
-                右上の表示が <strong>「hokushi (8843-7510-6358)」</strong>
-                という <strong>「アカウント名 (アカウント番号)」</strong>の形式。
-                IAM ユーザーなら <strong>「ユーザー名 @ アカウント番号」</strong>
-                のように <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">@</code> 付きになる
-              </span>
-            </li>
-            <li className="flex gap-2">
-              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
-              <span>
                 ドロップダウンに <strong>「請求とコスト管理」</strong>
                 が普通に出ている。root は全権限を持つので請求情報まで見える
-              </span>
-            </li>
-            <li className="flex gap-2">
-              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
-              <span>そもそも、まだ IAM ユーザーを作っていない</span>
-            </li>
-          </ul>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-            確実に確認したいとき
-          </h3>
-          <ul className="flex flex-col gap-1.5 text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            <li className="flex gap-2">
-              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
-              <span>
-                ドロップダウンの上部に <strong>「ルートユーザー」</strong>
-                というラベルが表示される (拡大すれば見える)
-              </span>
-            </li>
-            <li className="flex gap-2">
-              <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
-              <span>
-                CLI が通っていれば <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">aws sts get-caller-identity</code> で
-                ARN を確認。末尾が <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">:root</code>
-                なら root、<code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">:user/名前</code> なら IAM ユーザー
               </span>
             </li>
           </ul>

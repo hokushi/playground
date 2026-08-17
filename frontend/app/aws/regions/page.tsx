@@ -312,44 +312,6 @@ export default function AwsRegionsPage() {
           </ul>
         </div>
       </section>
-
-      <section className="flex flex-col gap-4">
-        <SectionH2 id="summary" num={6}>
-          まとめ: 営業資料の表現を読み解く
-        </SectionH2>
-        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <table className="w-full text-sm">
-            <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-              <tr>
-                <th className="px-4 py-2 text-left font-semibold">営業資料の表現</th>
-                <th className="px-4 py-2 text-left font-semibold">技術的に何を指しているか</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
-              <tr>
-                <td className="px-4 py-2">AWS 東京リージョンで稼働</td>
-                <td className="px-4 py-2">日本国内 (東京) の AWS データセンター群を利用</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">複数のデータセンターにまたがって構成</td>
-                <td className="px-4 py-2"><strong>Multi-AZ 構成</strong>。同一リージョン内の複数 AZ に分散</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">高可用性設計</td>
-                <td className="px-4 py-2">単一 AZ 障害ではサービス停止しない設計 (Multi-AZ がほぼ前提)</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">複数リージョン間での可用性確保を検討</td>
-                <td className="px-4 py-2"><strong>Multi-Region 構成 (DR)</strong>。東京 + 大阪 や 東京 + 海外</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">99.99% のサービス稼働率を保証</td>
-                <td className="px-4 py-2">SLA。年間 約 52 分以下の停止 (AWS 各サービスの SLA を踏襲)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
     </main>
   );
 }
@@ -559,7 +521,6 @@ function TableOfContents() {
     { id: "az", num: 3, title: "アベイラビリティゾーン" },
     { id: "multiaz", num: 4, title: "Multi-AZ 設計" },
     { id: "multiregion", num: 5, title: "Multi-Region 設計" },
-    { id: "summary", num: 6, title: "営業資料の表現を読み解く" },
   ];
   return (
     <nav className="rounded-lg border border-zinc-200 bg-zinc-50/60 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900/50">
