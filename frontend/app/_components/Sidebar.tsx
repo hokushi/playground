@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import SearchBox from "./SearchBox";
 import { navGroups } from "./nav";
 
 const SIDEBAR_WIDTH_MIN = 180;
@@ -61,10 +62,11 @@ export default function Sidebar() {
     <aside
       style={{ width: `${width}px` }}
       className="relative shrink-0 overflow-y-auto border-r border-black/10 bg-white dark:border-white/10 dark:bg-black">
-      <div className="px-6 py-6">
+      <div className="flex flex-col gap-4 px-6 py-6">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
           Playground
         </h2>
+        <SearchBox />
       </div>
       <nav className="px-3">
         <ul className="flex flex-col gap-2">
