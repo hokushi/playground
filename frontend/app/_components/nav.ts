@@ -22,6 +22,7 @@ export const navGroups: NavGroup[] = [
   {
     label: "ネットワーク構成",
     items: [
+      { href: "/network/two-sites", label: "2 拠点・セグメント分割と共通 L3" },
       { href: "/network/firewall", label: "ファイアウォール / FortiGate" },
     ],
   },
