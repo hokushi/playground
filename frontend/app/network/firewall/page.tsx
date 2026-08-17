@@ -379,69 +379,7 @@ export default function FirewallPage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <SectionH2 id="evolution" num={4}>
-          進化: パケットフィルタから NGFW へ
-        </SectionH2>
-        <p className="text-zinc-700 dark:text-zinc-300">
-          ファイアウォールは <strong>3 世代</strong>に分けて発展してきました。
-          今のオフィスにある FortiGate などは一番右の <strong>NGFW</strong> 世代です。
-        </p>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-500">
-              第 1 世代 (1980s〜)
-            </p>
-            <h3 className="mt-1 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              パケットフィルタ
-            </h3>
-            <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
-              ヘッダの <strong>IP・ポート・プロトコル</strong>を見て判定するだけ。
-              シンプルだが <strong>応答パケットを別ルールで明示的に許可</strong>する必要があり管理が大変。
-            </p>
-          </div>
-          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900/50 dark:bg-blue-950/30">
-            <p className="text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-400">
-              第 2 世代 (1990s〜)
-            </p>
-            <h3 className="mt-1 text-sm font-semibold text-blue-900 dark:text-blue-200">
-              ステートフル
-            </h3>
-            <p className="mt-2 text-sm text-blue-900/80 dark:text-blue-300">
-              <strong>「どのコネクションが今開いてるか」を覚える</strong>ようになった。
-              「内から出した通信の応答」だけ自動で許可できる。今のファイアウォールはほぼ全部これ以降。
-            </p>
-          </div>
-          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
-            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-              第 3 世代 (2010s〜)
-            </p>
-            <h3 className="mt-1 text-sm font-semibold text-emerald-900 dark:text-emerald-200">
-              NGFW (次世代)
-            </h3>
-            <p className="mt-2 text-sm text-emerald-900/80 dark:text-emerald-300">
-              <strong>ヘッダだけでなく中身も見る</strong>。
-              SSL 復号 / アプリ識別 / 侵入検知 / アンチウイルス / Web カテゴリフィルタ。
-              <strong>FortiGate はここ</strong>。
-            </p>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-            なぜ「中身を見る」必要が出てきたか
-          </p>
-          <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
-            昔は「ポート 80 = HTTP」のように <strong>ポートと用途が一致</strong>していたので、
-            ポートで弾けば用途を制限できた。今は <strong>全部が HTTPS (443)</strong> に集約されていて、
-            YouTube も Gmail も社内システムも <strong>同じポート</strong>を使う。
-            なので「Gmail は OK だが YouTube はダメ」みたいな制御には <strong>中身を見る必要</strong>がある ── これが NGFW の発端。
-          </p>
-        </div>
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <SectionH2 id="fortigate" num={5}>
+        <SectionH2 id="fortigate" num={4}>
           FortiGate (フォーティゲート) とは
         </SectionH2>
         <p className="text-zinc-700 dark:text-zinc-300">
@@ -634,7 +572,7 @@ export default function FirewallPage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <SectionH2 id="topology" num={6}>
+        <SectionH2 id="topology" num={5}>
           配置例: オフィスでの位置
         </SectionH2>
         <p className="text-zinc-700 dark:text-zinc-300">
@@ -730,7 +668,7 @@ function GatekeeperDiagram() {
         </text>
 
         <text x="300" y="312" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
-          2 つのネットワークの境目に FW が立ち、流れてくる<strong>パケット 1 個ずつ</strong>を判定する
+          2 つのネットワークの境目に FW が立ち、流れてくる<tspan className="font-semibold">パケット 1 個ずつ</tspan>を判定する
         </text>
 
         <defs>
@@ -828,9 +766,8 @@ function TableOfContents() {
     { id: "intro", num: 1, title: "先に結論" },
     { id: "basics", num: 2, title: "通信の門番" },
     { id: "rules", num: 3, title: "ルール" },
-    { id: "evolution", num: 4, title: "進化 (NGFW)" },
-    { id: "fortigate", num: 5, title: "FortiGate とは" },
-    { id: "topology", num: 6, title: "配置例" },
+    { id: "fortigate", num: 4, title: "FortiGate とは" },
+    { id: "topology", num: 5, title: "配置例" },
   ];
   return (
     <nav className="rounded-lg border border-zinc-200 bg-zinc-50/60 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900/50">
