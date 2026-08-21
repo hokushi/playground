@@ -86,59 +86,7 @@ export default function HttpTlsPage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <SectionH2 id="versions" num={3}>
-          HTTP のバージョン: 1.1 → 2 → 3
-        </SectionH2>
-        <p className="text-zinc-700 dark:text-zinc-300">
-          HTTP は同じ「リクエスト/レスポンス」というモデルを保ったまま、<strong>配管のやり方</strong>を
-          進化させてきました。中身 (メソッドやステータス) はほぼ変わらず、<strong>速度と並列性</strong>が改善され続けています。
-        </p>
-
-        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <table className="w-full text-sm">
-            <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-              <tr>
-                <th className="px-4 py-2 text-left font-semibold">バージョン</th>
-                <th className="px-4 py-2 text-left font-semibold">登場</th>
-                <th className="px-4 py-2 text-left font-semibold">特徴</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
-              <tr>
-                <td className="px-4 py-2 font-medium text-zinc-900 dark:text-zinc-100">HTTP/1.1</td>
-                <td className="px-4 py-2">1997</td>
-                <td className="px-4 py-2">
-                  テキストベース。<strong>1 接続で 1 リクエストずつ</strong> (前のレスポンスを待つ間は次が送れない)
-                </td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 font-medium text-zinc-900 dark:text-zinc-100">HTTP/2</td>
-                <td className="px-4 py-2">2015</td>
-                <td className="px-4 py-2">
-                  バイナリ化 + <strong>多重化 (Multiplexing)</strong>。
-                  1 接続で複数リクエストが並列で流せる。ヘッダ圧縮も
-                </td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 font-medium text-zinc-900 dark:text-zinc-100">HTTP/3</td>
-                <td className="px-4 py-2">2022</td>
-                <td className="px-4 py-2">
-                  TCP ではなく <strong>QUIC (UDP ベース)</strong> で動く。
-                  パケットロスがあっても他のストリームが止まらない。接続確立も高速 (1-RTT / 0-RTT)
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          重要なのは <strong>「HTTP の意味論 (動詞・ステータスコード) は変わっていない」</strong>こと。
-          だからブラウザ側のコードも、サーバ側のアプリも、バージョンが上がっても書き換え不要で恩恵が受けられます。
-        </p>
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <SectionH2 id="tls" num={4}>
+        <SectionH2 id="tls" num={3}>
           TLS が解決する 3 つのこと
         </SectionH2>
         <p className="text-zinc-700 dark:text-zinc-300">
@@ -190,7 +138,7 @@ export default function HttpTlsPage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <SectionH2 id="summary" num={5}>
+        <SectionH2 id="summary" num={4}>
           まとめ: HTTPS = HTTP + TLS
         </SectionH2>
         <p className="text-zinc-700 dark:text-zinc-300">
@@ -326,9 +274,8 @@ function TableOfContents() {
   const items = [
     { id: "intro", num: 1, title: "先に結論" },
     { id: "http", num: 2, title: "HTTP の基本" },
-    { id: "versions", num: 3, title: "HTTP のバージョン" },
-    { id: "tls", num: 4, title: "TLS が解決すること" },
-    { id: "summary", num: 5, title: "HTTPS = HTTP + TLS" },
+    { id: "tls", num: 3, title: "TLS が解決すること" },
+    { id: "summary", num: 4, title: "HTTPS = HTTP + TLS" },
   ];
   return (
     <nav className="rounded-lg border border-zinc-200 bg-zinc-50/60 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900/50">

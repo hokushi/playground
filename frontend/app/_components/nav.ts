@@ -38,6 +38,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { href: "/business/hospital", label: "病院の組織と用語" },
       { href: "/business/fax", label: "ファックス" },
+      { href: "/business/sso", label: "SSO (シングルサインオン)" },
     ],
   },
   {
