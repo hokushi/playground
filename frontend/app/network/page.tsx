@@ -464,6 +464,154 @@ Step 2. ビット数 ÷ 回線速度 で秒数が出る
             </tbody>
           </table>
         </div>
+
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+            帯域は両方にある。違いは「専有」か「共有」か
+          </p>
+          <p className="mt-2 text-sm text-emerald-900/80 dark:text-emerald-300">
+            <strong>有線はケーブル 1 本がその機器の専用</strong>です。
+            1Gbps のポートに挿した PC は、隣の PC が何をしていても 1Gbps を使えます。
+          </p>
+          <p className="mt-2 text-sm text-emerald-900/80 dark:text-emerald-300">
+            <strong>無線は電波という 1 つの場所を全員で分け合います</strong>。
+            同じアクセスポイントに 10 人ぶら下がれば、1 人あたりはその分だけ細くなります。
+            「昼休みだけ遅い」が起きるのはこのためです。
+          </p>
+          <SharedVsDedicatedDiagram />
+        </div>
+
+        <div className="rounded-lg border border-blue-200 bg-blue-50 px-5 py-4 dark:border-blue-900/50 dark:bg-blue-950/30">
+          <p className="text-sm font-medium text-blue-900 dark:text-blue-200">
+            有線の速度は「ケーブル」と「両端のポート」で決まる
+          </p>
+          <p className="mt-2 text-sm text-blue-900/80 dark:text-blue-300">
+            どちらか一方ではありません。
+            <strong>3 つのうち、いちばん遅いものに合わせて</strong>自動的に決まります
+            (電源を入れたときに両端の機器が「お互い何が出せるか」を相談する ──
+            <strong>オートネゴシエーション</strong>と呼びます)。
+          </p>
+
+          <LinkSpeedDiagram />
+
+          <p className="mt-3 text-sm font-medium text-blue-900 dark:text-blue-200">
+            ケーブル側の規格
+          </p>
+          <div className="mt-2 overflow-hidden rounded-md border border-blue-200 dark:border-blue-800">
+            <table className="w-full text-xs">
+              <thead className="bg-white text-blue-900 dark:bg-blue-950/60 dark:text-blue-200">
+                <tr>
+                  <th className="px-2 py-1.5 text-left font-semibold">種類</th>
+                  <th className="px-2 py-1.5 text-left font-semibold">速度</th>
+                  <th className="px-2 py-1.5 text-left font-semibold">備考</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-blue-200 bg-white text-blue-900/90 dark:divide-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
+                <tr>
+                  <td className="px-2 py-1.5 font-mono">Cat5</td>
+                  <td className="px-2 py-1.5">100Mbps</td>
+                  <td className="px-2 py-1.5">古い。これが混ざっていると 100 で頭打ちになる</td>
+                </tr>
+                <tr>
+                  <td className="px-2 py-1.5 font-mono font-semibold">Cat5e</td>
+                  <td className="px-2 py-1.5 font-semibold">1Gbps</td>
+                  <td className="px-2 py-1.5">いま一番よく使われている</td>
+                </tr>
+                <tr>
+                  <td className="px-2 py-1.5 font-mono">Cat6</td>
+                  <td className="px-2 py-1.5">1Gbps</td>
+                  <td className="px-2 py-1.5">10Gbps は 55m まで</td>
+                </tr>
+                <tr>
+                  <td className="px-2 py-1.5 font-mono">Cat6A</td>
+                  <td className="px-2 py-1.5">10Gbps</td>
+                  <td className="px-2 py-1.5">100m まで。10G を引くならこれ以上</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-xs text-blue-900/70 dark:text-blue-400">
+            見た目はほぼ同じなので、<strong>ケーブルの側面の印字</strong>
+            (<span className="font-mono">CAT5E</span> など) を見るしかありません。
+          </p>
+
+          <p className="mt-3 text-sm font-medium text-blue-900 dark:text-blue-200">
+            機器のポート側の規格
+          </p>
+          <ul className="mt-1 flex flex-col gap-1 text-sm text-blue-900/80 dark:text-blue-300">
+            <li>
+              ・<strong>100BASE-TX</strong> … 100Mbps まで
+            </li>
+            <li>
+              ・<strong>1000BASE-T</strong> … 1Gbps まで (いまの標準)
+            </li>
+            <li>
+              ・<strong>10GBASE-T</strong> … 10Gbps まで
+            </li>
+          </ul>
+          <p className="mt-2 text-sm text-blue-900/80 dark:text-blue-300">
+            安いハブや古い機器は 100BASE-TX のことがあり、
+            その場合は <strong>Cat6 を挿しても 100Mbps</strong> です。
+          </p>
+
+          <p className="mt-3 text-sm font-medium text-blue-900 dark:text-blue-200">
+            「1 台だけ妙に遅い」の定番原因
+          </p>
+          <p className="mt-1 text-sm text-blue-900/80 dark:text-blue-300">
+            <strong>その席だけ古い Cat5 が使われている</strong>ケースです。
+            壁の中の配線は更新されないまま残りがちなので、
+            机の下のケーブルを新しくしても改善しません。確認はここを見ます。
+          </p>
+          <ul className="mt-2 flex flex-col gap-1 text-sm text-blue-900/80 dark:text-blue-300">
+            <li>
+              ・<strong>Windows</strong>: 設定 → ネットワーク → イーサネット の
+              <strong>「リンク速度」</strong>
+            </li>
+            <li>
+              ・<strong>スイッチ側</strong>:{" "}
+              <code className="rounded bg-white/60 px-1 font-mono text-xs dark:bg-blue-950/50">
+                show interface status
+              </code>{" "}
+              で <span className="font-mono">a-100</span> /{" "}
+              <span className="font-mono">a-1000</span> と表示される
+            </li>
+          </ul>
+          <p className="mt-2 text-sm text-blue-900/80 dark:text-blue-300">
+            ここが <strong>100</strong> になっていれば、
+            <strong>ケーブルか、どちらかのポートが 100Mbps 止まり</strong>ということです。
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            速度を決めるのは「いちばん細いところ」
+          </p>
+          <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+            経路の途中に 1 か所でも細い区間があれば、そこが上限になります。
+            院内をいくら速くしても、外に出る回線が細ければ体感は変わりません。
+          </p>
+          <BottleneckDiagram />
+          <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+            なので「動画が遅い」ときに<strong>まず疑うべきは院内の配線ではなく、外向きの回線と無線</strong>です。
+            有線区間はたいてい十分に太く、犯人であることは多くありません。
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-amber-200 bg-amber-50/70 px-5 py-4 dark:border-amber-900/50 dark:bg-amber-950/30">
+          <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
+            家庭の場合: ブロードバンドルーターが全部やっている
+          </p>
+          <p className="mt-2 text-sm text-amber-900/80 dark:text-amber-300">
+            会社では <strong>ファイアウォール・L3 スイッチ・L2 スイッチ・無線 AP</strong> と
+            別々の箱に分かれている役割が、家庭では
+            <strong>ブロードバンドルーター (Wi-Fi ルーター) 1 台に全部入っています</strong>。
+            やっていることは同じです。
+          </p>
+
+          <HomeNetworkDiagram />
+
+        </div>
+
       </section>
 
       <section className="flex flex-col gap-4">
@@ -889,6 +1037,222 @@ function NetworkLayerDiagram() {
       <p className="mt-4 text-center text-xs text-zinc-500 dark:text-zinc-500">
         差は一番下だけ。上の3層は有線でも無線でも同じものが動いている
       </p>
+    </div>
+  );
+}
+
+function SharedVsDedicatedDiagram() {
+  return (
+    <div className="mt-3 rounded-md border border-emerald-200 bg-white p-4 dark:border-emerald-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 560 190" className="mx-auto w-full max-w-xl">
+        <text x="140" y="18" textAnchor="middle" className="fill-zinc-800 text-[11px] font-semibold dark:fill-zinc-200">
+          有線 = 1 台に 1 本ずつ
+        </text>
+        <g className="fill-white stroke-zinc-400 dark:fill-zinc-950 dark:stroke-zinc-600" strokeWidth="1.2">
+          <rect x="20" y="36" width="60" height="26" rx="4" />
+          <rect x="20" y="76" width="60" height="26" rx="4" />
+          <rect x="20" y="116" width="60" height="26" rx="4" />
+        </g>
+        <g className="fill-zinc-700 text-[10px] dark:fill-zinc-300" textAnchor="middle">
+          <text x="50" y="53">PC</text>
+          <text x="50" y="93">PC</text>
+          <text x="50" y="133">PC</text>
+        </g>
+        <line x1="82" y1="49" x2="196" y2="72" className="stroke-emerald-500" strokeWidth="3" />
+        <line x1="82" y1="89" x2="196" y2="89" className="stroke-emerald-500" strokeWidth="3" />
+        <line x1="82" y1="129" x2="196" y2="106" className="stroke-emerald-500" strokeWidth="3" />
+        <rect x="198" y="62" width="70" height="54" rx="5" className="fill-zinc-100 stroke-zinc-400 dark:fill-zinc-800 dark:stroke-zinc-600" strokeWidth="1.3" />
+        <text x="233" y="94" textAnchor="middle" className="fill-zinc-700 text-[10px] dark:fill-zinc-300">
+          スイッチ
+        </text>
+        <text x="140" y="166" textAnchor="middle" className="fill-emerald-700 text-[10px] font-semibold dark:fill-emerald-400">
+          それぞれ 1Gbps を専有
+        </text>
+
+        <line x1="290" y1="20" x2="290" y2="175" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
+
+        <text x="425" y="18" textAnchor="middle" className="fill-zinc-800 text-[11px] font-semibold dark:fill-zinc-200">
+          無線 = 全員で 1 本を分け合う
+        </text>
+        <g className="fill-white stroke-zinc-400 dark:fill-zinc-950 dark:stroke-zinc-600" strokeWidth="1.2">
+          <rect x="320" y="36" width="60" height="26" rx="4" />
+          <rect x="320" y="76" width="60" height="26" rx="4" />
+          <rect x="320" y="116" width="60" height="26" rx="4" />
+        </g>
+        <g className="fill-zinc-700 text-[10px] dark:fill-zinc-300" textAnchor="middle">
+          <text x="350" y="53">PC</text>
+          <text x="350" y="93">PC</text>
+          <text x="350" y="133">PC</text>
+        </g>
+        <line x1="382" y1="49" x2="452" y2="82" className="stroke-sky-400" strokeWidth="1.4" strokeDasharray="4 3" />
+        <line x1="382" y1="89" x2="452" y2="89" className="stroke-sky-400" strokeWidth="1.4" strokeDasharray="4 3" />
+        <line x1="382" y1="129" x2="452" y2="96" className="stroke-sky-400" strokeWidth="1.4" strokeDasharray="4 3" />
+        <rect x="455" y="62" width="70" height="54" rx="5" className="fill-sky-50 stroke-sky-400 dark:fill-sky-950/30 dark:stroke-sky-700" strokeWidth="1.3" />
+        <text x="490" y="88" textAnchor="middle" className="fill-sky-900 text-[10px] font-semibold dark:fill-sky-200">
+          AP
+        </text>
+        <text x="490" y="103" textAnchor="middle" className="fill-sky-700 text-[9px] dark:fill-sky-400">
+          電波 1 本ぶん
+        </text>
+        <text x="425" y="166" textAnchor="middle" className="fill-sky-700 text-[10px] font-semibold dark:fill-sky-400">
+          人数で割り算になる
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+function BottleneckDiagram() {
+  return (
+    <div className="mt-3 rounded-md border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 560 130" className="mx-auto w-full max-w-xl">
+        <g className="fill-white stroke-zinc-400 dark:fill-zinc-950 dark:stroke-zinc-600" strokeWidth="1.2">
+          <rect x="14" y="40" width="66" height="30" rx="5" />
+          <rect x="130" y="40" width="76" height="30" rx="5" />
+          <rect x="256" y="40" width="66" height="30" rx="5" />
+        </g>
+        <g className="fill-zinc-700 text-[10px] dark:fill-zinc-300" textAnchor="middle">
+          <text x="47" y="60">PC</text>
+          <text x="168" y="60">スイッチ</text>
+          <text x="289" y="60">FW</text>
+        </g>
+        <line x1="82" y1="55" x2="128" y2="55" className="stroke-emerald-500" strokeWidth="6" />
+        <line x1="208" y1="55" x2="254" y2="55" className="stroke-emerald-500" strokeWidth="6" />
+        <text x="105" y="42" textAnchor="middle" className="fill-emerald-700 font-mono text-[9px] dark:fill-emerald-400">
+          1Gbps
+        </text>
+        <text x="231" y="42" textAnchor="middle" className="fill-emerald-700 font-mono text-[9px] dark:fill-emerald-400">
+          1Gbps
+        </text>
+
+        <line x1="324" y1="55" x2="430" y2="55" className="stroke-rose-500" strokeWidth="1.6" />
+        <text x="377" y="42" textAnchor="middle" className="fill-rose-700 font-mono text-[10px] font-semibold dark:fill-rose-400">
+          10Mbps
+        </text>
+        <text x="377" y="80" textAnchor="middle" className="fill-rose-600 text-[9px] font-semibold dark:fill-rose-400">
+          ここが上限を決める
+        </text>
+
+        <rect x="432" y="40" width="112" height="30" rx="5" className="fill-amber-50 stroke-amber-400 dark:fill-amber-950/30 dark:stroke-amber-700" strokeWidth="1.2" />
+        <text x="488" y="60" textAnchor="middle" className="fill-amber-900 text-[10px] dark:fill-amber-200">
+          インターネット
+        </text>
+
+        <text x="280" y="116" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
+          院内をどれだけ太くしても、外向きが細ければ体感は変わらない
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+function LinkSpeedDiagram() {
+  return (
+    <div className="mt-3 rounded-md border border-blue-200 bg-white p-4 dark:border-blue-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 560 160" className="mx-auto w-full max-w-xl">
+        <rect x="20" y="40" width="120" height="44" rx="6" className="fill-zinc-50 stroke-zinc-400 dark:fill-zinc-900 dark:stroke-zinc-600" strokeWidth="1.3" />
+        <text x="80" y="60" textAnchor="middle" className="fill-zinc-800 text-[10px] font-semibold dark:fill-zinc-200">
+          PC のポート
+        </text>
+        <text x="80" y="75" textAnchor="middle" className="fill-emerald-700 font-mono text-[10px] dark:fill-emerald-400">
+          1Gbps 対応
+        </text>
+
+        <line x1="142" y1="62" x2="278" y2="62" className="stroke-rose-500" strokeWidth="2" />
+        <rect x="170" y="14" width="120" height="40" rx="6" className="fill-rose-50 stroke-rose-400 dark:fill-rose-950/30 dark:stroke-rose-700" strokeWidth="1.4" />
+        <text x="230" y="31" textAnchor="middle" className="fill-rose-900 text-[10px] font-semibold dark:fill-rose-200">
+          ケーブル Cat5
+        </text>
+        <text x="230" y="45" textAnchor="middle" className="fill-rose-700 font-mono text-[10px] dark:fill-rose-400">
+          100Mbps まで
+        </text>
+        <line x1="230" y1="54" x2="230" y2="60" className="stroke-rose-400" strokeWidth="1.2" />
+
+        <rect x="280" y="40" width="130" height="44" rx="6" className="fill-zinc-50 stroke-zinc-400 dark:fill-zinc-900 dark:stroke-zinc-600" strokeWidth="1.3" />
+        <text x="345" y="60" textAnchor="middle" className="fill-zinc-800 text-[10px] font-semibold dark:fill-zinc-200">
+          スイッチのポート
+        </text>
+        <text x="345" y="75" textAnchor="middle" className="fill-emerald-700 font-mono text-[10px] dark:fill-emerald-400">
+          1Gbps 対応
+        </text>
+
+        <line x1="412" y1="62" x2="440" y2="62" className="stroke-zinc-400" strokeWidth="1.5" />
+        <rect x="442" y="40" width="106" height="44" rx="6" className="fill-rose-50 stroke-rose-400 dark:fill-rose-950/30 dark:stroke-rose-700" strokeWidth="1.4" />
+        <text x="495" y="60" textAnchor="middle" className="fill-rose-900 text-[10px] font-semibold dark:fill-rose-200">
+          実際の速度
+        </text>
+        <text x="495" y="75" textAnchor="middle" className="fill-rose-700 font-mono text-[11px] font-semibold dark:fill-rose-300">
+          100Mbps
+        </text>
+
+        <text x="280" y="118" textAnchor="middle" className="fill-zinc-700 text-[10px] font-semibold dark:fill-zinc-300">
+          両端が 1Gbps 対応でも、ケーブルが Cat5 なら 100Mbps になる
+        </text>
+        <text x="280" y="136" textAnchor="middle" className="fill-zinc-500 text-[10px] dark:fill-zinc-400">
+          3 つのうち、いちばん遅いものに合わせて自動で決まる
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+function HomeNetworkDiagram() {
+  return (
+    <div className="mt-3 rounded-md border border-amber-200 bg-white p-4 dark:border-amber-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 560 190" className="mx-auto w-full max-w-xl">
+        <rect x="14" y="86" width="86" height="40" rx="6" className="fill-amber-50 stroke-amber-400 dark:fill-amber-950/40 dark:stroke-amber-700" strokeWidth="1.3" />
+        <text x="57" y="111" textAnchor="middle" className="fill-amber-900 text-[10px] font-semibold dark:fill-amber-200">
+          インターネット
+        </text>
+
+        <line x1="102" y1="106" x2="146" y2="106" className="stroke-zinc-500" strokeWidth="2" />
+        <text x="124" y="82" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">
+          光 1Gbps
+        </text>
+        <text x="124" y="130" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">
+          ベストエフォート
+        </text>
+
+        <rect x="148" y="86" width="70" height="40" rx="6" className="fill-zinc-50 stroke-zinc-400 dark:fill-zinc-900 dark:stroke-zinc-600" strokeWidth="1.3" />
+        <text x="183" y="111" textAnchor="middle" className="fill-zinc-700 text-[10px] dark:fill-zinc-300">
+          ONU
+        </text>
+
+        <line x1="220" y1="106" x2="262" y2="106" className="stroke-zinc-500" strokeWidth="2" />
+        <text x="241" y="98" textAnchor="middle" className="fill-rose-600 text-[8px] dark:fill-rose-400">
+          Cat5 だと
+        </text>
+        <text x="241" y="124" textAnchor="middle" className="fill-rose-600 text-[8px] dark:fill-rose-400">
+          100M 止まり
+        </text>
+
+        <rect x="264" y="76" width="140" height="60" rx="6" className="fill-zinc-900 dark:fill-zinc-100" />
+        <text x="334" y="100" textAnchor="middle" className="fill-zinc-50 text-[11px] font-semibold dark:fill-zinc-900">
+          ブロードバンドルーター
+        </text>
+        <text x="334" y="118" textAnchor="middle" className="fill-zinc-300 text-[9px] dark:fill-zinc-600">
+          (家庭にあるルーター)
+        </text>
+
+        <line x1="406" y1="92" x2="446" y2="66" className="stroke-emerald-500" strokeWidth="2.5" />
+        <rect x="448" y="46" width="100" height="40" rx="6" className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.3" />
+        <text x="498" y="63" textAnchor="middle" className="fill-emerald-900 text-[10px] font-semibold dark:fill-emerald-200">
+          有線の PC
+        </text>
+        <text x="498" y="77" textAnchor="middle" className="fill-emerald-700 font-mono text-[8px] dark:fill-emerald-400">
+          LAN ポート次第
+        </text>
+
+        <line x1="406" y1="122" x2="446" y2="152" className="stroke-sky-400" strokeWidth="1.6" strokeDasharray="4 3" />
+        <rect x="448" y="134" width="100" height="40" rx="6" className="fill-sky-50 stroke-sky-400 dark:fill-sky-950/30 dark:stroke-sky-700" strokeWidth="1.3" />
+        <text x="498" y="151" textAnchor="middle" className="fill-sky-900 text-[10px] font-semibold dark:fill-sky-200">
+          スマホ・TV
+        </text>
+        <text x="498" y="165" textAnchor="middle" className="fill-sky-700 font-mono text-[8px] dark:fill-sky-400">
+          Wi-Fi の規格次第
+        </text>
+
+      </svg>
     </div>
   );
 }
