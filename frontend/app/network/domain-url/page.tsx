@@ -200,32 +200,6 @@ export default function NetworkDomainUrlPage() {
 
         <DnsActorsDiagram />
 
-        <p className="text-zinc-700 dark:text-zinc-300">
-          ポイント:
-        </p>
-        <ul className="ml-5 flex list-disc flex-col gap-1.5 text-[15px] text-zinc-700 dark:text-zinc-300">
-          <li>
-            <strong>あなたは「Google サーバー」と直接話さない</strong>。最初に必ず DNS に「住所教えて」と聞く
-          </li>
-          <li>
-            <strong>DNS は住所を教えるだけ</strong>。サイトの中身は届けてくれない
-          </li>
-          <li>
-            一度聞いた住所はブラウザがしばらく覚えてる (キャッシュ)。次は DNS をスキップして直接繋ぎに行ける
-          </li>
-        </ul>
-
-        <h3 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
-          時系列で見ると
-        </h3>
-
-        <DnsFlowDiagram />
-
-        <p className="text-zinc-700 dark:text-zinc-300">
-          つまり、サイトを開く時は <strong>① 名前から IP を調べる (DNS) → ② IP に接続する (HTTP)</strong> の 2 ステップ。
-          普段は一瞬で終わるけど、この裏で電話帳引きが走っている。
-        </p>
-
         <details className="group mt-6 rounded-lg border-2 border-emerald-300 bg-emerald-50/40 dark:border-emerald-800 dark:bg-emerald-950/20" open>
           <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 text-base font-semibold text-emerald-900 transition-colors hover:bg-emerald-100/50 dark:text-emerald-100 dark:hover:bg-emerald-900/20">
             <svg
@@ -727,24 +701,6 @@ function DnsAuthoritativeDiagram() {
           君が買ったドメインなら <strong>Route 53 の Hosted Zone がこれ</strong>。
         </div>
       </div>
-    </div>
-  );
-}
-
-function DnsFlowDiagram() {
-  return (
-    <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900">
-      <pre className="overflow-x-auto font-mono text-[12px] leading-relaxed text-zinc-800 dark:text-zinc-200">
-{`  ① ブラウザに  https://google.com  を入力
-              ↓
-  ② DNS に「google.com の IP は?」と聞く
-              ↓
-  ③ DNS が「142.250.196.110 です」と返事
-              ↓
-  ④ ブラウザがその IP に接続
-              ↓
-  ⑤ Google のページが返ってくる`}
-      </pre>
     </div>
   );
 }
