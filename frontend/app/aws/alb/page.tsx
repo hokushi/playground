@@ -36,23 +36,6 @@ export default function AwsAlbPage() {
           ALB 自体は <strong>1 個のリソース</strong>。作るときに <strong>「使うサブネットを 2 つ選ぶ」</strong>と、
           あとは全部 AWS が裏でやってくれる。
         </p>
-
-        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-500">
-            ALB 作成画面 (イメージ)
-          </p>
-          <pre className="mt-2 font-mono text-[12px] leading-relaxed text-zinc-800 dark:text-zinc-200">
-{`・名前 : hokushi-alb
-・サブネット : ☑ Public 1a   ☑ Public 1c   ← ここで 2 つ選ぶ
-・[ 作成 ]`}
-          </pre>
-          <p className="mt-2 text-center text-xs text-emerald-700 dark:text-emerald-400">
-            ↓
-          </p>
-          <p className="text-center text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-            「2 つのサブネットで動く ALB が 1 個」ができあがる
-          </p>
-        </div>
       </section>
 
       <section className="flex flex-col gap-4">
@@ -251,13 +234,6 @@ export default function AwsAlbPage() {
                 <strong>AMI (Amazon Machine Image)</strong> = EC2 のフルコピーを保存した「テンプレート」。
                 ゲームのセーブデータ的なもの。
               </p>
-              <p>中身は:</p>
-              <ul className="ml-1 flex flex-col gap-0.5">
-                <li>・OS (Amazon Linux 2023)</li>
-                <li>・入れたソフト (nginx)</li>
-                <li>・設定 (systemctl enable など)</li>
-                <li>・ファイル (index.html の中身)</li>
-              </ul>
               <p>
                 <strong>1 つの AMI から何台でも EC2 を起動可能</strong>。
                 立ち上がった新しい EC2 は AMI 作成時のディスクの状態のまま動き始めるので、
@@ -307,12 +283,6 @@ export default function AwsAlbPage() {
             width={2560}
             height={1440}
           />
-
-          <Note>
-            裏側では「EC2 を再起動 → EBS をスナップショット → AMI として登録」が走っている。
-            5〜10 分で <strong>「利用可能 (available)」</strong>になる。
-            その間、元の EC2 も一時的に再起動するが、<Code>systemctl enable nginx</Code> のおかげで自動復帰する
-          </Note>
         </Step>
 
         <Step n="03" title="AMI から 2 台目を Public Subnet 1c に立てる">
@@ -1005,12 +975,6 @@ export default function AwsAlbPage() {
             width={2560}
             height={1440}
           />
-
-          <Note>
-            <strong>ヘルスチェックとは:</strong> ALB が EC2 に定期的に
-            <Code>GET http://&lt;EC2&gt;:80/</Code> を打って、200 OK が返るかを確認する仕組み。
-            今回は nginx が <Code>index.html</Code> を返すので、デフォルトのパス <Code>/</Code> で通る
-          </Note>
 
           <h4 className="mt-6 text-base font-semibold text-zinc-900 dark:text-zinc-50">
             ② ブラウザで DNS 名にアクセス

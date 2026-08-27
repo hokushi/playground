@@ -625,20 +625,9 @@ export default function AwsVpcPage() {
               ルートテーブル)。実際の料金は <strong>この VPC の中に EC2 / RDS / NAT GW を置いたタイミング</strong>から発生する
             </p>
           </div>
-
-          <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            右下の <strong>「VPC を表示」</strong> ボタンを押すと、作成した VPC の詳細画面に遷移する。
-            次の Step 04 で確認する。
-          </p>
         </Step>
 
         <Step n="04" title="リソースマップで全体構成を確認">
-          <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            VPC 詳細ページの <strong>「リソースマップ」タブ</strong>では、
-            ウィザードのプレビューと同じ <strong>構成図がそのまま実体化した状態</strong>で見える。
-            それぞれのリソースが実際に作られていて、線で繋がっているのが確認できる。
-          </p>
-
           <Screenshot
             src="/aws/vpc/スクリーンショット 2026-05-29 11.20.08.png"
             alt="VPC 詳細ページ - リソースマップタブ"
@@ -655,7 +644,7 @@ export default function AwsVpcPage() {
             <li className="flex gap-2">
               <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 dark:bg-indigo-400" />
               <span>
-                <strong>VPC ID</strong>: <Code>vpc-072cb325e93e2ec90</Code> ── これがこの VPC の固有 ID
+                <strong>VPC ID</strong>: <Code>vpc-072cb323e93e2ec90</Code> ── これがこの VPC の固有 ID
               </span>
             </li>
             <li className="flex gap-2">
@@ -749,16 +738,7 @@ export default function AwsVpcPage() {
                 </span>
               </li>
             </ul>
-            <p className="mt-3 text-xs text-indigo-700 dark:text-indigo-400">
-              ※ Step 03 の作成完了画面で「ルートテーブル × 3」と出るのは <strong>ウィザードが作った数</strong>。
-              リソースマップ (Step 04) はメイン RT も含めて表示するので 4 になる、という関係
-            </p>
           </div>
-
-          <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            ここまでで <strong>「箱」と「ドア」と「住所表」</strong>が揃った状態。
-            次はこの中に <strong>実際にサーバを置く</strong> (EC2 / ECS / RDS) ステップに進める。
-          </p>
         </Step>
       </section>
 
