@@ -112,11 +112,6 @@ export default function AwsEc2Page() {
               <li>・<strong>t2.micro</strong> (1 vCPU / 1 GiB) → ✅ 無料枠あり、検証には十分</li>
               <li>・<strong>t2.small</strong> 以上 → 無料枠 ❌ (月 ~$20〜)</li>
             </ul>
-            <p>
-              ※ 新しめのアカウント or 無料枠 (12 ヶ月) が切れていると、
-              代わりに <strong>t3.micro</strong> や <strong>t4g.small</strong> が無料枠になっていることもある。
-              ドロップダウンで <strong>「無料利用枠の対象」ラベル</strong>が付いているものを選ぶのが確実
-            </p>
           </Details>
           <Screenshot
             src="/aws/ec2/スクリーンショット 2026-06-03 16.10.14.png"
@@ -196,58 +191,6 @@ export default function AwsEc2Page() {
               EC2 立ち上げ時にダウンロードした <Code>hokushi-ec2-key.pem</Code> が秘密鍵。
               ターミナルから <Code>ssh -i hokushi-ec2-key.pem ec2-user@&lt;Public IP&gt;</Code> で繋ぐと、
               EC2 のターミナルが開く。
-            </p>
-            <p className="text-zinc-600 dark:text-zinc-400">
-              → なぜパスワードじゃなく鍵?: パスワードは盗まれるしブルートフォースされる。
-              鍵は数千文字の暗号文なので実質破られない
-            </p>
-
-            <p className="mt-3 font-semibold text-zinc-800 dark:text-zinc-200">
-              EC2 で SSH を使う 2 つの方法
-            </p>
-            <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
-              <table className="w-full text-xs">
-                <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-                  <tr>
-                    <th className="px-3 py-1.5 text-left font-medium"></th>
-                    <th className="px-3 py-1.5 text-left font-medium">① ターミナル SSH</th>
-                    <th className="px-3 py-1.5 text-left font-medium">② EC2 Instance Connect</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
-                  <tr>
-                    <td className="px-3 py-1.5">ツール</td>
-                    <td className="px-3 py-1.5">Mac のターミナル + <Code>ssh</Code></td>
-                    <td className="px-3 py-1.5">AWS コンソール (ブラウザ)</td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 py-1.5">鍵</td>
-                    <td className="px-3 py-1.5">
-                      <Code>.pem</Code> ファイルを使う
-                    </td>
-                    <td className="px-3 py-1.5">AWS が裏で一時鍵を発行</td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 py-1.5">通信元</td>
-                    <td className="px-3 py-1.5">自分の家の IP</td>
-                    <td className="px-3 py-1.5">AWS の中継サーバー</td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 py-1.5">SG ルール</td>
-                    <td className="px-3 py-1.5 font-mono">
-                      SSH 22 / マイ IP
-                    </td>
-                    <td className="px-3 py-1.5 font-mono">
-                      SSH 22 / 3.112.23.0/29
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p className="text-zinc-600 dark:text-zinc-400">
-              → SG に SSH 22 のルールが <strong>2 つあるのはこのため</strong>。
-              どちらも宛先は同じ EC2 の 22 番だが、<strong>「誰から来るか」</strong>が違う。
-              片方だけでも作業可能 (両方残すと冗長性が上がる)
             </p>
           </Details>
           <Li>
@@ -385,69 +328,6 @@ export default function AwsEc2Page() {
             width={2560}
             height={1440}
           />
-
-          <Details summary="なぜ HTTP は 80, SSH は 22 なの?">
-            <p>
-              各プロトコルには <strong>「特に指定がなければこのポートを使う」と決められた番号</strong>
-              (<strong>Well-Known Port</strong>) がある。IANA という世界のネット標準を決める団体が古くから割り当てていて、
-              ブラウザや SSH クライアントは「指定がなければこのポート」と覚えている。
-            </p>
-            <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
-              <table className="w-full text-xs">
-                <thead className="bg-white text-zinc-700 dark:bg-zinc-950 dark:text-zinc-300">
-                  <tr>
-                    <th className="px-3 py-2 text-left font-semibold">プロトコル</th>
-                    <th className="px-3 py-2 text-left font-semibold">ポート</th>
-                    <th className="px-3 py-2 text-left font-semibold">用途</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
-                  <tr>
-                    <td className="px-3 py-2 font-mono">HTTP</td>
-                    <td className="px-3 py-2 font-mono">80</td>
-                    <td className="px-3 py-2">Web (平文)</td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 py-2 font-mono">HTTPS</td>
-                    <td className="px-3 py-2 font-mono">443</td>
-                    <td className="px-3 py-2">Web (TLS 暗号化)</td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 py-2 font-mono">SSH</td>
-                    <td className="px-3 py-2 font-mono">22</td>
-                    <td className="px-3 py-2">リモートログイン</td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 py-2 font-mono">DNS</td>
-                    <td className="px-3 py-2 font-mono">53</td>
-                    <td className="px-3 py-2">ドメイン名 → IP 変換</td>
-                  </tr>
-                  <tr>
-                    <td className="px-3 py-2 font-mono">SMTP</td>
-                    <td className="px-3 py-2 font-mono">25</td>
-                    <td className="px-3 py-2">メール送信</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p>
-              つまり、ブラウザで <Code>http://13.113.54.137</Code> を開くと、自動で
-              <strong>「13.113.54.137 の 80 番ポート」</strong>に接続する。
-              もし nginx を 8080 で動かすと <Code>http://13.113.54.137:8080</Code> のように
-              <strong>ポート番号を明示する必要</strong>が出てくる。
-            </p>
-            <p>
-              SSH も同じで <Code>ssh ec2-user@13.113.54.137</Code> と打つと、自動で 22 番に繋ぎに行く
-            </p>
-          </Details>
-
-          <Note>
-            EC2 Instance Connect の通信は <strong>AWS のサーバから飛んでくる</strong>ので、自分のマイ IP とは別に
-            <Code>3.112.23.0/29</Code> を許可する必要がある
-          </Note>
-          <Note>
-            launch-wizard-1 が <strong>VPC ごとに 2 個</strong>並んで見えるが、編集するのは hokushi-vpc 側のみ
-          </Note>
         </Step>
 
         <Step n="08" title="EC2 Instance Connect → nginx インストール">
@@ -641,11 +521,6 @@ sudo systemctl enable nginx     # 再起動時も自動起動`}
               <strong>もう絶対触らないなら必ず「終了」</strong>
             </p>
           </div>
-
-          <Note>
-            <strong>確認方法</strong>: 削除後、AWS Console → <strong>請求とコスト管理 → Cost Explorer</strong> で
-            「日別 × サービス別」を見ると、EC2 / EBS の課金が <strong>翌日 $0</strong> に落ちていれば成功
-          </Note>
         </Step>
       </section>
     </main>
