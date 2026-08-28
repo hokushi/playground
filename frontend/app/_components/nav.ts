@@ -17,6 +17,7 @@ export const navGroups: NavGroup[] = [
       { href: "/network/layers", label: "ネットワークの 7 層 (OSI)" },
       { href: "/network/domain-url", label: "ドメイン と URL" },
       { href: "/network/port", label: "ポートとは何か (443 / 80)" },
+      { href: "/network/ping", label: "ping で疎通を確かめる" },
       { href: "/network/vpn", label: "VPN の種類 (IP-VPN ほか)" },
     ],
   },
