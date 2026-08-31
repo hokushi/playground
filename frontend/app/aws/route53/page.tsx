@@ -52,99 +52,6 @@ export default function AwsRoute53Page() {
        ↓
 [EC2 1a] [EC2 1c]`}</code>
         </pre>
-        <ul className="ml-1 flex flex-col gap-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-          <li>・<strong>Route 53</strong>: ドメイン取得 + DNS 管理</li>
-          <li>・<strong>ACM</strong>: 無料の SSL 証明書を発行 + 自動更新</li>
-          <li>・<strong>ALB</strong> (既存): HTTPS リスナーを追加して TLS 終端</li>
-          <li>・<strong>EC2</strong> (既存): いじらない (HTTP 80 のまま)</li>
-        </ul>
-      </section>
-
-      <section className="flex flex-col gap-3 rounded-lg border border-zinc-200 bg-zinc-50/40 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900/40">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-          使うサービス (3 つ)
-        </h2>
-
-        <div className="flex flex-col gap-3">
-          <div className="rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-              ① Route 53 (DNS)
-            </p>
-            <p className="mt-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-              AWS の DNS サービス。ドメインの「住所録」を管理する。今回は
-              <strong>「ドメインの取得」「Hosted Zone での DNS レコード管理」</strong>の
-              2 役で使う
-            </p>
-          </div>
-
-          <div className="rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-              ② ACM (AWS Certificate Manager)
-            </p>
-            <p className="mt-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-              SSL/TLS 証明書を発行・管理する AWS のサービス。
-              ALB と組み合わせる限り <strong>完全無料</strong>。更新も AWS が自動でやってくれる
-            </p>
-          </div>
-
-          <div className="rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-              ③ ALB (既存)
-            </p>
-            <p className="mt-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-              <a
-                href="/aws/alb"
-                className="text-indigo-600 underline underline-offset-2 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
-              >
-                ALB ページ
-              </a>{" "}
-              で作った <Code>hokushi-alb</Code> をそのまま使う。
-              <strong>HTTPS リスナー</strong>を追加して、ACM の証明書を紐づける
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-          料金
-        </h2>
-        <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
-          <table className="w-full text-sm">
-            <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-              <tr>
-                <th className="px-3 py-2 text-left font-semibold">サービス</th>
-                <th className="px-3 py-2 text-left font-semibold">料金</th>
-                <th className="px-3 py-2 text-left font-semibold">備考</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
-              <tr>
-                <td className="px-3 py-2">ドメイン登録</td>
-                <td className="px-3 py-2 font-mono">$3〜$13 / 年</td>
-                <td className="px-3 py-2">TLD による (.click は安い、.com は普通)</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2">Hosted Zone</td>
-                <td className="px-3 py-2 font-mono">$0.50 / 月</td>
-                <td className="px-3 py-2">ドメインごと</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2">ACM 証明書</td>
-                <td className="px-3 py-2 font-mono">$0</td>
-                <td className="px-3 py-2">ALB と組み合わせる限り無料</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2">ALB HTTPS リスナー追加</td>
-                <td className="px-3 py-2 font-mono">$0 (追加料金なし)</td>
-                <td className="px-3 py-2">既存の ALB 料金に含まれる</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p className="text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-          → ドメイン代 + 月 $0.50 ≈ 年 ¥2,500〜 で運用可能
-        </p>
       </section>
 
       <section className="flex flex-col gap-8">
@@ -235,30 +142,6 @@ export default function AwsRoute53Page() {
             width={2560}
             height={1440}
           />
-
-          <Details summary="画面下に出ている「標準価格」テーブルって何?">
-            <p>
-              <strong>TLD (Top-Level Domain) ごとの年額料金一覧</strong>。
-              ドメインの末尾 (<Code>.com</Code> / <Code>.dev</Code> / <Code>.click</Code> 等) によって値段が全然違うので、ここで確認できる。
-            </p>
-            <p>例として:</p>
-            <ul className="ml-1 flex flex-col gap-0.5">
-              <li>・<Code>.ac</Code> = $99 ← 高い (アセンション島)</li>
-              <li>・<Code>.academy</Code> = $13</li>
-              <li>・<Code>.ai</Code> = $129 ← 超高い (AI ブーム影響)</li>
-              <li>・<Code>.app</Code> = $20</li>
-              <li>・<Code>.click</Code> = ~$3 ← 最安級 (学習用に最適)</li>
-              <li>・<Code>.com</Code> = $13</li>
-              <li>・<Code>.dev</Code> = $13</li>
-              <li>・<Code>.xyz</Code> = ~$10</li>
-            </ul>
-            <p>40 ページ分の TLD があるので、検索欄で絞り込みも可能。料金はレジストリ (TLD 管理組織) が決めるので AWS の都合では変えられない</p>
-          </Details>
-
-          <Note>
-            画面上部に <strong>「新規 .app / .dev / .ai / .bot ...」</strong>と新 TLD のプロモーション。
-            学習用なら気にせず安い <Code>.click</Code> や <Code>.xyz</Code> でも十分
-          </Note>
             </div>
           </details>
 
@@ -331,19 +214,6 @@ export default function AwsRoute53Page() {
             width={2560}
             height={1440}
           />
-
-          <div className="rounded-lg border border-rose-200 bg-rose-50 px-5 py-4 dark:border-rose-900/50 dark:bg-rose-950/30">
-            <p className="text-sm font-semibold text-rose-900 dark:text-rose-200">
-              ⚠️ 候補に <Code>.ai</Code> $158 が紛れてる
-            </p>
-            <p className="mt-2 text-sm text-rose-900/80 dark:text-rose-300">
-              「ブランド保護」を口実に高額 TLD (<Code>.ai</Code> 年 $158、更新 $129!) が並んでいる。
-              学習用には完全に不要。<strong>「Skip」をクリック</strong>して何も追加せず次へ
-            </p>
-            <p className="mt-2 text-sm text-rose-900/80 dark:text-rose-300">
-              ⚠️ 「Add and proceed to checkout」を絶対に押さない (チェックされたドメインが追加で買われる)
-            </p>
-          </div>
             </div>
           </details>
 
@@ -517,21 +387,6 @@ export default function AwsRoute53Page() {
 
             </div>
           </details>
-
-          <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
-            <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
-              🎉 Step 01 完了
-            </p>
-            <ul className="mt-2 ml-5 list-disc space-y-1 text-sm text-emerald-900/80 dark:text-emerald-300">
-              <li>ドメイン <Code>hokushi-aws.click</Code> を $3 で取得</li>
-              <li>自動更新 OFF (来年の請求なし)</li>
-              <li>プライバシー保護 ON (個人情報は WHOIS に出ない)</li>
-              <li>メール認証完了 (ドメイン停止リスクなし)</li>
-            </ul>
-            <p className="mt-3 text-sm text-emerald-900/80 dark:text-emerald-300">
-              次は <strong>Hosted Zone (DNS の管理場所)</strong> を確認 → 後の Step で ACM・ALB と繋いでいく
-            </p>
-          </div>
         </Step>
 
         <Step n="02" title="Hosted Zone を確認する">
@@ -683,81 +538,6 @@ export default function AwsRoute53Page() {
                   </tbody>
                 </table>
               </div>
-
-              <details className="group rounded-md border border-zinc-200 bg-zinc-50/60 dark:border-zinc-800 dark:bg-zinc-900/40">
-                <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm font-semibold text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50">
-                  <svg className="h-3 w-3 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
-                    <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span>そもそもネームサーバーって何?</span>
-                </summary>
-                <div className="flex flex-col gap-3 px-5 pb-4 pt-1">
-                  <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-                    <strong>ネームサーバー (NS)</strong> = <strong>「このドメインの住所録を持っている係のサーバー」</strong>。
-                    誰かが <Code>hokushi-aws.click</Code> にアクセスしようとすると「このドメインの IP は?」という
-                    問い合わせが発生し、それに<strong>「このサーバーに聞いてね」と答える担当</strong>がネームサーバー。
-                    Route 53 でドメインを買うと、AWS が自動で <strong>4 台</strong>を割り当てる。
-                    <strong>4 台とも中身 (住所録) は全く同じコピー</strong>で、1 台落ちても残りで答えられるようにしてある。
-                  </p>
-
-                  <div className="rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
-                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                      名前の読み方 (例: <span className="font-mono">ns-2003.awsdns-58.co.uk</span>)
-                    </p>
-                    <p className="mt-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-                      これは<strong>サーバー 1 台の名前 (ホスト名)</strong>で、あなたのドメインとは別物の
-                      <strong> AWS 側の設備のアドレス</strong>。
-                    </p>
-                    <ul className="mt-2 ml-1 flex flex-col gap-0.5 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-                      <li>・<Code>ns-2003</Code> … 何番目のネームサーバーかの識別番号 (AWS が振った通し番号)</li>
-                      <li>・<Code>awsdns-58</Code> … AWS の DNS サービスの何番目のクラスタか</li>
-                      <li>・<Code>.co.uk</Code> … このサーバー自身が住んでいるドメイン (末尾)</li>
-                    </ul>
-                  </div>
-                </div>
-              </details>
-
-              <h4 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
-                ⭐ 4 つのネームサーバーが「別々の TLD」になってる理由
-              </h4>
-              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-                NS レコードを見ると 4 つのネームサーバーが並んでて、よく見ると <strong>末尾が全部違う TLD</strong>:
-              </p>
-              <pre className="overflow-x-auto rounded-md bg-zinc-900 px-4 py-3 text-[12px] leading-relaxed text-zinc-100">
-                <code>{`ns-2003.awsdns-58.co.uk    ← .co.uk
-ns-1465.awsdns-55.org      ← .org
-ns-188.awsdns-23.com       ← .com
-ns-905.awsdns-48.net       ← .net`}</code>
-              </pre>
-              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-                これは <strong>耐障害性のため</strong>。<Code>ns-188.awsdns-23.com</Code> という名前の
-                サーバーにたどり着くには、まず<strong>「<Code>.com</Code> を管理する仕組み」が動いている</strong>必要がある。
-                もし 4 台とも <Code>.com</Code> だったら、<Code>.com</Code> が大規模障害を起こすと
-                <strong>4 台まとめて到達不能</strong>になってしまう。
-              </p>
-              <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-                でも末尾を <Code>.com / .org / .net / .co.uk</Code> と<strong>わざと散らしてある</strong>ので、
-                <Code>.com</Code> が落ちても残り 3 台 (<Code>.org / .net / .co.uk</Code> 経由) で
-                ちゃんと名前解決できる。<strong>AWS の細やかな設計</strong>がここに見える。
-              </p>
-
-              <details className="group rounded-md border border-zinc-200 bg-zinc-50/60 dark:border-zinc-800 dark:bg-zinc-900/40">
-                <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm font-semibold text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50">
-                  <svg className="h-3 w-3 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
-                    <path d="M4 3l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span>TTL の値も気になる人へ</span>
-                </summary>
-                <div className="flex flex-col gap-2 px-5 pb-3 pt-1 text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-                  <p>
-                    <strong>TTL (Time To Live)</strong> = 「このレコードは何秒キャッシュしていいか」。
-                  </p>
-                  <ul className="ml-4 list-disc">
-                    <li>NS の TTL <strong>172800</strong> 秒 = <strong>2 日</strong> (滅多に変えないので長め)</li>
-                    <li>SOA の TTL <strong>900</strong> 秒 = <strong>15 分</strong> (変更時の伝播は速め)</li>
-                  </ul>
-                </div>
-              </details>
             </div>
           </details>
 
@@ -769,7 +549,6 @@ ns-905.awsdns-48.net       ← .net`}</code>
             <ul className="mt-2 ml-5 list-disc space-y-1 text-sm text-emerald-900/80 dark:text-emerald-300">
               <li>Hosted Zone <Code>hokushi-aws.click</Code> が自動作成されてた ✓</li>
               <li>中に NS (4 ネームサーバー) と SOA が入ってる ✓</li>
-              <li>4 つの NS は <Code>.com/.org/.net/.co.uk</Code> に分散 (耐障害性)</li>
               <li>後の Step (ACM 検証 / Alias) で <strong>ここにレコードを追加していく</strong>場所</li>
             </ul>
             <p className="mt-3 text-sm text-emerald-900/80 dark:text-emerald-300">
@@ -874,11 +653,6 @@ ns-905.awsdns-48.net       ← .net`}</code>
             <strong>確認用の CNAME レコードを Hosted Zone にワンクリックで自動追加</strong>でき、
             あとは放置で発行される (メール検証より楽 & 自動更新も効く)
           </Li>
-
-          <Note>
-            Step 02 の最後で予告した「TXT レコードを追加」は、正確には ACM の DNS 検証用の
-            <strong>CNAME レコード</strong>。ACM が「この名前でこの値を入れて」と指示してくれる
-          </Note>
 
           {/* === Phase A: ACM を開いてリクエスト開始 === */}
           <details className="group mt-3 rounded-lg border-2 border-indigo-300 bg-indigo-50/30 dark:border-indigo-700 dark:bg-indigo-950/20">
@@ -1307,6 +1081,27 @@ ns-905.awsdns-48.net       ← .net`}</code>
                           ↑ ACM 証明書を貼るのがこのリスナー`}</code>
           </pre>
 
+          <Details summary="なぜ証明書を EC2 ではなく ALB に紐づけるの?">
+            <p>
+              <strong>ブラウザが TLS ハンドシェイクする相手が ALB だから</strong>。証明書は
+              「この接続先が本物の <Code>hokushi-aws.click</Code> か」を示すために提示されるので、
+              <strong>接続を受ける側が持っていないと使われない</strong>。ドメインの Alias レコードが指す先も ALB なので、
+              「ドメインの宛先 = 証明書の持ち主」で一致する。
+            </p>
+            <p>
+              加えて <strong>ACM の証明書は秘密鍵をダウンロードできない</strong>仕様で、ALB / CloudFront など
+              AWS 管理のサービスにアタッチする形でしか使えない。EC2 の nginx で終端したいなら Let&apos;s Encrypt 等が別途必要になる。
+            </p>
+            <p>
+              運用面でも、証明書が ALB の 1 箇所で済み <strong>ACM が自動更新</strong>してくれる。EC2 を増やしても
+              証明書の配布は不要。
+            </p>
+            <p>
+              ALB → EC2 間が平文 (HTTP 80) なのは、そこが <strong>VPC 内部の通信でインターネットを経由しない</strong>ため。
+              なので EC2 側の SG に 443 を開ける必要はない。
+            </p>
+          </Details>
+
           <details className="group mt-3 rounded-lg border-2 border-indigo-300 bg-indigo-50/30 dark:border-indigo-700 dark:bg-indigo-950/20">
             <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-indigo-900 transition-colors hover:bg-indigo-100/30 dark:text-indigo-100 dark:hover:bg-indigo-900/30">
               <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
@@ -1388,11 +1183,6 @@ ns-905.awsdns-48.net       ← .net`}</code>
             width={3006}
             height={1870}
           />
-
-          <Note>
-            「相互認証 (mTLS)」はチェック不要。クライアント側にも証明書を要求する特殊用途で、
-            一般的な Web 公開では使わない
-          </Note>
 
           <h4 className="mt-6 text-base font-semibold text-zinc-900 dark:text-zinc-50">
             ④ 追加 → リスナーが 2 本になる
@@ -1514,11 +1304,6 @@ ns-905.awsdns-48.net       ← .net`}</code>
             </ul>
           </div>
 
-          <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
-            そこで「ドメイン名 → ALB」の案内板 (DNS レコード) を Route 53 に 1 本立てる。
-            これで初めて <Code>https://hokushi-aws.click</Code> で繋がるようになる。
-          </p>
-
           <details className="group mt-3 rounded-lg border-2 border-violet-300 bg-violet-50/30 dark:border-violet-700 dark:bg-violet-950/20">
             <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-3 text-base font-bold text-violet-900 transition-colors hover:bg-violet-100/30 dark:text-violet-100 dark:hover:bg-violet-900/30">
               <svg className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" viewBox="0 0 12 12" fill="none" aria-hidden>
@@ -1615,7 +1400,7 @@ ns-905.awsdns-48.net       ← .net`}</code>
 
           <Note>
             これで <Code>hokushi-aws.click</Code> → <Code>hokushi-alb</Code> の案内板が完成。
-            NS / SOA / 検証用 CNAME は元からある基本レコードなので触らない
+            NS / SOA はドメイン取得時から、検証用 CNAME は Step 03 の ACM 検証で増えたもの。どれも触らない
           </Note>
 
             </div>
