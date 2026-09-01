@@ -129,25 +129,6 @@ export default function FirewallPage() {
           <strong>最後まで 1 つも当てはまらなければ → 通さない</strong>。これがファイアウォールの全部です。
         </p>
 
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
-          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
-            会社の門番に例えると
-          </p>
-          <p className="mt-2 text-sm text-emerald-900/90 dark:text-emerald-300">
-            会社の入口に立っている警備員に、こういうリストを渡しているイメージです:
-          </p>
-          <ol className="mt-3 ml-5 flex list-decimal flex-col gap-1 text-sm text-emerald-900/90 dark:text-emerald-300">
-            <li>「社員証を持ってる人 → 通して」</li>
-            <li>「アポありの来客 → 通して」</li>
-            <li>「宅配業者 → 通して」</li>
-            <li>(リストの最後) <strong>上のどれにも当てはまらない人 → 通すな</strong></li>
-          </ol>
-          <p className="mt-3 text-sm text-emerald-900/90 dark:text-emerald-300">
-            → 「許可する人」だけリストに書いて、<strong>書いてない人は全員ブロック</strong>。
-            これがファイアウォールの考え方そのもの。
-          </p>
-        </div>
-
         <h3 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">
           ルールの中身は 3 つだけ覚えれば OK
         </h3>
@@ -389,38 +370,6 @@ export default function FirewallPage() {
           だいたい FortiGate か Cisco ASA か Palo Alto Networks のどれかです。
         </p>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              実体は何か
-            </h3>
-            <ul className="mt-2 flex flex-col gap-1 text-sm text-zinc-700 dark:text-zinc-300">
-              <li>
-                ・<strong>専用ハードウェア (1U サイズの箱)</strong>。家庭用ルータの強力版に近い見た目
-              </li>
-              <li>
-                ・OS は独自の <strong>FortiOS</strong>
-              </li>
-              <li>
-                ・<strong>ASIC (専用チップ)</strong>で暗号処理を高速化しているのが売り
-              </li>
-              <li>
-                ・<strong>FortiGate-VM</strong> (ソフト版・クラウド版) もある
-              </li>
-            </ul>
-          </div>
-          <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              なぜ「ゲート (gate)」?
-            </h3>
-            <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
-              社内 LAN とインターネットの <strong>境目に立つ「門」</strong>として置かれるから。
-              通常 <strong>1 拠点に 1 台 (冗長化なら 2 台)</strong> 設置され、
-              ここを通らないと外に出られない・中に入れない構造を作る。
-            </p>
-          </div>
-        </div>
-
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
           <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
             FortiGate が <strong>1 台で</strong> やってくれること (UTM 機能)
@@ -543,30 +492,6 @@ export default function FirewallPage() {
             つまり「インバウンド」「アウトバウンド」というのは <strong>概念上の呼び方</strong>であって、
             FortiGate 上では <strong>「どのインターフェースから入って、どのインターフェースへ出るか」</strong>として
             機械的に定義される、というのが実体です。
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-            周辺製品: Fortinet 製品はファミリーで揃えるのが普通
-          </p>
-          <ul className="mt-2 flex flex-col gap-1 text-sm text-zinc-700 dark:text-zinc-300">
-            <li>
-              ・<strong>FortiManager</strong> = 複数の FortiGate を <strong>集中管理</strong>するサーバ
-            </li>
-            <li>
-              ・<strong>FortiAnalyzer</strong> = ログを集めて <strong>レポート・分析</strong>するサーバ
-            </li>
-            <li>
-              ・<strong>FortiSwitch / FortiAP</strong> = スイッチ / 無線 AP。FortiGate から一元管理できる
-            </li>
-            <li>
-              ・<strong>FortiClient</strong> = 端末側に入れる VPN クライアント + EPP
-            </li>
-          </ul>
-          <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
-            これらをまとめて <strong>「Security Fabric」</strong>と呼んでいて、
-            「全部 Fortinet で揃えると統合管理できる」というのが営業メッセージ。
           </p>
         </div>
       </section>
