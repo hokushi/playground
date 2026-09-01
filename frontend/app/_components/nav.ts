@@ -52,6 +52,7 @@ export const navGroups: NavGroup[] = [
       { href: "/cookie", label: "Cookie と Domain" },
       { href: "/keys", label: "秘密鍵と公開鍵" },
       { href: "/languages", label: "言語ごとの得意・不得意" },
+      { href: "/infra", label: "インフラの選び方 (実行環境と DB)" },
     ],
   },
   {
