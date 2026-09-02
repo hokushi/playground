@@ -72,22 +72,6 @@ export default function NetworkLayersPage() {
         </p>
 
         <LayerStackDiagram />
-
-        <Faq q="覚え方の語呂合わせ">
-          <p>
-            英語で <strong>"All People Seem To Need Data Processing"</strong> (L7→L1)
-            の頭文字。
-          </p>
-          <ul className="ml-5 mt-2 flex list-disc flex-col gap-1">
-            <li>A = Application (L7)</li>
-            <li>P = Presentation (L6)</li>
-            <li>S = Session (L5)</li>
-            <li>T = Transport (L4)</li>
-            <li>N = Network (L3)</li>
-            <li>D = Data Link (L2)</li>
-            <li>P = Physical (L1)</li>
-          </ul>
-        </Faq>
       </section>
 
       {/* 4. L7 アプリケーション層 */}
@@ -172,13 +156,6 @@ export default function NetworkLayersPage() {
             </p>
           </div>
         </div>
-
-        <Faq q="この 2 つは無視していい?">
-          <p>
-            初心者のうちは <strong>「アプリケーション層の一部」と思って OK</strong>。
-            「TLS は L6 だよ」みたいな細かい議論は試験や規格書を読むときだけ気にすればいい
-          </p>
-        </Faq>
       </section>
 
       {/* 6. L4 トランスポート層 */}
@@ -216,6 +193,39 @@ export default function NetworkLayersPage() {
             </p>
           </div>
         </div>
+
+        <h3 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          ポート番号は実際どう使われるか
+        </h3>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          住所にたとえると分かりやすいです。
+          <strong>IP アドレスがマンションの住所、ポート番号が部屋番号</strong>。
+          住所だけだと建物までしか届かず、部屋番号があって初めて相手に渡ります。
+        </p>
+
+        <PortRoomDiagram />
+
+        <p className="text-zinc-700 dark:text-zinc-300">
+          サーバーは 1 台でも、中では Web・SSH・DB といった別々のプログラムが動いています。
+          <strong>どのプログラムに渡すかを決めているのがポート番号</strong>です。
+          80 番に来たら Web、22 番に来たら SSH、という具合に振り分けられます。
+        </p>
+
+        <h3 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          じゃあ、こちら側 (ブラウザ) のポートは?
+        </h3>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          実はブラウザ側にも部屋番号が付いています。
+          <strong>返事を受け取るための番号</strong>で、これは自分で決めるものではなく
+          <strong>接続するたびに PC が空いている番号を勝手に 1 つ選びます</strong>。
+        </p>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          これがないと困るのが、同じサイトをタブで複数開いたとき。
+          宛先はどれも同じ「YouTube の 443 番」なので、
+          こちら側の番号が違うおかげで、返ってきたデータをどのタブに渡せばいいか分かります。
+        </p>
+
+        <PortTabsDiagram />
 
         <Faq q="TCP は勝手に再送してくれるの?">
           <p>
@@ -260,28 +270,6 @@ export default function NetworkLayersPage() {
             → ざっくり言うと <strong>「確実さ重視 → TCP」「速さ重視 → UDP」</strong>。
           </p>
         </Faq>
-
-        <Faq q="ポート番号って?">
-          <p>
-            <strong>同じ IP 上で「どのアプリ宛か」を区別する番号</strong>。
-            1 台のサーバーで Web (80) と SSH (22) と DB (3306) を同時に動かせるのはポートで分けるから。
-          </p>
-          <p className="mt-2">
-            よく使う番号:
-          </p>
-          <ul className="ml-5 mt-1 flex list-disc flex-col gap-0.5">
-            <li><code className="font-mono">80</code> — HTTP</li>
-            <li><code className="font-mono">443</code> — HTTPS</li>
-            <li><code className="font-mono">22</code> — SSH</li>
-            <li><code className="font-mono">53</code> — DNS</li>
-            <li><code className="font-mono">3306</code> — MySQL</li>
-          </ul>
-        </Faq>
-
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          → AWS の <strong>NLB (Network Load Balancer)</strong> はこの層 (L4) で動く。
-          TCP/UDP レベルで振り分けるので超高速 / リアルタイム系に強い
-        </p>
       </section>
 
       {/* 7. L3 ネットワーク層 */}
@@ -394,9 +382,106 @@ export default function NetworkLayersPage() {
         </ul>
       </section>
 
-      {/* 10. TCP/IP 4層モデル */}
+      {/* 10. 動画を開くまでの順番 */}
       <section className="flex flex-col gap-4">
-        <SectionH2 id="tcpip" num={10}>OSI vs TCP/IP モデル</SectionH2>
+        <SectionH2 id="flow" num={10}>動画を 1 本開くまでの順番</SectionH2>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          層の話が一通り出たので、
+          <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs dark:bg-zinc-800">https://youtube.com</code>{" "}
+          を開いたときに<strong>どの層が何番目に働くのか</strong>を並べてみます。
+        </p>
+
+        <div className="flex flex-col gap-3">
+          <FlowStep num={1} tag="L7" color="indigo" title="youtube.com の IP アドレスを DNS で引く">
+            まず「youtube.com はどの IP?」を DNS に聞きます。DNS はアプリケーション層のプロトコル。
+            ただしこの問い合わせ自体も 1 回の通信なので、下では UDP の 53 番ポートで運ばれています。
+          </FlowStep>
+          <FlowStep num={2} tag="L7" color="indigo" title="宛先ポートは 443 だと決める">
+            URL が <code className="rounded bg-white px-1 font-mono text-xs dark:bg-zinc-950">https://</code>{" "}
+            で始まっていてポートの指定がないので、ブラウザが「443 番」と判断します。
+            <code className="rounded bg-white px-1 font-mono text-xs dark:bg-zinc-950">http://</code> なら 80 番、
+            <code className="rounded bg-white px-1 font-mono text-xs dark:bg-zinc-950">:8443</code>{" "}
+            と書けばその番号。<strong>この変換はアプリケーション層の仕事</strong>です (下の枠で詳しく)。
+          </FlowStep>
+          <FlowStep num={3} tag="L4" color="violet" title="その IP の 443 番へ TCP で接続する">
+            決まった宛先に向けて TCP がコネクションを張ります。
+            いきなりデータを送るのではなく、<strong>3 回やり取りして「準備できた?」を確認</strong>してから始めます (3 ウェイハンドシェイク)。
+          </FlowStep>
+          <FlowStep num={4} tag="TLS" color="pink" title="暗号化の鍵を交換する">
+            HTTPS の <strong>S</strong> の部分。ここで鍵を決めてから先の中身を暗号化します。
+            OSI では L6 (プレゼンテーション層) にあたる仕事ですが、実務では「HTTPS の一部」と扱われることが多いです。
+          </FlowStep>
+          <FlowStep num={5} tag="L7" color="indigo" title="ようやく HTTP のリクエストを送る">
+            ここでやっと{" "}
+            <code className="rounded bg-white px-1 font-mono text-xs dark:bg-zinc-950">GET /watch?v=...</code>{" "}
+            が飛びます。1〜4 が全部終わって初めて、本来送りたかったものが送れる。
+          </FlowStep>
+        </div>
+
+        <div className="rounded-lg border border-indigo-200 bg-indigo-50/60 px-5 py-4 dark:border-indigo-900/50 dark:bg-indigo-950/30">
+          <p className="text-sm font-medium text-indigo-900 dark:text-indigo-200">
+            「https → 443」の変換をしているのはどの層?
+          </p>
+          <p className="mt-2 text-sm text-indigo-900/80 dark:text-indigo-300">
+            ポート番号という<strong>仕組み自体は L4 のもの</strong>なので、
+            「443 に変えるのもトランスポート層では?」と思いがちです。
+            でも実際に変換しているのは<strong>アプリケーション層 (ブラウザ)</strong> の方です。
+          </p>
+          <p className="mt-3 text-sm font-semibold text-indigo-900 dark:text-indigo-200">
+            理由: TCP は「https」という文字列を知らない
+          </p>
+          <p className="mt-1 text-sm text-indigo-900/80 dark:text-indigo-300">
+            TCP ヘッダにあるのは<strong>宛先ポートという数値の箱だけ</strong>。
+            そこに入るのは 443 という数字で、「HTTPS だからこの数字にしよう」という判断はしません。
+            TCP から見れば 443 も 8443 も、区別のないただの数字です。
+          </p>
+          <pre className="mt-3 overflow-x-auto rounded-md border border-indigo-200 bg-white p-3 font-mono text-[11px] leading-relaxed text-zinc-700 dark:border-indigo-900/50 dark:bg-zinc-950 dark:text-zinc-300">
+{`ブラウザ  https://youtube.com
+            ↓  「スキームが https、ポート指定なし → 443」と変換  ← ここが L7
+          connect(IP = 142.250.196.110, port = 443)
+            ↓  渡された数字をヘッダに詰めて運ぶだけ              ← ここが L4`}
+          </pre>
+          <p className="mt-3 text-sm text-indigo-900/80 dark:text-indigo-300">
+            OS に接続を頼む時点で渡しているのは <strong>443 という数字</strong>で、
+            <code className="rounded bg-white px-1 font-mono text-xs dark:bg-indigo-950/50">https</code>{" "}
+            という情報はそもそも OS まで届いていません。
+          </p>
+          <p className="mt-3 text-sm font-semibold text-indigo-900 dark:text-indigo-200">
+            「https なら必ず 443」を強制している層はない
+          </p>
+          <p className="mt-1 text-sm text-indigo-900/80 dark:text-indigo-300">
+            この対応づけは IANA が決めた<strong>ただの取り決め (ウェルノウンポート)</strong> で、
+            その表をブラウザが持っているだけ。だから{" "}
+            <code className="rounded bg-white px-1 font-mono text-xs dark:bg-indigo-950/50">https://example.com:8443</code>{" "}
+            と書けば <strong>HTTPS なのに 8443</strong> で繋ぎにいきます。
+            強制する層があるなら、こんなことはできません。
+          </p>
+          <div className="mt-3 rounded-md border border-indigo-200 bg-white px-3 py-2 text-sm text-indigo-900/90 dark:border-indigo-900/50 dark:bg-zinc-950 dark:text-indigo-300">
+            <strong>まとめ</strong>: アプリは「部屋番号は 443 だ」と<strong>調べて封筒に書く人</strong>、
+            L4 は<strong>部屋番号の欄を用意して、書かれた番号どおりに配る仕組み</strong>。
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            ありがちな勘違い: 「IP に :443 をつける」
+          </p>
+          <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+            <code className="rounded bg-white px-1 font-mono text-xs dark:bg-zinc-950">142.250.196.110:443</code>{" "}
+            と 1 つの住所のように書きますが、実際のパケットでは
+            <strong>別々のヘッダに分かれて入っています</strong>。くっつけて書くのは人間が見やすいようにしているだけです。
+          </p>
+          <pre className="mt-3 overflow-x-auto rounded-md border border-zinc-200 bg-white p-3 font-mono text-[11px] leading-relaxed text-zinc-700 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300">
+{`[ IP ヘッダ  ] 宛先 IP    142.250.196.110   ← L3 が付ける
+[ TCP ヘッダ ] 宛先ポート 443               ← L4 が付ける
+[ データ     ] GET /watch?v=...             ← L7 が作る`}
+          </pre>
+        </div>
+      </section>
+
+      {/* 11. TCP/IP 4層モデル */}
+      <section className="flex flex-col gap-4">
+        <SectionH2 id="tcpip" num={11}>OSI vs TCP/IP モデル</SectionH2>
         <p className="text-zinc-700 dark:text-zinc-300">
           学術用の <strong>OSI 7 層</strong> に対して、実用では <strong>TCP/IP 4 層</strong>がよく使われる。
           中身は同じだけど、L5/L6/L7 をまとめて「アプリケーション」にしてる感じ。
@@ -409,9 +494,9 @@ export default function NetworkLayersPage() {
         </p>
       </section>
 
-      {/* 11. AWS サービス対応 */}
+      {/* 12. AWS サービス対応 */}
       <section className="flex flex-col gap-4">
-        <SectionH2 id="aws" num={11}>AWS のサービスはどの層?</SectionH2>
+        <SectionH2 id="aws" num={12}>AWS のサービスはどの層?</SectionH2>
         <p className="text-zinc-700 dark:text-zinc-300">
           AWS の主要なサービスを層にマッピングしてみる。実用イメージが掴める:
         </p>
@@ -461,9 +546,9 @@ export default function NetworkLayersPage() {
         </div>
       </section>
 
-      {/* 12. 関連ページ */}
+      {/* 13. 関連ページ */}
       <section className="flex flex-col gap-4">
-        <SectionH2 id="related" num={12}>関連ページ</SectionH2>
+        <SectionH2 id="related" num={13}>関連ページ</SectionH2>
         <ul className="ml-5 flex list-disc flex-col gap-2 text-zinc-700 dark:text-zinc-300">
           <li>
             <a
@@ -532,9 +617,10 @@ function TableOfContents() {
     { id: "l3", num: 7, title: "L3 ネットワーク層" },
     { id: "l1l2", num: 8, title: "L1+L2 ハードウェア" },
     { id: "encapsulation", num: 9, title: "カプセル化" },
-    { id: "tcpip", num: 10, title: "OSI vs TCP/IP" },
-    { id: "aws", num: 11, title: "AWS サービス対応" },
-    { id: "related", num: 12, title: "関連ページ" },
+    { id: "flow", num: 10, title: "動画を開くまでの順番" },
+    { id: "tcpip", num: 11, title: "OSI vs TCP/IP" },
+    { id: "aws", num: 12, title: "AWS サービス対応" },
+    { id: "related", num: 13, title: "関連ページ" },
   ];
   return (
     <nav className="rounded-lg border border-zinc-200 bg-zinc-50/60 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900/50">
@@ -577,6 +663,46 @@ function Faq({ q, children }: { q: string; children: React.ReactNode }) {
 }
 
 type LayerColor = "indigo" | "violet" | "sky" | "amber";
+
+function FlowStep({
+  num,
+  tag,
+  color,
+  title,
+  children,
+}: {
+  num: number;
+  tag: string;
+  color: "indigo" | "violet" | "pink" | "zinc";
+  title: string;
+  children: React.ReactNode;
+}) {
+  const tagClasses: Record<string, string> = {
+    indigo: "border-indigo-300 bg-indigo-100/70 text-indigo-800 dark:border-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-200",
+    violet: "border-violet-300 bg-violet-100/70 text-violet-800 dark:border-violet-700 dark:bg-violet-950/60 dark:text-violet-200",
+    pink: "border-pink-300 bg-pink-100/70 text-pink-800 dark:border-pink-700 dark:bg-pink-950/60 dark:text-pink-200",
+    zinc: "border-zinc-300 bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
+  };
+
+  return (
+    <div className="flex gap-4 rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900">
+        {num}
+      </div>
+      <div className="flex flex-1 flex-col gap-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] font-bold ${tagClasses[color]}`}>
+            {tag}
+          </span>
+          <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+            {title}
+          </span>
+        </div>
+        <p className="text-sm text-zinc-700 dark:text-zinc-300">{children}</p>
+      </div>
+    </div>
+  );
+}
 
 function LayerCard({ layer, color, title }: { layer: number; color: LayerColor; title: string }) {
   const colorClass = {
@@ -637,6 +763,113 @@ function LayerStackDiagram() {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function PortRoomDiagram() {
+  const rooms = [
+    { port: "443", app: "Web サーバー", note: "ブラウザからの表示要求", y: 50 },
+    { port: "22", app: "SSH", note: "エンジニアのログイン", y: 96 },
+    { port: "3306", app: "MySQL", note: "アプリからのデータ読み書き", y: 142 },
+  ];
+
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 580 200" className="mx-auto w-full max-w-2xl">
+        <rect x="12" y="86" width="92" height="44" rx="6" className="fill-zinc-50 stroke-zinc-400 dark:fill-zinc-900 dark:stroke-zinc-600" strokeWidth="1.3" />
+        <text x="58" y="104" textAnchor="middle" className="fill-zinc-800 text-[11px] font-semibold dark:fill-zinc-200">
+          あなたの PC
+        </text>
+        <text x="58" y="120" textAnchor="middle" className="fill-zinc-500 text-[9px] dark:fill-zinc-400">
+          ここから送る
+        </text>
+
+        <rect x="292" y="16" width="272" height="172" rx="8" className="fill-violet-50/60 stroke-violet-400 dark:fill-violet-950/30 dark:stroke-violet-700" strokeWidth="1.4" />
+        <text x="428" y="36" textAnchor="middle" className="fill-violet-900 text-[11px] font-semibold dark:fill-violet-200">
+          1 台のサーバー (住所 = IP アドレス)
+        </text>
+
+        {rooms.map((r) => (
+          <g key={r.port}>
+            <line
+              x1="106"
+              y1="108"
+              x2="290"
+              y2={r.y + 17}
+              className="stroke-violet-400 dark:stroke-violet-600"
+              strokeWidth="1.6"
+            />
+            <text
+              x="198"
+              y={108 + (r.y + 17 - 108) * 0.5 - 5}
+              textAnchor="middle"
+              className="fill-violet-700 font-mono text-[10px] font-semibold dark:fill-violet-300"
+            >
+              :{r.port} 宛
+            </text>
+            <rect x="306" y={r.y} width="244" height="34" rx="5" className="fill-white stroke-violet-300 dark:fill-zinc-950 dark:stroke-violet-800" strokeWidth="1.2" />
+            <text x="326" y={r.y + 22} className="fill-violet-700 font-mono text-[11px] font-bold dark:fill-violet-300">
+              {r.port}
+            </text>
+            <text x="374" y={r.y + 17} className="fill-zinc-800 text-[10px] font-semibold dark:fill-zinc-200">
+              {r.app}
+            </text>
+            <text x="374" y={r.y + 29} className="fill-zinc-500 text-[9px] dark:fill-zinc-400">
+              {r.note}
+            </text>
+          </g>
+        ))}
+      </svg>
+      <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
+        住所 (IP) は 1 つでも、部屋番号 (ポート) で渡す相手が変わる
+      </p>
+    </div>
+  );
+}
+
+function PortTabsDiagram() {
+  const tabs = [
+    { name: "タブ 1", port: "51234", y: 44 },
+    { name: "タブ 2", port: "51235", y: 88 },
+    { name: "タブ 3", port: "51236", y: 132 },
+  ];
+
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 580 196" className="mx-auto w-full max-w-2xl">
+        <text x="130" y="26" textAnchor="middle" className="fill-zinc-500 text-[10px] font-semibold dark:fill-zinc-400">
+          自分の PC (番号は自動で決まる)
+        </text>
+        <text x="452" y="26" textAnchor="middle" className="fill-zinc-500 text-[10px] font-semibold dark:fill-zinc-400">
+          YouTube のサーバー
+        </text>
+
+        <rect x="356" y="40" width="192" height="128" rx="8" className="fill-violet-50/60 stroke-violet-400 dark:fill-violet-950/30 dark:stroke-violet-700" strokeWidth="1.4" />
+        <text x="452" y="100" textAnchor="middle" className="fill-violet-900 font-mono text-[13px] font-bold dark:fill-violet-200">
+          :443
+        </text>
+        <text x="452" y="118" textAnchor="middle" className="fill-violet-700 text-[9px] dark:fill-violet-300">
+          宛先はどれも同じ
+        </text>
+
+        {tabs.map((t) => (
+          <g key={t.port}>
+            <rect x="12" y={t.y} width="150" height="32" rx="5" className="fill-zinc-50 stroke-zinc-300 dark:fill-zinc-900 dark:stroke-zinc-700" strokeWidth="1.2" />
+            <text x="30" y={t.y + 21} className="fill-zinc-700 text-[10px] font-semibold dark:fill-zinc-300">
+              {t.name}
+            </text>
+            <text x="82" y={t.y + 21} className="fill-emerald-700 font-mono text-[11px] font-bold dark:fill-emerald-400">
+              :{t.port}
+            </text>
+            <line x1="166" y1={t.y + 16} x2="352" y2={t.y + 16} className="stroke-zinc-400 dark:stroke-zinc-600" strokeWidth="1.4" />
+          </g>
+        ))}
+
+        <text x="259" y="186" textAnchor="middle" className="fill-emerald-700 text-[10px] font-semibold dark:fill-emerald-400">
+          ↑ 自分側の番号だけが違う = 返事をどのタブに渡すか分かる
+        </text>
+      </svg>
     </div>
   );
 }
