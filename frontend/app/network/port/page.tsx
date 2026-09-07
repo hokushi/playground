@@ -370,6 +370,50 @@ export default function PortPage() {
           ファイアウォールは<strong>建物の入口に立つ門番</strong>です。
           「443 を開ける」は、<strong>443 号室宛の荷物だけ通す</strong>という指示になります。
         </p>
+
+        <p className="text-zinc-700 dark:text-zinc-300">
+          ここで大事なのは、
+          <strong>443 番に居るのはアプリ本体ではない</strong>ということです。
+          AWS の構成なら、443 で待っているのは <strong>ALB</strong> で、
+          フロントやバックエンドのサーバーは
+          <strong>3000 番や 8080 番といった別の部屋</strong>にいます。
+          実際の流れはこうなります。
+        </p>
+
+        <FirewallFlowDiagram />
+
+        <ol className="flex flex-col gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+          <li>
+            <strong>1.</strong> ブラウザが{" "}
+            <span className="font-mono">https://app.example.com</span> を開く。
+            HTTPS なので<strong>宛先は自動的に 443 番</strong>になる
+          </li>
+          <li>
+            <strong>2.</strong> 入口のセキュリティグループ（AWS のファイアウォール）が、
+            <strong>443 宛だけ通す</strong>。ここが「ポートを開ける」の実体
+          </li>
+          <li>
+            <strong>3.</strong> 443 で待っているのは <strong>ALB</strong>。
+            ここで HTTPS の暗号を解き、
+            <strong>URL のパスを見て行き先を決める</strong>
+          </li>
+          <li>
+            <strong>4.</strong> <span className="font-mono">/</span> はフロントのサーバー
+            (3000 番)、<span className="font-mono">/api/*</span> はバックエンド (8080 番) へ、
+            <strong>ALB が中継して渡す</strong>
+          </li>
+          <li>
+            <strong>5.</strong> バックエンドが必要に応じて
+            RDS の <strong>5432 番</strong>につなぐ
+          </li>
+        </ol>
+
+        <p className="text-zinc-700 dark:text-zinc-300">
+          つまり<strong>外に向けて開けている部屋は 443 の 1 つだけ</strong>で、
+          3000・8080・5432 は<strong>VPC の中でしか使われません</strong>。
+          インターネットから <span className="font-mono">:3000</span> を直接叩こうとしても、
+          そもそも入口の門番が通しません。
+        </p>
         <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
           <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
             なぜ全部開けないのか
@@ -464,7 +508,7 @@ function LocalhostDiagram() {
           3000
         </text>
         <text x="292" y="80" className="fill-zinc-800 text-[11px] font-semibold dark:fill-zinc-200">
-          Next.js (このサイト)
+          Next.js サーバー (このサイト)
         </text>
         <text x="292" y="94" className="fill-rose-700 text-[9px] dark:fill-rose-400">
           ← ここが応える
@@ -475,7 +519,7 @@ function LocalhostDiagram() {
           3001
         </text>
         <text x="292" y="138" className="fill-zinc-700 text-[11px] dark:fill-zinc-300">
-          別のアプリ
+          別のアプリのサーバー
         </text>
 
         <rect x="200" y="164" width="360" height="34" rx="6" className="fill-white stroke-zinc-300 dark:fill-zinc-950 dark:stroke-zinc-700" strokeWidth="1.2" strokeDasharray="4 3" />
@@ -673,6 +717,114 @@ function TwoPortsDiagram() {
         <text x="310" y="228" textAnchor="middle" className="fill-zinc-700 text-[10px] font-semibold dark:fill-zinc-300">
           見分け方: ケーブルを挿せるなら ①、番号で呼ばれているなら ②
         </text>
+      </svg>
+    </div>
+  );
+}
+
+function FirewallFlowDiagram() {
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 620 470" className="mx-auto w-full max-w-2xl">
+        <rect x="230" y="16" width="160" height="44" rx="8" className="fill-white stroke-zinc-400 dark:fill-zinc-950 dark:stroke-zinc-600" strokeWidth="1.4" />
+        <text x="310" y="36" textAnchor="middle" className="fill-zinc-900 text-[11px] font-semibold dark:fill-zinc-100">
+          ブラウザ
+        </text>
+        <text x="310" y="51" textAnchor="middle" className="fill-zinc-500 font-mono text-[9px] dark:fill-zinc-400">
+          https://app.example.com
+        </text>
+
+        <line x1="310" y1="60" x2="310" y2="130" className="stroke-rose-500" strokeWidth="1.8" markerEnd="url(#fw-arrow)" />
+        <text x="322" y="84" className="fill-rose-700 font-mono text-[10px] font-semibold dark:fill-rose-400">
+          宛先ポート 443
+        </text>
+
+        <line x1="40" y1="100" x2="580" y2="100" className="stroke-emerald-500" strokeWidth="1.6" strokeDasharray="6 4" />
+        <text x="44" y="94" className="fill-emerald-700 text-[10px] font-semibold dark:fill-emerald-400">
+          セキュリティグループ（入口の門番）
+        </text>
+        <text x="576" y="94" textAnchor="end" className="fill-emerald-700 text-[10px] font-semibold dark:fill-emerald-400">
+          443 だけ通す
+        </text>
+
+        <rect x="140" y="140" width="340" height="66" rx="8" className="fill-sky-50 stroke-sky-400 dark:fill-sky-950/30 dark:stroke-sky-700" strokeWidth="1.5" />
+        <text x="310" y="162" textAnchor="middle" className="fill-zinc-900 text-[11px] font-semibold dark:fill-zinc-100">
+          ALB（ロードバランサー）
+        </text>
+        <text x="310" y="179" textAnchor="middle" className="fill-rose-700 font-mono text-[11px] font-semibold dark:fill-rose-400">
+          443 で待っている
+        </text>
+        <text x="310" y="196" textAnchor="middle" className="fill-zinc-600 text-[9px] dark:fill-zinc-400">
+          HTTPS を解いて、URL のパスで行き先を決める
+        </text>
+
+        <path d="M 240 206 L 165 246" className="fill-none stroke-zinc-500" strokeWidth="1.6" markerEnd="url(#fw-arrow-gray)" />
+        <path d="M 380 206 L 455 246" className="fill-none stroke-zinc-500" strokeWidth="1.6" markerEnd="url(#fw-arrow-gray)" />
+        <text x="150" y="232" textAnchor="middle" className="fill-zinc-600 font-mono text-[9px] dark:fill-zinc-400">
+          /
+        </text>
+        <text x="480" y="232" textAnchor="middle" className="fill-zinc-600 font-mono text-[9px] dark:fill-zinc-400">
+          /api/*
+        </text>
+
+        <rect x="40" y="250" width="250" height="86" rx="8" className="fill-white stroke-zinc-400 dark:fill-zinc-950 dark:stroke-zinc-600" strokeWidth="1.4" />
+        <text x="165" y="272" textAnchor="middle" className="fill-zinc-900 text-[11px] font-semibold dark:fill-zinc-100">
+          フロントのサーバー
+        </text>
+        <rect x="60" y="284" width="210" height="24" rx="4" className="fill-rose-50 stroke-rose-400 dark:fill-rose-950/30 dark:stroke-rose-700" strokeWidth="1.2" />
+        <text x="74" y="300" className="fill-rose-800 font-mono text-[10px] font-semibold dark:fill-rose-300">
+          3000
+        </text>
+        <text x="124" y="300" className="fill-zinc-700 text-[10px] dark:fill-zinc-300">
+          Next.js など
+        </text>
+        <text x="165" y="326" textAnchor="middle" className="fill-zinc-500 text-[9px] dark:fill-zinc-400">
+          外から直接は叩けない
+        </text>
+
+        <rect x="330" y="250" width="250" height="86" rx="8" className="fill-white stroke-zinc-400 dark:fill-zinc-950 dark:stroke-zinc-600" strokeWidth="1.4" />
+        <text x="455" y="272" textAnchor="middle" className="fill-zinc-900 text-[11px] font-semibold dark:fill-zinc-100">
+          バックエンドのサーバー
+        </text>
+        <rect x="350" y="284" width="210" height="24" rx="4" className="fill-rose-50 stroke-rose-400 dark:fill-rose-950/30 dark:stroke-rose-700" strokeWidth="1.2" />
+        <text x="364" y="300" className="fill-rose-800 font-mono text-[10px] font-semibold dark:fill-rose-300">
+          8080
+        </text>
+        <text x="414" y="300" className="fill-zinc-700 text-[10px] dark:fill-zinc-300">
+          API
+        </text>
+        <text x="455" y="326" textAnchor="middle" className="fill-zinc-500 text-[9px] dark:fill-zinc-400">
+          外から直接は叩けない
+        </text>
+
+        <line x1="455" y1="336" x2="455" y2="376" className="stroke-emerald-500" strokeWidth="1.6" markerEnd="url(#fw-arrow-green)" />
+
+        <rect x="330" y="380" width="250" height="58" rx="8" className="fill-white stroke-zinc-400 dark:fill-zinc-950 dark:stroke-zinc-600" strokeWidth="1.4" />
+        <text x="455" y="402" textAnchor="middle" className="fill-zinc-900 text-[11px] font-semibold dark:fill-zinc-100">
+          RDS（PostgreSQL）
+        </text>
+        <text x="455" y="422" textAnchor="middle" className="fill-rose-700 font-mono text-[10px] font-semibold dark:fill-rose-400">
+          5432 で待っている
+        </text>
+
+        <text x="165" y="404" textAnchor="middle" className="fill-zinc-500 text-[9px] dark:fill-zinc-400">
+          外に開けている部屋は
+        </text>
+        <text x="165" y="418" textAnchor="middle" className="fill-zinc-500 text-[9px] dark:fill-zinc-400">
+          443 の 1 つだけ
+        </text>
+
+        <defs>
+          <marker id="fw-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" className="fill-rose-500" />
+          </marker>
+          <marker id="fw-arrow-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" className="fill-zinc-500" />
+          </marker>
+          <marker id="fw-arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" className="fill-emerald-500" />
+          </marker>
+        </defs>
       </svg>
     </div>
   );

@@ -138,10 +138,6 @@ export default function DockerPage() {
             </p>
           </div>
         </div>
-        <P>
-          プログラミングに例えるなら、<strong>イメージ＝クラス</strong>、
-          <strong>コンテナ＝そのクラスから作ったインスタンス</strong>、という関係に近い。
-        </P>
       </Card>
 
       {/* おまけ用語 */}
