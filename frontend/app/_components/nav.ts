@@ -48,6 +48,7 @@ export const navGroups: NavGroup[] = [
     label: "バック・フロント",
     items: [
       { href: "/docker", label: "Docker でローカル DB" },
+      { href: "/database", label: "データベースの基本" },
       { href: "/cors", label: "CORS はブラウザのルール" },
       { href: "/cookie", label: "Cookie と Domain" },
       { href: "/keys", label: "秘密鍵と公開鍵" },
