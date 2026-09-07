@@ -286,6 +286,49 @@ export default function VpnPage() {
 
         <NoRouteDiagram />
 
+        <p className="text-zinc-700 dark:text-zinc-300">
+          図の例で言うと、攻撃者が{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">198.51.100.77</code>{" "}
+          から A 社のサーバー{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">10.0.0.5</code>{" "}
+          の SSH (22 番) を狙ってパケットを投げたとします。
+          PE ルータはそれを受け取り、<strong>インターネット用の経路表で 10.0.0.5 を探します</strong>。
+          そこに載っているのは{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">0.0.0.0/0</code>{" "}
+          や{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">203.0.113.0/24</code>{" "}
+          といったインターネット側の経路だけで、<strong>10.0.0.5 に行く道はどこにも書いていません</strong>。
+        </p>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          隣の A 社用の経路表 (VRF) には{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">10.0.0.0/16 → 東京</code>{" "}
+          と載っているので、<strong>物理的には同じ 1 台の中に行き方が存在します</strong>。
+          それでも届かないのは、<strong>インターネット用の表からその表を参照しないから</strong>です。
+          結果、パケットは弾かれたのではなく<strong>行き先不明でそこで終わり</strong>ます。
+        </p>
+
+        <h3 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          では、どの経路表を使うかは何で決まるのか
+        </h3>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          ここで気になるのが「PE は誰から来たパケットかを確認しているのか?」という点です。
+          実は<strong>パケットごとに送信元を検査しているわけではありません</strong>。
+          決め手は<strong>どの入口 (ポート) から入ってきたか</strong>です。
+        </p>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          PE の各ポートには、あらかじめ「このポートは A 社の VRF」という紐づけが設定されています。
+          パケットが来たら、まず<strong>入口を見て引くべき経路表を選び</strong>、それから宛先を探します。
+        </p>
+
+        <VrfEntranceDiagram />
+
+        <p className="text-zinc-700 dark:text-zinc-300">
+          同じ{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">10.0.0.5</code>{" "}
+          宛でも、<strong>A 社の回線から入れば東京へ転送され、インターネット側から入れば該当なしで終わる</strong>。
+          宛先が同じなのに結果が変わるのは、<strong>入口によって見る地図が違う</strong>からです。
+        </p>
+
         <h3 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
           日本の主なサービス
         </h3>
@@ -354,121 +397,163 @@ export default function VpnPage() {
       <section className="flex flex-col gap-4">
         <SectionH2 id="ether" num={5}>③ 広域イーサネット</SectionH2>
         <p className="text-zinc-700 dark:text-zinc-300">
-          <strong>キャリアの閉域網を借りる</strong>ところは ② とまったく同じです。
-          違うのは <strong>「網に何をやらせるか」</strong>。
-          ② が<strong>ルーティングまで任せる</strong>のに対して、
-          ③ は <strong>運ぶことだけ任せて、経路は自社で決めます</strong>。
+          一言でいうと{" "}
+          <strong>「離れた拠点を、まるごと 1 つの同じネットワークに入れてしまう」</strong>
+          サービスです。東京と大阪が<strong>同じオフィスの中</strong>にあるかのように扱えるようになります。
         </p>
 
-        <L2L3CompareDiagram />
+        <SameSegmentDiagram />
 
-        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">
-            ② では拠点ごとに <strong>別のセグメント</strong>を持ち、
-            その間をキャリアの網が繋いでいました。
-            ③ では <strong>全拠点を同じセグメントにできます</strong>。
-            東京の PC から見ると、大阪のサーバが
-            <strong>「同じフロアの隣の島にいる」</strong>ように見える、ということです。
+        <h3 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          同じセグメントの中では、IP ではなく MAC で届いている
+        </h3>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          「直接届ける」と言いましたが、そのとき使われるのは<strong>IP ではありません</strong>。
+          パケットには宛先の札が<strong>2 枚</strong>ついていて、使い分けられています。
+        </p>
+
+        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+          <pre className="overflow-x-auto font-mono text-[11px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+{`┌──────────────────────────────────────────────┐
+│ MAC ヘッダ   宛先 aa:bb:cc:dd:ee:ff          │ ← 隣の機器へ渡すための札
+├──────────────────────────────────────────────┤
+│ IP ヘッダ    宛先 10.0.1.6                   │ ← 最終的な目的地
+├──────────────────────────────────────────────┤
+│ データ                                       │
+└──────────────────────────────────────────────┘`}
+          </pre>
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+            IP の札は<strong>端から端まで変わりません</strong>。
+            対して MAC の札は<strong>隣に渡すたびに書き換えられます</strong>。
           </p>
         </div>
 
+        <p className="text-zinc-700 dark:text-zinc-300">
+          では MAC の札はどこから手に入るのか。
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">10.0.1.5</code>{" "}
+          が{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">10.0.1.6</code>{" "}
+          に送るときの実際の動きです。
+        </p>
+        <ol className="ml-5 flex list-decimal flex-col gap-1.5 text-[15px] text-zinc-700 dark:text-zinc-300">
+          <li>
+            「10.0.1.6 は<strong>同じ帯だ</strong>」と判定する
+          </li>
+          <li>
+            「<strong>10.0.1.6 さん、MAC アドレスを教えて</strong>」と<strong>セグメント全体に呼びかける</strong> (ARP)
+          </li>
+          <li>
+            本人が「私です、
+            <code className="rounded bg-zinc-100 px-1 font-mono text-xs dark:bg-zinc-800">aa:bb:cc:dd:ee:ff</code>{" "}
+            です」と返す
+          </li>
+          <li>
+            以降は<strong>その MAC を宛先に書いて</strong>送る。スイッチはその MAC を見て届ける
+          </li>
+        </ol>
+
         <h3 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
-          網が「1 台の巨大なスイッチ」に見える
+          広域イーサ = そのセグメントを、拠点をまたいで引き伸ばす
         </h3>
         <p className="text-zinc-700 dark:text-zinc-300">
-          広域イーサを借りると、キャリアの網は
-          <strong>「全国に置かれた 1 台のスイッチ」</strong>のように振る舞います。
-          各拠点は、そのスイッチのポートに LAN ケーブルを挿しているのと同じ扱いです。
+          ここまで来ると、広域イーサが何をしているかは一言で済みます。
+          <strong>1 拠点の中で閉じていたセグメントを、キャリアの回線を使って東京と大阪にまたがらせる</strong>。それだけです。
         </p>
 
         <GiantSwitchDiagram />
 
+        <p className="text-zinc-700 dark:text-zinc-300">
+          こうすると東京の{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">10.0.1.5</code>{" "}
+          と大阪の{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">10.0.1.6</code>{" "}
+          が<strong>同じ帯の住人</strong>になります。さっきの判定で「同じ帯」と出るので、
+          <strong>ルータを通さず、MAC で直接届けにいきます</strong>。
+          東京の PC から見ると、大阪のサーバは<strong>隣の席の PC と区別がつきません</strong>。
+        </p>
+
         <h3 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
-          誰が何を担当するか
+          他社の MAC が分かれば、そこに送りつけられるのでは?
         </h3>
-        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <table className="w-full text-sm">
-            <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-              <tr>
-                <th className="px-3 py-2 text-left font-semibold">　</th>
-                <th className="px-3 py-2 text-left font-semibold">② IP-VPN (L3)</th>
-                <th className="px-3 py-2 text-left font-semibold">③ 広域イーサ (L2)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
-              <tr>
-                <td className="px-3 py-2 font-medium">網がやること</td>
-                <td className="px-3 py-2 text-xs">拠点間のルーティング</td>
-                <td className="px-3 py-2 text-xs text-violet-700 dark:text-violet-400">運ぶことだけ</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2 font-medium">経路を決めるのは</td>
-                <td className="px-3 py-2 text-xs">キャリア</td>
-                <td className="px-3 py-2 text-xs text-violet-700 dark:text-violet-400">自社</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2 font-medium">セグメント</td>
-                <td className="px-3 py-2 text-xs">拠点ごとに別</td>
-                <td className="px-3 py-2 text-xs text-violet-700 dark:text-violet-400">全拠点で同じにできる</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2 font-medium">流せるもの</td>
-                <td className="px-3 py-2 text-xs">基本は IPv4 だけ</td>
-                <td className="px-3 py-2 text-xs text-violet-700 dark:text-violet-400">
-                  IPv6・マルチキャスト・独自プロトコルも
-                </td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2 font-medium">拠点を増やすとき</td>
-                <td className="px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">申し込めば繋がる</td>
-                <td className="px-3 py-2 text-xs">自社側の設計もやり直す</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2 font-medium">難易度</td>
-                <td className="px-3 py-2 text-xs text-emerald-700 dark:text-emerald-400">楽</td>
-                <td className="px-3 py-2 text-xs">自由だが、その分むずかしい</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          MAC だけで届く世界だと聞くと、<strong>他社の MAC を知っていれば入り込めるのでは</strong>と思えます。
+          結論から言うと<strong>できません</strong>。理由は、前に出てきた
+          <strong>VRF の話とまったく同じ構図</strong>です。
+        </p>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          キャリアのスイッチは MAC を学習して表を作りますが、
+          その表は<strong>契約者ごとに完全に分かれています</strong>。
+          そして<strong>どの表を使うかは入口のポートで決まります</strong>。
+          A 社の回線から入ってきたフレームは、<strong>A 社の表しか参照されません</strong>。
+        </p>
 
-        <div className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-lg border-2 border-violet-300 bg-violet-50/40 p-4 dark:border-violet-700 dark:bg-violet-950/30">
-            <p className="text-sm font-bold text-violet-900 dark:text-violet-200">
-              これが要るときに選ぶ
-            </p>
-            <ul className="mt-2 flex flex-col gap-1 text-sm text-violet-900/90 dark:text-violet-300">
-              <li>・データセンター間で<strong>ストレージを同期</strong>したい</li>
-              <li>・サーバを<strong>IP を変えずに別拠点へ移設</strong>したい</li>
-              <li>・<strong>L2 でしか動かない機器やソフト</strong>がある</li>
-              <li>・IPv6 やマルチキャストを拠点間で流したい</li>
-            </ul>
-          </div>
-          <div className="rounded-lg border-2 border-red-300 bg-red-50/40 p-4 dark:border-red-800 dark:bg-red-950/30">
-            <p className="text-sm font-bold text-red-900 dark:text-red-200">
-              引き換えに引き受けるリスク
-            </p>
-            <ul className="mt-2 flex flex-col gap-1 text-sm text-red-900/90 dark:text-red-300">
-              <li>
-                ・<strong>ブロードキャストが全拠点に流れる</strong>。
-                拠点が増えるほど無駄な通信が増える
-              </li>
-              <li>
-                ・<strong>ループを作ると全拠点が同時に止まる</strong>。
-                事故の影響範囲が社内全体になる
-              </li>
-              <li>・経路設計の責任が<strong>全部自社に来る</strong></li>
-            </ul>
-          </div>
-        </div>
+        <PerCustomerMacDiagram />
 
-        <div className="rounded-lg border border-blue-200 bg-blue-50/60 px-5 py-4 dark:border-blue-900/50 dark:bg-blue-950/30">
-          <p className="text-sm text-blue-900/90 dark:text-blue-300">
-            一言でいうと <strong>「拠点間に、長い LAN ケーブルを 1 本通す」</strong>。
-            <strong>自由度を取るか、管理の楽さを取るか</strong>で ② と分かれます。
-            普通の企業の拠点間接続なら、<strong>② で足りることがほとんど</strong>です。
+        <p className="text-zinc-700 dark:text-zinc-300">
+          実際に A 社の拠点から B 社の PC{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-800">bb:bb:bb:bb:bb:bb</code>{" "}
+          宛のフレームを流すと、こうなります。
+        </p>
+        <ol className="ml-5 flex list-decimal flex-col gap-1.5 text-[15px] text-zinc-700 dark:text-zinc-300">
+          <li>PE が <strong>A 社の MAC テーブル</strong>でその MAC を探す</li>
+          <li><strong>載っていない</strong> (B 社の表にしかないので)</li>
+          <li>知らない MAC 宛なので、<strong>A 社のドメインの中だけに</strong>流す</li>
+          <li>
+            <strong>B 社のポートにはそもそも出て行かない</strong>。返事も来ないので永久に学習されない
+          </li>
+        </ol>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          前に出てきた「攻撃パケットは PE まで届くが、行き先が経路表に無いのでそこで終わる」と同じで、
+          <strong>弾かれるのではなく、行き先が分からず終わる</strong>という挙動です。
+        </p>
+
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            そもそも MAC は秘密の値ではない
+          </p>
+          <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+            同じセグメントにいれば ARP で誰でも取れますし、機器のラベルに書いてあることもあります。
+            なので<strong>「MAC を知られたら危ない」という設計にはそもそもなっていません</strong>。
+            分離しているのは<strong>入口</strong>であって、アドレスの秘匿ではない
+            ── という点も VRF と共通です。
           </p>
         </div>
+
+        <h3 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          裏返し: 自社の中は素通りになる
+        </h3>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          他社からは届かない一方で、<strong>同じセグメントに入れた相手には自由に送りつけられます</strong>。
+          東京の PC から大阪のサーバへ、<strong>ルータもファイアウォールも通らずに直接届く</strong>。
+          隣の席のように使えるということは、<strong>間に何も挟まっていない</strong>ということでもあります。
+        </p>
+
+        <FlatSegmentRiskDiagram />
+
+        <div className="rounded-lg border border-red-200 bg-red-50/50 px-5 py-4 dark:border-red-900/50 dark:bg-red-950/30">
+          <p className="text-sm font-medium text-red-900 dark:text-red-200">
+            L2 を全国に広げる = 事故も全国に広がる
+          </p>
+          <ul className="mt-2 flex flex-col gap-1.5 text-sm text-red-900/90 dark:text-red-300">
+            <li>
+              ・<strong>止める場所が無い</strong>。拠点間の通信を絞りたくなっても、
+              間にフィルタをかける機器が存在しない
+            </li>
+            <li>
+              ・<strong>呼びかけが全拠点に届く</strong>。
+              東京の PC が「10.0.1.6 さんいますか?」と叫べば、その声は大阪にも流れる
+            </li>
+            <li>
+              ・<strong>ループを作ると全拠点が同時に止まる</strong>。
+              1 拠点の配線ミスが社内全体の障害になる
+            </li>
+          </ul>
+          <p className="mt-3 text-sm text-red-900/90 dark:text-red-300">
+            ② の IP-VPN なら拠点間にルータが挟まるので、<strong>そこでフィルタをかけられます</strong>。
+            止めたいときに止められる場所があるかどうかが、両者のいちばん実務的な差です。
+          </p>
+        </div>
+
       </section>
 
     </main>
@@ -814,53 +899,135 @@ function MplsLabelDiagram() {
   );
 }
 
+function VrfEntranceDiagram() {
+  const ports = [
+    { port: "1 番ポート", from: "A 社の CE と繋がる回線", table: "A 社用の経路表 (VRF)", color: "emerald" as const, y: 62 },
+    { port: "2 番ポート", from: "B 社の CE と繋がる回線", table: "B 社用の経路表 (VRF)", color: "blue" as const, y: 122 },
+    { port: "9 番ポート", from: "上流のインターネット", table: "インターネット用の経路表", color: "zinc" as const, y: 182 },
+  ];
+
+  const colors: Record<string, { box: string; text: string; sub: string; line: string }> = {
+    emerald: {
+      box: "fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700",
+      text: "fill-emerald-900 dark:fill-emerald-200",
+      sub: "fill-emerald-700 dark:fill-emerald-400",
+      line: "stroke-emerald-500",
+    },
+    blue: {
+      box: "fill-blue-50 stroke-blue-400 dark:fill-blue-950/30 dark:stroke-blue-700",
+      text: "fill-blue-900 dark:fill-blue-200",
+      sub: "fill-blue-700 dark:fill-blue-400",
+      line: "stroke-blue-500",
+    },
+    zinc: {
+      box: "fill-zinc-50 stroke-zinc-300 dark:fill-zinc-900 dark:stroke-zinc-700",
+      text: "fill-zinc-700 dark:fill-zinc-300",
+      sub: "fill-zinc-500 dark:fill-zinc-500",
+      line: "stroke-zinc-400 dark:stroke-zinc-600",
+    },
+  };
+
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 700 268" className="mx-auto w-full">
+        <text x="130" y="34" textAnchor="middle" className="fill-zinc-500 text-[9px] font-semibold dark:fill-zinc-400">
+          どこから入ってきたか
+        </text>
+        <text x="530" y="34" textAnchor="middle" className="fill-zinc-500 text-[9px] font-semibold dark:fill-zinc-400">
+          引かれる経路表
+        </text>
+
+        <rect x="288" y="46" width="84" height="176" rx="8" className="fill-amber-50/60 stroke-amber-400 dark:fill-amber-950/20 dark:stroke-amber-700" strokeWidth="1.5" />
+        <text x="330" y="122" textAnchor="middle" className="fill-amber-800 text-[9px] font-bold dark:fill-amber-300">PE</text>
+        <text x="330" y="138" textAnchor="middle" className="fill-amber-700 text-[8px] dark:fill-amber-400">ルータ</text>
+
+        {ports.map((p) => {
+          const c = colors[p.color];
+          return (
+            <g key={p.port}>
+              <rect x="16" y={p.y} width="200" height="44" rx="7" className={c.box} strokeWidth="1.4" />
+              <text x="116" y={p.y + 19} textAnchor="middle" className={`${c.text} text-[10px] font-bold`}>
+                {p.port}
+              </text>
+              <text x="116" y={p.y + 34} textAnchor="middle" className={`${c.sub} text-[8px]`}>
+                {p.from}
+              </text>
+
+              <line x1="216" y1={p.y + 22} x2="286" y2={p.y + 22} className={c.line} strokeWidth="2" />
+              <line x1="374" y1={p.y + 22} x2="440" y2={p.y + 22} className={c.line} strokeWidth="2" />
+
+              <rect x="442" y={p.y} width="242" height="44" rx="7" className={c.box} strokeWidth="1.4" />
+              <text x="563" y={p.y + 27} textAnchor="middle" className={`${c.text} text-[10px] font-bold`}>
+                {p.table}
+              </text>
+            </g>
+          );
+        })}
+
+        <text x="350" y="252" textAnchor="middle" className="fill-zinc-700 text-[10px] font-semibold dark:fill-zinc-300">
+          入口とテーブルは設定で 1 対 1 に紐づいている。送信元 IP は見ていない
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 function NoRouteDiagram() {
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-      <svg viewBox="0 0 700 280" className="mx-auto w-full">
-        <rect x="190" y="52" width="320" height="176" rx="12" className="fill-amber-50/50 stroke-amber-400 dark:fill-amber-950/20 dark:stroke-amber-700" strokeWidth="1.5" />
-        <text x="350" y="74" textAnchor="middle" className="fill-amber-800 text-[10px] font-semibold dark:fill-amber-300">
+      <svg viewBox="0 0 700 300" className="mx-auto w-full">
+        <rect x="190" y="44" width="320" height="196" rx="12" className="fill-amber-50/50 stroke-amber-400 dark:fill-amber-950/20 dark:stroke-amber-700" strokeWidth="1.5" />
+        <text x="350" y="66" textAnchor="middle" className="fill-amber-800 text-[10px] font-semibold dark:fill-amber-300">
           キャリアの PE ルータ（物理的には 1 台）
         </text>
 
-        <rect x="206" y="88" width="130" height="124" rx="7" className="fill-white stroke-zinc-300 dark:fill-zinc-950 dark:stroke-zinc-700" strokeWidth="1.3" />
-        <text x="271" y="108" textAnchor="middle" className="fill-zinc-700 text-[9px] font-bold dark:fill-zinc-300">インターネット用</text>
-        <text x="271" y="122" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">の経路表</text>
-        <text x="271" y="146" textAnchor="middle" className="fill-zinc-600 text-[8px] dark:fill-zinc-400">0.0.0.0/0 → 上流へ</text>
-        <text x="271" y="162" textAnchor="middle" className="fill-zinc-600 text-[8px] dark:fill-zinc-400">203.0.113.0/24 → …</text>
-        <text x="271" y="186" textAnchor="middle" className="fill-red-600 text-[8px] font-bold dark:fill-red-400">A 社への経路</text>
-        <text x="271" y="200" textAnchor="middle" className="fill-red-600 text-[8px] font-bold dark:fill-red-400">→ 載っていない</text>
+        <rect x="206" y="80" width="130" height="148" rx="7" className="fill-white stroke-zinc-300 dark:fill-zinc-950 dark:stroke-zinc-700" strokeWidth="1.3" />
+        <text x="271" y="98" textAnchor="middle" className="fill-zinc-700 text-[9px] font-bold dark:fill-zinc-300">インターネット用</text>
+        <text x="271" y="111" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">の経路表</text>
+        <text x="271" y="132" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">0.0.0.0/0 → 上流へ</text>
+        <text x="271" y="147" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">203.0.113.0/24 → …</text>
+        <line x1="216" y1="158" x2="326" y2="158" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
+        <text x="271" y="175" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">10.0.0.5 を検索</text>
+        <text x="271" y="192" textAnchor="middle" className="fill-red-600 text-[9px] font-bold dark:fill-red-400">→ 該当なし</text>
+        <text x="271" y="208" textAnchor="middle" className="fill-red-500 text-[8px] dark:fill-red-400">A 社の経路が無い</text>
 
-        <line x1="350" y1="88" x2="350" y2="212" className="stroke-amber-500" strokeWidth="1.6" strokeDasharray="5 3" />
+        <line x1="350" y1="80" x2="350" y2="228" className="stroke-amber-500" strokeWidth="1.6" strokeDasharray="5 3" />
 
-        <rect x="364" y="88" width="130" height="124" rx="7" className="fill-white stroke-emerald-400 dark:fill-zinc-950 dark:stroke-emerald-700" strokeWidth="1.3" />
-        <text x="429" y="108" textAnchor="middle" className="fill-emerald-800 text-[9px] font-bold dark:fill-emerald-300">A 社用の経路表</text>
-        <text x="429" y="122" textAnchor="middle" className="fill-emerald-600 text-[8px] dark:fill-emerald-400">(VRF)</text>
-        <text x="429" y="150" textAnchor="middle" className="fill-zinc-600 text-[8px] dark:fill-zinc-400">10.0.0.0/16 → 東京</text>
-        <text x="429" y="168" textAnchor="middle" className="fill-zinc-600 text-[8px] dark:fill-zinc-400">10.0.1.0/24 → 大阪</text>
-        <text x="429" y="194" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">A 社の経路だけが載る</text>
+        <rect x="364" y="80" width="130" height="148" rx="7" className="fill-white stroke-emerald-400 dark:fill-zinc-950 dark:stroke-emerald-700" strokeWidth="1.3" />
+        <text x="429" y="98" textAnchor="middle" className="fill-emerald-800 text-[9px] font-bold dark:fill-emerald-300">A 社用の経路表</text>
+        <text x="429" y="111" textAnchor="middle" className="fill-emerald-600 text-[8px] dark:fill-emerald-400">(VRF)</text>
+        <text x="429" y="132" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">10.0.0.0/16 → 東京</text>
+        <text x="429" y="147" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">10.0.1.0/24 → 大阪</text>
+        <line x1="374" y1="158" x2="484" y2="158" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
+        <text x="429" y="175" textAnchor="middle" className="fill-emerald-700 font-mono text-[8px] dark:fill-emerald-400">10.0.0.5 はここに載る</text>
+        <text x="429" y="192" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">でも左の表からは</text>
+        <text x="429" y="206" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">この表は見えない</text>
 
-        <text x="350" y="224" textAnchor="middle" className="fill-amber-700 text-[8px] font-semibold dark:fill-amber-400">
+        <text x="350" y="236" textAnchor="middle" className="fill-amber-700 text-[8px] font-semibold dark:fill-amber-400">
           この 2 つは互いに参照しない
         </text>
 
-        <rect x="20" y="112" width="140" height="56" rx="8" className="fill-zinc-50 stroke-zinc-300 dark:fill-zinc-900 dark:stroke-zinc-700" strokeWidth="1.4" />
-        <text x="90" y="136" textAnchor="middle" className="fill-zinc-700 text-[10px] font-bold dark:fill-zinc-300">インターネット</text>
-        <text x="90" y="152" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">誰かの攻撃パケット</text>
-        <line x1="160" y1="140" x2="206" y2="140" className="stroke-zinc-400 dark:stroke-zinc-600" strokeWidth="2" />
+        <rect x="10" y="96" width="168" height="84" rx="8" className="fill-zinc-50 stroke-zinc-300 dark:fill-zinc-900 dark:stroke-zinc-700" strokeWidth="1.4" />
+        <text x="94" y="118" textAnchor="middle" className="fill-zinc-700 text-[10px] font-bold dark:fill-zinc-300">インターネット</text>
+        <text x="94" y="133" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">誰かの攻撃パケット</text>
+        <text x="94" y="152" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">送信元 198.51.100.77</text>
+        <text x="94" y="167" textAnchor="middle" className="fill-zinc-800 font-mono text-[8px] font-bold dark:fill-zinc-200">宛先 10.0.0.5:22</text>
+        <line x1="178" y1="138" x2="206" y2="138" className="stroke-zinc-400 dark:stroke-zinc-600" strokeWidth="2" />
 
-        <line x1="341" y1="131" x2="359" y2="149" className="stroke-red-500" strokeWidth="2.6" />
-        <line x1="359" y1="131" x2="341" y2="149" className="stroke-red-500" strokeWidth="2.6" />
+        <line x1="341" y1="129" x2="359" y2="147" className="stroke-red-500" strokeWidth="2.6" />
+        <line x1="359" y1="129" x2="341" y2="147" className="stroke-red-500" strokeWidth="2.6" />
 
-        <rect x="540" y="112" width="140" height="56" rx="8" className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.5" />
-        <text x="610" y="136" textAnchor="middle" className="fill-emerald-900 text-[10px] font-bold dark:fill-emerald-200">A 社の拠点</text>
-        <text x="610" y="152" textAnchor="middle" className="fill-emerald-700 text-[8px] dark:fill-emerald-400">10.0.0.0/16</text>
-        <line x1="494" y1="140" x2="540" y2="140" className="stroke-emerald-500" strokeWidth="2.5" />
+        <rect x="534" y="96" width="156" height="84" rx="8" className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.5" />
+        <text x="612" y="120" textAnchor="middle" className="fill-emerald-900 text-[10px] font-bold dark:fill-emerald-200">A 社の拠点</text>
+        <text x="612" y="138" textAnchor="middle" className="fill-emerald-700 font-mono text-[8px] dark:fill-emerald-400">10.0.0.0/16</text>
+        <text x="612" y="158" textAnchor="middle" className="fill-emerald-800 font-mono text-[8px] font-bold dark:fill-emerald-300">10.0.0.5</text>
+        <text x="612" y="171" textAnchor="middle" className="fill-emerald-600 text-[8px] dark:fill-emerald-500">狙われたサーバー</text>
+        <line x1="494" y1="138" x2="534" y2="138" className="stroke-emerald-500" strokeWidth="2.5" />
 
-        <text x="350" y="252" textAnchor="middle" className="fill-zinc-700 text-[10px] font-semibold dark:fill-zinc-300">
-          攻撃パケットは PE まで届く。でも「次にどこへ送るか」が経路表に無い
+        <text x="350" y="264" textAnchor="middle" className="fill-zinc-700 text-[10px] font-semibold dark:fill-zinc-300">
+          攻撃パケットは PE まで届く。でも「10.0.0.5 に行くにはどこへ送るか」が経路表に無い
         </text>
-        <text x="350" y="272" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
+        <text x="350" y="284" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
           捨てているのではなく、行き先が分からずそこで終わる
         </text>
       </svg>
@@ -868,70 +1035,187 @@ function NoRouteDiagram() {
   );
 }
 
-function L2L3CompareDiagram() {
+function SameSegmentDiagram() {
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 700 292" className="mx-auto w-full">
+        <rect x="14" y="52" width="290" height="180" rx="10" className="fill-emerald-50/50 stroke-emerald-400 dark:fill-emerald-950/20 dark:stroke-emerald-700" strokeWidth="1.6" />
+        <text x="159" y="76" textAnchor="middle" className="fill-emerald-800 text-[10px] font-bold dark:fill-emerald-300">
+          同じセグメント
+        </text>
+        <text x="159" y="92" textAnchor="middle" className="fill-emerald-700 font-mono text-[9px] dark:fill-emerald-400">
+          10.0.1.0/24
+        </text>
+
+        <rect x="34" y="112" width="96" height="48" rx="7" className="fill-white stroke-emerald-400 dark:fill-zinc-950 dark:stroke-emerald-700" strokeWidth="1.3" />
+        <text x="82" y="132" textAnchor="middle" className="fill-zinc-800 text-[10px] font-bold dark:fill-zinc-200">自分の PC</text>
+        <text x="82" y="148" textAnchor="middle" className="fill-zinc-600 font-mono text-[9px] dark:fill-zinc-400">10.0.1.5</text>
+
+        <rect x="188" y="112" width="96" height="48" rx="7" className="fill-white stroke-emerald-400 dark:fill-zinc-950 dark:stroke-emerald-700" strokeWidth="1.3" />
+        <text x="236" y="132" textAnchor="middle" className="fill-zinc-800 text-[10px] font-bold dark:fill-zinc-200">同僚の PC</text>
+        <text x="236" y="148" textAnchor="middle" className="fill-zinc-600 font-mono text-[9px] dark:fill-zinc-400">10.0.1.6</text>
+
+        <line x1="130" y1="136" x2="186" y2="136" className="stroke-emerald-500" strokeWidth="2.4" />
+        <text x="158" y="180" textAnchor="middle" className="fill-emerald-700 text-[9px] font-bold dark:fill-emerald-400">
+          ① そのまま直接届く
+        </text>
+        <text x="158" y="196" textAnchor="middle" className="fill-emerald-600 text-[8px] dark:fill-emerald-500">
+          ルータを通らない
+        </text>
+        <text x="158" y="216" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">
+          宛先の指定に使うのは MAC
+        </text>
+
+        <line x1="304" y1="136" x2="336" y2="136" className="stroke-amber-500" strokeWidth="2.4" />
+        <rect x="338" y="112" width="78" height="48" rx="7" className="fill-amber-50 stroke-amber-400 dark:fill-amber-950/30 dark:stroke-amber-700" strokeWidth="1.5" />
+        <text x="377" y="132" textAnchor="middle" className="fill-amber-900 text-[10px] font-bold dark:fill-amber-200">ルータ</text>
+        <text x="377" y="148" textAnchor="middle" className="fill-amber-700 text-[8px] dark:fill-amber-400">出口</text>
+        <line x1="416" y1="136" x2="448" y2="136" className="stroke-amber-500" strokeWidth="2.4" />
+
+        <text x="377" y="180" textAnchor="middle" className="fill-amber-700 text-[9px] font-bold dark:fill-amber-400">
+          ② 違う帯なので
+        </text>
+        <text x="377" y="196" textAnchor="middle" className="fill-amber-700 text-[9px] font-bold dark:fill-amber-400">
+          ルータに渡す
+        </text>
+
+        <rect x="450" y="52" width="236" height="180" rx="10" className="fill-zinc-50 stroke-zinc-300 dark:fill-zinc-900/60 dark:stroke-zinc-700" strokeWidth="1.6" />
+        <text x="568" y="76" textAnchor="middle" className="fill-zinc-700 text-[10px] font-bold dark:fill-zinc-300">
+          別のセグメント
+        </text>
+        <text x="568" y="92" textAnchor="middle" className="fill-zinc-500 font-mono text-[9px] dark:fill-zinc-400">
+          10.0.2.0/24
+        </text>
+        <rect x="490" y="112" width="156" height="48" rx="7" className="fill-white stroke-zinc-300 dark:fill-zinc-950 dark:stroke-zinc-700" strokeWidth="1.3" />
+        <text x="568" y="132" textAnchor="middle" className="fill-zinc-800 text-[10px] font-bold dark:fill-zinc-200">別拠点のサーバ</text>
+        <text x="568" y="148" textAnchor="middle" className="fill-zinc-600 font-mono text-[9px] dark:fill-zinc-400">10.0.2.7</text>
+        <text x="568" y="196" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">
+          直接は届けられない相手
+        </text>
+
+        <text x="350" y="266" textAnchor="middle" className="fill-zinc-700 text-[10px] font-semibold dark:fill-zinc-300">
+          「同じセグメント」＝ ルータを通らずに直接やり取りできる範囲
+        </text>
+        <text x="350" y="284" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
+          送る前に毎回、宛先が同じ帯かどうかを判定している
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+function PerCustomerMacDiagram() {
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
       <svg viewBox="0 0 700 300" className="mx-auto w-full">
-        <line x1="350" y1="30" x2="350" y2="270" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1.2" />
-
-        <text x="175" y="34" textAnchor="middle" className="fill-amber-800 text-[11px] font-bold dark:fill-amber-300">
-          ② IP-VPN = L3 (IP) でつなぐ
+        <rect x="190" y="44" width="320" height="196" rx="12" className="fill-amber-50/50 stroke-amber-400 dark:fill-amber-950/20 dark:stroke-amber-700" strokeWidth="1.5" />
+        <text x="350" y="66" textAnchor="middle" className="fill-amber-800 text-[10px] font-semibold dark:fill-amber-300">
+          キャリアのスイッチ（物理的には 1 台）
         </text>
 
-        <rect x="16" y="120" width="76" height="56" rx="8" className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.5" />
-        <text x="54" y="144" textAnchor="middle" className="fill-emerald-900 text-[10px] font-bold dark:fill-emerald-200">拠点 A</text>
-        <text x="54" y="161" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">10.0.1.0/24</text>
+        <rect x="206" y="80" width="130" height="148" rx="7" className="fill-white stroke-emerald-400 dark:fill-zinc-950 dark:stroke-emerald-700" strokeWidth="1.3" />
+        <text x="271" y="98" textAnchor="middle" className="fill-emerald-800 text-[9px] font-bold dark:fill-emerald-300">A 社用の</text>
+        <text x="271" y="111" textAnchor="middle" className="fill-emerald-800 text-[9px] font-bold dark:fill-emerald-300">MAC テーブル</text>
+        <text x="271" y="132" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">aa:…:11 → 東京</text>
+        <text x="271" y="147" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">aa:…:22 → 大阪</text>
+        <line x1="216" y1="158" x2="326" y2="158" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
+        <text x="271" y="175" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">bb:…:ff を検索</text>
+        <text x="271" y="192" textAnchor="middle" className="fill-red-600 text-[9px] font-bold dark:fill-red-400">→ 該当なし</text>
+        <text x="271" y="208" textAnchor="middle" className="fill-red-500 text-[8px] dark:fill-red-400">B 社の MAC は無い</text>
 
-        <rect x="104" y="98" width="142" height="100" rx="10" className="fill-amber-50 stroke-amber-400 dark:fill-amber-950/30 dark:stroke-amber-700" strokeWidth="1.6" />
-        <text x="175" y="122" textAnchor="middle" className="fill-amber-900 text-[10px] font-bold dark:fill-amber-200">キャリアの網</text>
-        <rect x="140" y="134" width="70" height="30" rx="5" className="fill-amber-100 stroke-amber-500 dark:fill-amber-900/50 dark:stroke-amber-600" strokeWidth="1.3" />
-        <text x="175" y="154" textAnchor="middle" className="fill-amber-900 text-[10px] font-bold dark:fill-amber-200">ルータ</text>
-        <text x="175" y="184" textAnchor="middle" className="fill-amber-700 text-[8px] dark:fill-amber-400">経路はキャリアが持つ</text>
+        <line x1="350" y1="80" x2="350" y2="228" className="stroke-amber-500" strokeWidth="1.6" strokeDasharray="5 3" />
 
-        <rect x="258" y="120" width="76" height="56" rx="8" className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.5" />
-        <text x="296" y="144" textAnchor="middle" className="fill-emerald-900 text-[10px] font-bold dark:fill-emerald-200">拠点 B</text>
-        <text x="296" y="161" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">10.0.2.0/24</text>
+        <rect x="364" y="80" width="130" height="148" rx="7" className="fill-white stroke-blue-400 dark:fill-zinc-950 dark:stroke-blue-700" strokeWidth="1.3" />
+        <text x="429" y="98" textAnchor="middle" className="fill-blue-800 text-[9px] font-bold dark:fill-blue-300">B 社用の</text>
+        <text x="429" y="111" textAnchor="middle" className="fill-blue-800 text-[9px] font-bold dark:fill-blue-300">MAC テーブル</text>
+        <text x="429" y="132" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">bb:…:ff → B 社の拠点</text>
+        <line x1="374" y1="158" x2="484" y2="158" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
+        <text x="429" y="177" textAnchor="middle" className="fill-blue-700 text-[8px] dark:fill-blue-400">ここには載っている</text>
+        <text x="429" y="194" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">でも A 社側からは</text>
+        <text x="429" y="208" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">この表を参照しない</text>
 
-        <line x1="92" y1="148" x2="104" y2="148" className="stroke-amber-500" strokeWidth="2.2" />
-        <line x1="246" y1="148" x2="258" y2="148" className="stroke-amber-500" strokeWidth="2.2" />
-
-        <text x="175" y="232" textAnchor="middle" className="fill-zinc-700 text-[9px] font-semibold dark:fill-zinc-300">
-          セグメントは拠点ごとに別
-        </text>
-        <text x="175" y="250" textAnchor="middle" className="fill-zinc-600 text-[9px] dark:fill-zinc-400">
-          拠点をまたぐ配送はキャリアがやる
-        </text>
-
-        <text x="525" y="34" textAnchor="middle" className="fill-violet-800 text-[11px] font-bold dark:fill-violet-300">
-          ③ 広域イーサ = L2 (Ethernet) でつなぐ
+        <text x="350" y="236" textAnchor="middle" className="fill-amber-700 text-[8px] font-semibold dark:fill-amber-400">
+          入口が A 社の回線なら、見るのは左の表だけ
         </text>
 
-        <rect x="366" y="120" width="76" height="56" rx="8" className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.5" />
-        <text x="404" y="144" textAnchor="middle" className="fill-emerald-900 text-[10px] font-bold dark:fill-emerald-200">拠点 A</text>
-        <text x="404" y="161" textAnchor="middle" className="fill-violet-700 font-mono text-[8px] dark:fill-violet-400">10.0.0.0/24</text>
+        <rect x="10" y="70" width="168" height="76" rx="8" className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.4" />
+        <text x="94" y="92" textAnchor="middle" className="fill-emerald-900 text-[10px] font-bold dark:fill-emerald-200">A 社の拠点</text>
+        <text x="94" y="108" textAnchor="middle" className="fill-emerald-700 text-[8px] dark:fill-emerald-400">送りたいフレーム</text>
+        <text x="94" y="128" textAnchor="middle" className="fill-zinc-800 font-mono text-[8px] font-bold dark:fill-zinc-200">宛先 bb:bb:bb:bb:bb:bb</text>
+        <line x1="178" y1="112" x2="206" y2="112" className="stroke-emerald-500" strokeWidth="2" />
 
-        <rect x="454" y="98" width="142" height="100" rx="10" className="fill-violet-50 stroke-violet-400 dark:fill-violet-950/30 dark:stroke-violet-700" strokeWidth="1.6" />
-        <text x="525" y="122" textAnchor="middle" className="fill-violet-900 text-[10px] font-bold dark:fill-violet-200">キャリアの網</text>
-        <rect x="484" y="134" width="82" height="30" rx="5" className="fill-violet-100 stroke-violet-500 dark:fill-violet-900/50 dark:stroke-violet-600" strokeWidth="1.3" />
-        <text x="525" y="154" textAnchor="middle" className="fill-violet-900 text-[10px] font-bold dark:fill-violet-200">スイッチ</text>
-        <text x="525" y="184" textAnchor="middle" className="fill-violet-700 text-[8px] dark:fill-violet-400">運ぶだけ。経路は持たない</text>
+        <rect x="10" y="176" width="168" height="60" rx="8" className="fill-emerald-50/60 stroke-emerald-300 dark:fill-emerald-950/20 dark:stroke-emerald-800" strokeWidth="1.3" />
+        <text x="94" y="199" textAnchor="middle" className="fill-emerald-800 text-[9px] font-bold dark:fill-emerald-300">A 社の他拠点</text>
+        <text x="94" y="216" textAnchor="middle" className="fill-emerald-700 text-[8px] dark:fill-emerald-400">ここにだけ流される</text>
+        <line x1="206" y1="206" x2="178" y2="206" className="stroke-emerald-500" strokeWidth="2" strokeDasharray="4 3" />
 
-        <rect x="608" y="120" width="76" height="56" rx="8" className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.5" />
-        <text x="646" y="144" textAnchor="middle" className="fill-emerald-900 text-[10px] font-bold dark:fill-emerald-200">拠点 B</text>
-        <text x="646" y="161" textAnchor="middle" className="fill-violet-700 font-mono text-[8px] dark:fill-violet-400">10.0.0.0/24</text>
+        <line x1="341" y1="103" x2="359" y2="121" className="stroke-red-500" strokeWidth="2.6" />
+        <line x1="359" y1="103" x2="341" y2="121" className="stroke-red-500" strokeWidth="2.6" />
 
-        <line x1="442" y1="148" x2="454" y2="148" className="stroke-violet-500" strokeWidth="2.2" />
-        <line x1="596" y1="148" x2="608" y2="148" className="stroke-violet-500" strokeWidth="2.2" />
+        <rect x="534" y="82" width="156" height="76" rx="8" className="fill-blue-50 stroke-blue-400 dark:fill-blue-950/30 dark:stroke-blue-700" strokeWidth="1.5" />
+        <text x="612" y="106" textAnchor="middle" className="fill-blue-900 text-[10px] font-bold dark:fill-blue-200">B 社の拠点</text>
+        <text x="612" y="124" textAnchor="middle" className="fill-blue-700 font-mono text-[8px] dark:fill-blue-400">bb:bb:bb:bb:bb:bb</text>
+        <text x="612" y="142" textAnchor="middle" className="fill-red-600 text-[8px] font-bold dark:fill-red-400">ここには出て行かない</text>
+        <line x1="494" y1="120" x2="534" y2="120" className="stroke-zinc-300 dark:stroke-zinc-700" strokeWidth="2" strokeDasharray="4 4" />
 
-        <text x="525" y="232" textAnchor="middle" className="fill-violet-700 text-[9px] font-semibold dark:fill-violet-400">
-          全拠点が同じセグメント
+        <text x="350" y="266" textAnchor="middle" className="fill-zinc-700 text-[10px] font-semibold dark:fill-zinc-300">
+          知らない MAC 宛なので、A 社のドメインの中にだけ流される
         </text>
-        <text x="525" y="250" textAnchor="middle" className="fill-zinc-600 text-[9px] dark:fill-zinc-400">
-          ルーティングは自社の機器でやる
+        <text x="350" y="284" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
+          B 社のポートには出て行かず、返事も来ないので永久に学習されない
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+function FlatSegmentRiskDiagram() {
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 700 250" className="mx-auto w-full">
+        <text x="350" y="24" textAnchor="middle" className="fill-violet-800 text-[11px] font-bold dark:fill-violet-300">
+          ③ 広域イーサ — 同じセグメントなので、間に何も無い
         </text>
 
-        <text x="350" y="286" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
-          同じ「閉域網を借りる」でも、網に何をやらせるかが違う
+        <rect x="46" y="40" width="150" height="48" rx="8" className="fill-violet-50 stroke-violet-400 dark:fill-violet-950/30 dark:stroke-violet-700" strokeWidth="1.5" />
+        <text x="121" y="60" textAnchor="middle" className="fill-violet-900 text-[10px] font-bold dark:fill-violet-200">東京の PC</text>
+        <text x="121" y="76" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">10.0.1.5</text>
+
+        <rect x="504" y="40" width="150" height="48" rx="8" className="fill-violet-50 stroke-violet-400 dark:fill-violet-950/30 dark:stroke-violet-700" strokeWidth="1.5" />
+        <text x="579" y="60" textAnchor="middle" className="fill-violet-900 text-[10px] font-bold dark:fill-violet-200">大阪のサーバ</text>
+        <text x="579" y="76" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">10.0.1.6</text>
+
+        <line x1="196" y1="64" x2="504" y2="64" className="stroke-red-500" strokeWidth="2.4" />
+        <text x="350" y="56" textAnchor="middle" className="fill-red-600 text-[9px] font-bold dark:fill-red-400">
+          そのまま直接届く
+        </text>
+        <text x="350" y="84" textAnchor="middle" className="fill-red-500 text-[9px] font-semibold dark:fill-red-400">
+          止める場所が存在しない
+        </text>
+
+        <line x1="40" y1="118" x2="660" y2="118" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
+
+        <text x="350" y="148" textAnchor="middle" className="fill-amber-800 text-[11px] font-bold dark:fill-amber-300">
+          ② IP-VPN — 別セグメントなので、必ずルータを通る
+        </text>
+
+        <rect x="46" y="164" width="150" height="48" rx="8" className="fill-amber-50 stroke-amber-400 dark:fill-amber-950/30 dark:stroke-amber-700" strokeWidth="1.5" />
+        <text x="121" y="184" textAnchor="middle" className="fill-amber-900 text-[10px] font-bold dark:fill-amber-200">東京の PC</text>
+        <text x="121" y="200" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">10.0.1.5</text>
+
+        <rect x="308" y="164" width="84" height="48" rx="8" className="fill-emerald-50 stroke-emerald-500 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.7" />
+        <text x="350" y="184" textAnchor="middle" className="fill-emerald-900 text-[10px] font-bold dark:fill-emerald-200">ルータ</text>
+        <text x="350" y="200" textAnchor="middle" className="fill-emerald-700 text-[8px] dark:fill-emerald-400">/ FW</text>
+
+        <rect x="504" y="164" width="150" height="48" rx="8" className="fill-amber-50 stroke-amber-400 dark:fill-amber-950/30 dark:stroke-amber-700" strokeWidth="1.5" />
+        <text x="579" y="184" textAnchor="middle" className="fill-amber-900 text-[10px] font-bold dark:fill-amber-200">大阪のサーバ</text>
+        <text x="579" y="200" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">10.0.2.7</text>
+
+        <line x1="196" y1="188" x2="306" y2="188" className="stroke-amber-500" strokeWidth="2.4" />
+        <line x1="394" y1="188" x2="504" y2="188" className="stroke-amber-500" strokeWidth="2.4" />
+
+        <text x="350" y="234" textAnchor="middle" className="fill-emerald-700 text-[9px] font-bold dark:fill-emerald-400">
+          ここでフィルタをかけられる
         </text>
       </svg>
     </div>
@@ -940,9 +1224,9 @@ function L2L3CompareDiagram() {
 
 function GiantSwitchDiagram() {
   const sites = [
-    { x: 60, port: 210, name: "東京本社", ip: "10.0.0.10" },
-    { x: 265, port: 350, name: "大阪支社", ip: "10.0.0.20" },
-    { x: 470, port: 490, name: "名古屋支社", ip: "10.0.0.30" },
+    { x: 60, port: 210, name: "東京本社", ip: "10.0.1.5" },
+    { x: 265, port: 350, name: "大阪支社", ip: "10.0.1.6" },
+    { x: 470, port: 490, name: "名古屋支社", ip: "10.0.1.7" },
   ];
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
@@ -974,7 +1258,7 @@ function GiantSwitchDiagram() {
         </text>
 
         <text x="350" y="272" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
-          3 拠点とも同じ 10.0.0.0/24。ブロードキャストも 3 拠点すべてに届く
+          3 拠点とも同じ 10.0.1.0/24。呼びかけ (ブロードキャスト) も 3 拠点すべてに届く
         </text>
       </svg>
     </div>
