@@ -104,49 +104,6 @@ export default function NetworkInternetPage() {
 
         <DataJourneyDiagram />
 
-        <div className="flex flex-col gap-3">
-          <JourneyStep
-            num={1}
-            title="DNS で住所を引く"
-            desc="まずブラウザは「youtube.com の IP アドレスは?」と DNS サーバーに聞きます。これは住所録を引く作業。返ってくるのは例えば 142.250.196.110 のような数字。日本の DNS は近いキャッシュから即返してくれることが多く、ここは数ミリ秒で終わる。"
-          />
-          <JourneyStep
-            num={2}
-            title="自宅 → ISP のネットワーク"
-            desc="PC → Wi-Fi/LAN → ルーター → ONU (光) → 電柱の光ケーブル → ISP の収容局。ここまではあなたの契約してる ISP (NTT、NURO、au など) のネットワーク内。"
-          />
-          <JourneyStep
-            num={3}
-            title="IX (インターネットエクスチェンジ) で他社網と繋がる"
-            desc="ISP は東京の JPNAP / NSPIXP / Equinix Tokyo といった「相互接続点」で他社や Google/Meta などの大手と直接繋がっています。YouTube ならここで Google のネットワークに渡る可能性が高い。"
-          />
-          <JourneyStep
-            num={4}
-            title="陸揚げ局 (Cable Landing Station) へ"
-            desc="国外サーバーに繋ぐ場合は、千葉県千倉/丸山や三重県志摩などの陸揚げ局へ。ここで陸の光ファイバーが海底ケーブルに繋ぎ変えられる。建物自体は海岸沿いの目立たない施設で、警備は厳重。"
-          />
-          <JourneyStep
-            num={5}
-            title="海底ケーブルで太平洋を横断 (約 8,000 km)"
-            desc="光のパルスとして 50〜100 ミリ秒かけて太平洋の底を渡る。途中、約 80 km おきに「中継器(リピーター)」が海底に沈んでて信号を増幅。電源は陸から数千ボルトの直流をケーブルに流して供給。"
-          />
-          <JourneyStep
-            num={6}
-            title="米国西海岸の陸揚げ局に到着"
-            desc="Bandon (Oregon)、Hermosa Beach (LA)、Pacific City (Oregon) など。ここから米国の陸上光ファイバー網に渡る。"
-          />
-          <JourneyStep
-            num={7}
-            title="米国 ISP / バックボーンを経由"
-            desc="Google なら自社バックボーンに乗り、目的の YouTube データセンター (もしくは CDN エッジ) まで運ばれる。"
-          />
-          <JourneyStep
-            num={8}
-            title="サーバーが応答 → 同じ道を逆向きに戻る"
-            desc="動画ファイルの中身が今度はアメリカ→日本へ流れてくる。実際には経路の選択は BGP というプロトコルで動的に決まっていて、往路と復路で完全に同じとは限らない。"
-          />
-        </div>
-
         <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
           <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
             気づき: 物理の限界はどこにある?
@@ -396,20 +353,6 @@ function DataJourneyDiagram() {
       <p className="mt-4 text-center text-xs text-zinc-500 dark:text-zinc-500">
         往復で約 100〜150 ms。物理下限は約 80 ms (光速 × 距離)
       </p>
-    </div>
-  );
-}
-
-function JourneyStep({ num, title, desc }: { num: number; title: string; desc: string }) {
-  return (
-    <div className="flex gap-4 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sm font-semibold text-sky-800 dark:bg-sky-950/60 dark:text-sky-300">
-        {num}
-      </div>
-      <div className="flex flex-col gap-1">
-        <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{title}</h4>
-        <p className="text-sm text-zinc-700 dark:text-zinc-300">{desc}</p>
-      </div>
     </div>
   );
 }

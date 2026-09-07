@@ -212,10 +212,6 @@ Step 2. ビット数 ÷ 回線速度 で秒数が出る
               </tbody>
             </table>
           </div>
-          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-            ※ 1 GB = 8 Gbit で換算した理論値。実際はオーバーヘッドや経路の影響で
-            6〜8 割程度に落ちます。
-          </p>
         </div>
 
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
@@ -553,33 +549,6 @@ Step 2. ビット数 ÷ 回線速度 で秒数が出る
             安いハブや古い機器は 100BASE-TX のことがあり、
             その場合は <strong>Cat6 を挿しても 100Mbps</strong> です。
           </p>
-
-          <p className="mt-3 text-sm font-medium text-blue-900 dark:text-blue-200">
-            「1 台だけ妙に遅い」の定番原因
-          </p>
-          <p className="mt-1 text-sm text-blue-900/80 dark:text-blue-300">
-            <strong>その席だけ古い Cat5 が使われている</strong>ケースです。
-            壁の中の配線は更新されないまま残りがちなので、
-            机の下のケーブルを新しくしても改善しません。確認はここを見ます。
-          </p>
-          <ul className="mt-2 flex flex-col gap-1 text-sm text-blue-900/80 dark:text-blue-300">
-            <li>
-              ・<strong>Windows</strong>: 設定 → ネットワーク → イーサネット の
-              <strong>「リンク速度」</strong>
-            </li>
-            <li>
-              ・<strong>スイッチ側</strong>:{" "}
-              <code className="rounded bg-white/60 px-1 font-mono text-xs dark:bg-blue-950/50">
-                show interface status
-              </code>{" "}
-              で <span className="font-mono">a-100</span> /{" "}
-              <span className="font-mono">a-1000</span> と表示される
-            </li>
-          </ul>
-          <p className="mt-2 text-sm text-blue-900/80 dark:text-blue-300">
-            ここが <strong>100</strong> になっていれば、
-            <strong>ケーブルか、どちらかのポートが 100Mbps 止まり</strong>ということです。
-          </p>
         </div>
 
         <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
@@ -595,21 +564,6 @@ Step 2. ビット数 ÷ 回線速度 で秒数が出る
             なので「動画が遅い」ときに<strong>まず疑うべきは院内の配線ではなく、外向きの回線と無線</strong>です。
             有線区間はたいてい十分に太く、犯人であることは多くありません。
           </p>
-        </div>
-
-        <div className="rounded-lg border border-amber-200 bg-amber-50/70 px-5 py-4 dark:border-amber-900/50 dark:bg-amber-950/30">
-          <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
-            家庭の場合: ブロードバンドルーターが全部やっている
-          </p>
-          <p className="mt-2 text-sm text-amber-900/80 dark:text-amber-300">
-            会社では <strong>ファイアウォール・L3 スイッチ・L2 スイッチ・無線 AP</strong> と
-            別々の箱に分かれている役割が、家庭では
-            <strong>ブロードバンドルーター (Wi-Fi ルーター) 1 台に全部入っています</strong>。
-            やっていることは同じです。
-          </p>
-
-          <HomeNetworkDiagram />
-
         </div>
 
       </section>
@@ -1191,67 +1145,6 @@ function LinkSpeedDiagram() {
         <text x="280" y="136" textAnchor="middle" className="fill-zinc-500 text-[10px] dark:fill-zinc-400">
           3 つのうち、いちばん遅いものに合わせて自動で決まる
         </text>
-      </svg>
-    </div>
-  );
-}
-
-function HomeNetworkDiagram() {
-  return (
-    <div className="mt-3 rounded-md border border-amber-200 bg-white p-4 dark:border-amber-800 dark:bg-zinc-950">
-      <svg viewBox="0 0 560 190" className="mx-auto w-full max-w-xl">
-        <rect x="14" y="86" width="86" height="40" rx="6" className="fill-amber-50 stroke-amber-400 dark:fill-amber-950/40 dark:stroke-amber-700" strokeWidth="1.3" />
-        <text x="57" y="111" textAnchor="middle" className="fill-amber-900 text-[10px] font-semibold dark:fill-amber-200">
-          インターネット
-        </text>
-
-        <line x1="102" y1="106" x2="146" y2="106" className="stroke-zinc-500" strokeWidth="2" />
-        <text x="124" y="82" textAnchor="middle" className="fill-zinc-600 font-mono text-[8px] dark:fill-zinc-400">
-          光 1Gbps
-        </text>
-        <text x="124" y="130" textAnchor="middle" className="fill-zinc-500 text-[8px] dark:fill-zinc-500">
-          ベストエフォート
-        </text>
-
-        <rect x="148" y="86" width="70" height="40" rx="6" className="fill-zinc-50 stroke-zinc-400 dark:fill-zinc-900 dark:stroke-zinc-600" strokeWidth="1.3" />
-        <text x="183" y="111" textAnchor="middle" className="fill-zinc-700 text-[10px] dark:fill-zinc-300">
-          ONU
-        </text>
-
-        <line x1="220" y1="106" x2="262" y2="106" className="stroke-zinc-500" strokeWidth="2" />
-        <text x="241" y="98" textAnchor="middle" className="fill-rose-600 text-[8px] dark:fill-rose-400">
-          Cat5 だと
-        </text>
-        <text x="241" y="124" textAnchor="middle" className="fill-rose-600 text-[8px] dark:fill-rose-400">
-          100M 止まり
-        </text>
-
-        <rect x="264" y="76" width="140" height="60" rx="6" className="fill-zinc-900 dark:fill-zinc-100" />
-        <text x="334" y="100" textAnchor="middle" className="fill-zinc-50 text-[11px] font-semibold dark:fill-zinc-900">
-          ブロードバンドルーター
-        </text>
-        <text x="334" y="118" textAnchor="middle" className="fill-zinc-300 text-[9px] dark:fill-zinc-600">
-          (家庭にあるルーター)
-        </text>
-
-        <line x1="406" y1="92" x2="446" y2="66" className="stroke-emerald-500" strokeWidth="2.5" />
-        <rect x="448" y="46" width="100" height="40" rx="6" className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.3" />
-        <text x="498" y="63" textAnchor="middle" className="fill-emerald-900 text-[10px] font-semibold dark:fill-emerald-200">
-          有線の PC
-        </text>
-        <text x="498" y="77" textAnchor="middle" className="fill-emerald-700 font-mono text-[8px] dark:fill-emerald-400">
-          LAN ポート次第
-        </text>
-
-        <line x1="406" y1="122" x2="446" y2="152" className="stroke-sky-400" strokeWidth="1.6" strokeDasharray="4 3" />
-        <rect x="448" y="134" width="100" height="40" rx="6" className="fill-sky-50 stroke-sky-400 dark:fill-sky-950/30 dark:stroke-sky-700" strokeWidth="1.3" />
-        <text x="498" y="151" textAnchor="middle" className="fill-sky-900 text-[10px] font-semibold dark:fill-sky-200">
-          スマホ・TV
-        </text>
-        <text x="498" y="165" textAnchor="middle" className="fill-sky-700 font-mono text-[8px] dark:fill-sky-400">
-          Wi-Fi の規格次第
-        </text>
-
       </svg>
     </div>
   );
