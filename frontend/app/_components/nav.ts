@@ -68,6 +68,7 @@ export const navGroups: NavGroup[] = [
       { href: "/aws/setup", label: "アカウント準備" },
       { href: "/aws/vpc", label: "VPC と サブネット" },
       { href: "/aws/ec2", label: "EC2 を立てる" },
+      { href: "/aws/rds", label: "RDS で DB を立てる" },
       { href: "/aws/alb", label: "ALB を立てる" },
       { href: "/aws/route53", label: "Route 53 で HTTPS 化" },
       { href: "/aws/s3", label: "S3 でファイルを置く" },
