@@ -33,6 +33,7 @@ export const navGroups: NavGroup[] = [
     label: "Web 通信",
     items: [
       { href: "/communication/http", label: "HTTP / TLS / HTTPS" },
+      { href: "/communication/client-cert", label: "クライアント証明書 (端末の身分証)" },
       { href: "/communication/sse", label: "SSE" },
     ],
   },
