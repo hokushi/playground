@@ -15,12 +15,8 @@ const SIDEBAR_STORAGE_KEY = "playground:sidebar-width";
 export default function Sidebar() {
   const pathname = usePathname();
 
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(navGroups.map((g) => [g.label, false])),
-  );
-
-  const toggle = (label: string) =>
-    setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
+  // 未操作のグループは「今いるページを含むなら開く」
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
   const [width, setWidth] = useState(SIDEBAR_WIDTH_DEFAULT);
   const [isDragging, setIsDragging] = useState(false);
@@ -71,12 +67,16 @@ export default function Sidebar() {
       <nav className="px-3">
         <ul className="flex flex-col gap-2">
           {navGroups.map((group) => {
-            const isOpen = openGroups[group.label];
+            const isOpen =
+              openGroups[group.label] ??
+              group.items.some((item) => item.href === pathname);
             return (
               <li key={group.label}>
                 <button
                   type="button"
-                  onClick={() => toggle(group.label)}
+                  onClick={() =>
+                    setOpenGroups((prev) => ({ ...prev, [group.label]: !isOpen }))
+                  }
                   className="flex w-full items-center justify-between rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
                   aria-expanded={isOpen}
                 >
