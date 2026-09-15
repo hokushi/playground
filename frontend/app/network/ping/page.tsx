@@ -49,7 +49,171 @@ export default function PingPage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <SectionH2 id="try" num={2}>実際に試してみる</SectionH2>
+        <SectionH2 id="icmp" num={2}>ping の正体: ICMP と「何層の話か」</SectionH2>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          「ping」は<strong>コマンドの名前</strong>です。中で使っている通信の決まりは
+          <strong> ICMP</strong> (Internet Control Message Protocol) といいます。
+          直訳すると<strong>「インターネットの連絡用メッセージ」</strong>です。
+        </p>
+
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            ICMP はもともと何のためのものか
+          </p>
+          <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+            通信がうまくいかなかったときに、ルータや相手の OS が
+            <strong>「届けられませんでした」「途中で寿命が尽きました」と知らせる</strong>ための仕組みです。
+            メッセージには何種類かあり、<strong>ping はそのうちの 2 種類を借りて使っているだけ</strong>です。
+          </p>
+          <div className="mt-3 overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+            <table className="w-full text-xs">
+              <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                <tr>
+                  <th className="px-2 py-1.5 text-left font-semibold">ICMP の種類</th>
+                  <th className="px-2 py-1.5 text-left font-semibold">意味</th>
+                  <th className="px-2 py-1.5 text-left font-semibold">誰が使うか</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                <tr className="bg-emerald-50/60 dark:bg-emerald-950/20">
+                  <td className="px-2 py-1.5 font-mono font-semibold">Echo Request</td>
+                  <td className="px-2 py-1.5">もしもし、いますか?</td>
+                  <td className="px-2 py-1.5"><strong>ping</strong> (送る側)</td>
+                </tr>
+                <tr className="bg-emerald-50/60 dark:bg-emerald-950/20">
+                  <td className="px-2 py-1.5 font-mono font-semibold">Echo Reply</td>
+                  <td className="px-2 py-1.5">はい、います</td>
+                  <td className="px-2 py-1.5"><strong>ping</strong> (相手の OS が自動で返す)</td>
+                </tr>
+                <tr>
+                  <td className="px-2 py-1.5 font-mono">Destination Unreachable</td>
+                  <td className="px-2 py-1.5">宛先に届けられません</td>
+                  <td className="px-2 py-1.5">ルータや OS が自動で送る</td>
+                </tr>
+                <tr>
+                  <td className="px-2 py-1.5 font-mono">Time Exceeded</td>
+                  <td className="px-2 py-1.5">途中で寿命 (TTL) が尽きました</td>
+                  <td className="px-2 py-1.5">ルータが自動で送る (traceroute が利用)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <h3 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          何層の話か: L3 (ネットワーク層)
+        </h3>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          ICMP は <strong>IP パケットに直接乗ります</strong>。
+          TCP や UDP (L4) を通らないので、<strong>IP の付属品として L3 に分類</strong>されます。
+          ブラウザでサイトを開くときと、送っている中身を並べると違いがはっきりします。
+        </p>
+
+        <PacketCompareDiagram />
+
+        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <table className="w-full text-sm">
+            <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+              <tr>
+                <th className="px-3 py-2 text-left font-semibold">層</th>
+                <th className="px-3 py-2 text-left font-semibold">ブラウザで開く</th>
+                <th className="px-3 py-2 text-left font-semibold">ping</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+              <tr>
+                <td className="px-3 py-2 text-xs font-medium text-zinc-900 dark:text-zinc-100">L7 アプリケーション</td>
+                <td className="px-3 py-2 text-xs">HTTP (ページをください)</td>
+                <td className="px-3 py-2 text-xs text-zinc-400 dark:text-zinc-600">使わない</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 text-xs font-medium text-zinc-900 dark:text-zinc-100">L4 トランスポート</td>
+                <td className="px-3 py-2 text-xs">TCP (<strong>ポート 443</strong>)</td>
+                <td className="px-3 py-2 text-xs text-zinc-400 dark:text-zinc-600">使わない</td>
+              </tr>
+              <tr className="bg-emerald-50/60 dark:bg-emerald-950/20">
+                <td className="px-3 py-2 text-xs font-semibold text-zinc-900 dark:text-zinc-100">L3 ネットワーク</td>
+                <td className="px-3 py-2 text-xs">IP</td>
+                <td className="px-3 py-2 text-xs"><strong>IP + ICMP ← ping はここだけ</strong></td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2 text-xs font-medium text-zinc-900 dark:text-zinc-100">L2 / L1</td>
+                <td className="px-3 py-2 text-xs">Wi-Fi / 有線 LAN</td>
+                <td className="px-3 py-2 text-xs">Wi-Fi / 有線 LAN (同じ)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 className="mt-2 text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          L3 だから起きること
+        </h3>
+        <div className="grid gap-3 md:grid-cols-3">
+          <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              ポート番号を指定しない
+            </p>
+            <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+              <span className="font-mono text-xs">ping 192.168.1.8</span> のように
+              <strong>IP (か名前) だけ</strong>。ポートは L4 の話なので、
+              <span className="font-mono text-xs">:443</span> を書く場所がそもそもありません。
+            </p>
+          </div>
+          <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              返事をするのは OS
+            </p>
+            <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+              アプリは関係ありません。<strong>Web サーバが止まっていても、
+              PC 本体が起きていれば返事が来ます</strong>。
+              1 章の「分からないこと」はこのためです。
+            </p>
+          </div>
+          <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              ICMP だけ別に止められる
+            </p>
+            <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+              ファイアウォールは TCP / UDP とは<strong>別枠で ICMP を許可・拒否</strong>します。
+              AWS のセキュリティグループで 443 を開けても、
+              <strong>ICMP を許可しないと ping は返りません</strong>。
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+            建物でたとえると
+          </p>
+          <p className="mt-2 text-sm text-emerald-900/80 dark:text-emerald-300">
+            「IP = 建物の住所、ポート = 部屋番号」でいうと、ping は
+            <strong>建物の玄関で呼び鈴を押して、管理人 (OS) が返事するか見る</strong>ものです。
+            <strong>部屋 (ポート) までは上がっていかない</strong>ので、
+            部屋に住人 (アプリ) がいるかどうかは分かりません。
+          </p>
+        </div>
+
+        <p className="text-zinc-700 dark:text-zinc-300">
+          3 章の結果に出てくる <span className="font-mono text-sm">TTL</span> も、
+          <strong>IP ヘッダ (L3) に書かれている値</strong>です。
+          ルータを 1 台通るたびに 1 ずつ減らされ、0 になるとルータがパケットを捨てて
+          ICMP の <span className="font-mono text-sm">Time Exceeded</span> を送り返します。
+        </p>
+
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          関連:{" "}
+          <a href="/network/port" className="text-indigo-600 underline underline-offset-2 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">
+            ポートとは何か
+          </a>
+          {" "}/{" "}
+          <a href="/network/layers" className="text-indigo-600 underline underline-offset-2 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">
+            ネットワークの 7 層 (OSI モデル)
+          </a>
+        </p>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <SectionH2 id="try" num={3}>実際に試してみる</SectionH2>
         <p className="text-zinc-700 dark:text-zinc-300">
           同じ Wi-Fi に繋がっている <strong>別の PC から、この Mac に ping を飛ばした</strong>記録です。
           インターネットを一切通らないので、<strong>ping の素の姿</strong>が見られます。
@@ -386,6 +550,88 @@ function HopDistanceDiagram() {
   );
 }
 
+function PacketCompareDiagram() {
+  const rows = [
+    {
+      y: 16,
+      title: "ブラウザで開く",
+      cmd: "https://example.com",
+      segs: [
+        { name: "IP ヘッダ", detail: "宛先 203.0.113.10", layer: "L3", tone: "ip" },
+        { name: "TCP ヘッダ", detail: "宛先ポート 443", layer: "L4", tone: "tcp" },
+        { name: "HTTP", detail: "GET / (ページをください)", layer: "L7", tone: "data" },
+      ],
+    },
+    {
+      y: 128,
+      title: "ping",
+      cmd: "ping 192.168.1.8",
+      segs: [
+        { name: "IP ヘッダ", detail: "宛先 192.168.1.8", layer: "L3", tone: "ip" },
+        { name: "ICMP", detail: "Echo Request", layer: "L3 (IP の付属)", tone: "icmp" },
+        { name: "詰め物", detail: "意味のない 32 バイト", layer: "中身なし", tone: "pad" },
+      ],
+    },
+  ];
+  const tone = {
+    ip: "fill-blue-50 stroke-blue-400 dark:fill-blue-950/30 dark:stroke-blue-700",
+    tcp: "fill-rose-50 stroke-rose-400 dark:fill-rose-950/30 dark:stroke-rose-700",
+    data: "fill-zinc-50 stroke-zinc-400 dark:fill-zinc-900 dark:stroke-zinc-600",
+    icmp: "fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700",
+    pad: "fill-white stroke-zinc-300 dark:fill-zinc-950 dark:stroke-zinc-700",
+  } as const;
+
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 660 262" className="mx-auto w-full">
+        {rows.map((r) => (
+          <g key={r.title}>
+            <text x="20" y={r.y + 24} className="fill-zinc-900 text-[12px] font-bold dark:fill-zinc-100">
+              {r.title}
+            </text>
+            <text x="20" y={r.y + 40} className="fill-zinc-500 font-mono text-[8px] dark:fill-zinc-400">
+              {r.cmd}
+            </text>
+            {r.segs.map((seg, i) => {
+              const x = 150 + i * 165;
+              return (
+                <g key={seg.name}>
+                  <rect
+                    x={x}
+                    y={r.y}
+                    width="160"
+                    height="56"
+                    rx="6"
+                    className={tone[seg.tone as keyof typeof tone]}
+                    strokeWidth="1.4"
+                    strokeDasharray={seg.tone === "pad" ? "4 3" : undefined}
+                  />
+                  <text x={x + 80} y={r.y + 23} textAnchor="middle" className="fill-zinc-800 text-[11px] font-semibold dark:fill-zinc-200">
+                    {seg.name}
+                  </text>
+                  <text x={x + 80} y={r.y + 41} textAnchor="middle" className="fill-zinc-600 font-mono text-[9px] dark:fill-zinc-400">
+                    {seg.detail}
+                  </text>
+                  <text x={x + 80} y={r.y + 74} textAnchor="middle" className="fill-zinc-500 text-[10px] font-semibold dark:fill-zinc-400">
+                    {seg.layer}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
+        ))}
+
+        <text x="397" y="228" textAnchor="middle" className="fill-emerald-700 text-[10px] font-semibold dark:fill-emerald-400">
+          ↑ TCP の位置に ICMP が入る。ポート番号を書く欄がない
+        </text>
+        <text x="330" y="256" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
+          ping は L4 より上を使わず、IP (L3) に ICMP を直接載せて送る
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 function SectionH2({
   id,
   num,
@@ -411,7 +657,8 @@ function SectionH2({
 function TableOfContents() {
   const items = [
     { id: "what", num: 1, title: "何をしているのか" },
-    { id: "try", num: 2, title: "実際に試してみる" },
+    { id: "icmp", num: 2, title: "ping の正体: ICMP と何層の話か" },
+    { id: "try", num: 3, title: "実際に試してみる" },
   ];
   return (
     <nav className="rounded-lg border border-zinc-200 bg-zinc-50/60 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900/50">
