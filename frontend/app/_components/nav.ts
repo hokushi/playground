@@ -3,63 +3,58 @@ export type NavGroup = { label: string; items: NavItem[] };
 
 export const navGroups: NavGroup[] = [
   {
-    label: "並行処理",
+    label: "ネットワーク基礎",
     items: [
-      { href: "/web-worker", label: "Web Worker" },
-      { href: "/threads", label: "Threads & Memory" },
-    ],
-  },
-  {
-    label: "ネットワーク",
-    items: [
+      { href: "/network/layers", label: "ネットワークの 7 層 (OSI)" },
       { href: "/network", label: "有線と無線" },
       { href: "/network/internet", label: "インターネットの裏側" },
-      { href: "/network/layers", label: "ネットワークの 7 層 (OSI)" },
       { href: "/network/domain-url", label: "ドメイン と URL" },
       { href: "/network/port", label: "ポートとは何か (443 / 80)" },
       { href: "/network/ping", label: "ping で疎通を確かめる" },
-      { href: "/network/vpn", label: "VPN の種類 (IP-VPN ほか)" },
     ],
   },
   {
     label: "ネットワーク構成",
     items: [
+      { href: "/network/switches", label: "L2 / L3 スイッチとポート" },
       { href: "/network/two-sites", label: "2 拠点・セグメント分割と共通 L3" },
       { href: "/network/firewall", label: "ファイアウォール / FortiGate" },
       { href: "/network/proxy", label: "プロキシとは何か" },
+      { href: "/network/vpn", label: "VPN の種類 (IP-VPN ほか)" },
     ],
   },
   {
     label: "Web 通信",
     items: [
       { href: "/communication/http", label: "HTTP / TLS / HTTPS" },
-      { href: "/communication/client-cert", label: "クライアント証明書 (端末の身分証)" },
-      { href: "/communication/sse", label: "SSE" },
+      { href: "/cookie", label: "Cookie と Domain" },
+      { href: "/cors", label: "CORS はブラウザのルール" },
+      { href: "/communication/sse", label: "SSE (Server-Sent Events)" },
     ],
   },
   {
-    label: "業務",
+    label: "認証・セキュリティ",
     items: [
-      { href: "/business/hospital", label: "病院の組織と用語" },
-      { href: "/business/fax", label: "ファックス" },
+      { href: "/keys", label: "秘密鍵と公開鍵" },
+      { href: "/communication/client-cert", label: "クライアント証明書 (端末の身分証)" },
       { href: "/business/sso", label: "SSO (シングルサインオン)" },
     ],
   },
   {
-    label: "バック・フロント",
+    label: "並行処理",
     items: [
-      { href: "/docker", label: "Docker でローカル DB" },
-      { href: "/database", label: "データベースの基本" },
-      { href: "/cors", label: "CORS はブラウザのルール" },
-      { href: "/cookie", label: "Cookie と Domain" },
-      { href: "/keys", label: "秘密鍵と公開鍵" },
-      { href: "/languages", label: "言語ごとの得意・不得意" },
-      { href: "/infra", label: "インフラの選び方 (実行環境と DB)" },
+      { href: "/threads", label: "スレッドとメモリの基礎" },
+      { href: "/web-worker", label: "Web Worker" },
     ],
   },
   {
-    label: "用語集",
-    items: [{ href: "/glossary", label: "IT・AI・セキュリティ" }],
+    label: "開発・インフラ",
+    items: [
+      { href: "/languages", label: "言語ごとの得意・不得意" },
+      { href: "/database", label: "データベースの基本" },
+      { href: "/docker", label: "Docker (イメージとコンテナ)" },
+      { href: "/infra", label: "インフラの選び方 (実行環境と DB)" },
+    ],
   },
   {
     label: "AWS",
@@ -78,8 +73,18 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "記録",
-    items: [{ href: "/reads", label: "読んだ日カレンダー" }],
+    label: "業務",
+    items: [
+      { href: "/business/hospital", label: "病院の組織と用語" },
+      { href: "/business/fax", label: "ファックスの仕組み" },
+    ],
+  },
+  {
+    label: "リファレンス",
+    items: [
+      { href: "/glossary", label: "用語集 (IT・AI・セキュリティ)" },
+      { href: "/reads", label: "読んだ日カレンダー" },
+    ],
   },
 ];
 

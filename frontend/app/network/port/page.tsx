@@ -140,11 +140,6 @@ export default function PortPage() {
             </strong>
             ここが普通の IP との一番の違いです。
           </p>
-          <p className="mt-2 text-xs text-emerald-900/70 dark:text-emerald-400">
-            ※ 自分の LAN 側の IP は、Mac なら{" "}
-            <span className="font-mono">ipconfig getifaddr en0</span>、
-            Windows なら <span className="font-mono">ipconfig</span> で確認できます。
-          </p>
         </div>
 
         <p className="text-zinc-700 dark:text-zinc-300">
@@ -313,57 +308,7 @@ export default function PortPage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <SectionH2 id="two-meanings" num={5}>
-          紛らわしい: もう 1 つの「ポート」
-        </SectionH2>
-        <p className="text-zinc-700 dark:text-zinc-300">
-          ネットワークの話には<strong>「ポート」と呼ばれるものが 2 つ</strong>出てきます。
-          同じ言葉ですが、まったく別物です。
-        </p>
-
-        <TwoPortsDiagram />
-
-        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <table className="w-full text-sm">
-            <thead className="bg-zinc-50 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-              <tr>
-                <th className="px-3 py-2 text-left font-semibold"></th>
-                <th className="px-3 py-2 text-left font-semibold">物理ポート</th>
-                <th className="px-3 py-2 text-left font-semibold">ポート番号 (このページの主役)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-200 bg-white text-zinc-700 dark:divide-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
-              <tr>
-                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">正体</td>
-                <td className="px-3 py-2">ケーブルを挿す<strong>穴</strong></td>
-                <td className="px-3 py-2">通信につける<strong>番号</strong></td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">どこにある</td>
-                <td className="px-3 py-2">スイッチや PC の背面</td>
-                <td className="px-3 py-2">パケットの中 (目に見えない)</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">数</td>
-                <td className="px-3 py-2">24 口 / 48 口など</td>
-                <td className="px-3 py-2">0〜65535</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">例</td>
-                <td className="px-3 py-2 font-mono text-xs">gi0/1 に VLAN 10 を設定</td>
-                <td className="px-3 py-2 font-mono text-xs">443 を許可</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          見分け方は簡単で、<strong>「ケーブルを挿せるか」</strong>です。
-          挿せるなら物理ポート、番号で呼ばれているならポート番号。
-        </p>
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <SectionH2 id="firewall" num={6}>
+        <SectionH2 id="firewall" num={5}>
           「ポートを開ける」とは
         </SectionH2>
         <p className="text-zinc-700 dark:text-zinc-300">
@@ -430,6 +375,66 @@ export default function PortPage() {
           逆に「<strong>弊社への通信は HTTPS (TCP/443) のみです</strong>」という説明は、
           <strong>443 番の部屋しか使いません</strong>という宣言です。
           受け取った側は、その 1 つだけを開けたルールを書けば済みます。
+        </p>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <SectionH2 id="source-port" num={6}>
+          送信元ポート: 返事はどこに戻るのか
+        </SectionH2>
+        <p className="text-zinc-700 dark:text-zinc-300">
+          1 章で「宛先は IP とポートのセット」と書きましたが、
+          実は通信には<strong>もう 1 組、送信元の IP とポート</strong>も書かれています。
+          返事を届けてもらうための<strong>差出人欄</strong>です。
+        </p>
+
+        <SourcePortDiagram />
+
+        <ol className="flex flex-col gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+          <li>
+            <strong>1.</strong> ブラウザがサーバにつなぐとき、PC が
+            <strong>動的ポート (49152〜65535) から空いている番号を 1 つ借ります</strong>
+            (例: <span className="font-mono">52341</span>)。
+            3 章の表で「パソコンが自動で使う」と書いたのはこれです
+          </li>
+          <li>
+            <strong>2.</strong> 行きの荷物には
+            <strong>送信元 <span className="font-mono">192.168.1.11:52341</span></strong> と
+            <strong>宛先 <span className="font-mono">203.0.113.10:443</span></strong> が書かれる
+          </li>
+          <li>
+            <strong>3.</strong> サーバは返事を書くとき、
+            <strong>届いた荷物の送信元をそのまま宛先にする</strong>。
+            送信元と宛先が入れ替わるだけです
+          </li>
+          <li>
+            <strong>4.</strong> PC は <span className="font-mono">52341</span> 宛に届いた返事を、
+            その番号を借りた<strong>タブ A に渡す</strong>
+          </li>
+        </ol>
+
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-5 py-4 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+            タブを 10 個開いても返事が混ざらない理由
+          </p>
+          <p className="mt-2 text-sm text-emerald-900/80 dark:text-emerald-300">
+            <strong>タブごとに別の番号を借りるから</strong>です。
+            全部が同じ <span className="font-mono">203.0.113.10:443</span> につないでいても、
+            送信元が <span className="font-mono">52341</span>、
+            <span className="font-mono">52342</span> … と違うので区別できます。
+            通信が終わると番号は返却され、別の通信で使い回されます。
+          </p>
+        </div>
+
+        <p className="text-zinc-700 dark:text-zinc-300">
+          5 章の「ポートを開ける」とのつながりも見えてきます。
+          <strong>自分から始めた通信の返事は、開けていない 52341 番にもちゃんと戻ってきます</strong>。
+          セキュリティグループは「行きを通したなら、その帰りも通す」と覚えているからです。
+          開ける必要があるのは、<strong>外から話しかけられる側 (サーバの 443)</strong> だけです。
+        </p>
+        <p className="text-xs text-zinc-600 dark:text-zinc-400">
+          ※ 実際には家やオフィスのルーターが、外に出るときに送信元 IP をグローバル IP に書き換えます (NAT)。
+          それでも「送信元を宛先にして返す」という仕組みは同じです。
         </p>
       </section>
 
@@ -649,79 +654,6 @@ function DnsFlowDiagram() {
   );
 }
 
-function TwoPortsDiagram() {
-  const holes = Array.from({ length: 6 }, (_, i) => 60 + i * 34);
-  return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-      <svg viewBox="0 0 620 250" className="mx-auto w-full max-w-2xl">
-        <text x="160" y="24" textAnchor="middle" className="fill-zinc-800 text-[11px] font-semibold dark:fill-zinc-200">
-          ① 物理ポート = ケーブルを挿す穴
-        </text>
-        <rect x="35" y="44" width="250" height="70" rx="6" className="fill-zinc-100 stroke-zinc-400 dark:fill-zinc-800 dark:stroke-zinc-600" strokeWidth="1.4" />
-        {holes.map((x) => (
-          <rect
-            key={x}
-            x={x}
-            y="60"
-            width="24"
-            height="18"
-            rx="2"
-            className="fill-zinc-300 stroke-zinc-500 dark:fill-zinc-700 dark:stroke-zinc-500"
-            strokeWidth="1"
-          />
-        ))}
-        {holes.map((x) => (
-          <rect
-            key={`b-${x}`}
-            x={x}
-            y="84"
-            width="24"
-            height="18"
-            rx="2"
-            className="fill-zinc-300 stroke-zinc-500 dark:fill-zinc-700 dark:stroke-zinc-500"
-            strokeWidth="1"
-          />
-        ))}
-        <text x="160" y="134" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
-          スイッチや PC の背面にある
-        </text>
-        <text x="160" y="150" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
-          触れる ・ 24 口 / 48 口
-        </text>
-        <text x="160" y="172" textAnchor="middle" className="fill-zinc-500 font-mono text-[9px] dark:fill-zinc-500">
-          gi0/1 に VLAN 10 を設定
-        </text>
-
-        <line x1="310" y1="40" x2="310" y2="210" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-
-        <text x="460" y="24" textAnchor="middle" className="fill-zinc-800 text-[11px] font-semibold dark:fill-zinc-200">
-          ② ポート番号 = 通信につける番号
-        </text>
-        <rect x="340" y="44" width="240" height="70" rx="6" className="fill-rose-50 stroke-rose-400 dark:fill-rose-950/30 dark:stroke-rose-700" strokeWidth="1.4" />
-        <text x="460" y="72" textAnchor="middle" className="fill-rose-800 font-mono text-[13px] font-semibold dark:fill-rose-300">
-          203.0.113.10:443
-        </text>
-        <text x="460" y="95" textAnchor="middle" className="fill-rose-700 text-[10px] dark:fill-rose-400">
-          パケットの中に書かれている
-        </text>
-        <text x="460" y="134" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
-          目に見えない ・ 0〜65535
-        </text>
-        <text x="460" y="150" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
-          ケーブルは挿せない
-        </text>
-        <text x="460" y="172" textAnchor="middle" className="fill-zinc-500 font-mono text-[9px] dark:fill-zinc-500">
-          443 を許可
-        </text>
-
-        <text x="310" y="228" textAnchor="middle" className="fill-zinc-700 text-[10px] font-semibold dark:fill-zinc-300">
-          見分け方: ケーブルを挿せるなら ①、番号で呼ばれているなら ②
-        </text>
-      </svg>
-    </div>
-  );
-}
-
 function FirewallFlowDiagram() {
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
@@ -920,6 +852,94 @@ function AwsPortDiagram() {
   );
 }
 
+function SourcePortDiagram() {
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+      <svg viewBox="0 0 620 316" className="mx-auto w-full max-w-2xl">
+        <rect x="20" y="30" width="170" height="240" rx="10" className="fill-zinc-50/60 stroke-zinc-400 dark:fill-zinc-900/40 dark:stroke-zinc-600" strokeWidth="1.4" strokeDasharray="7 4" />
+        <text x="105" y="52" textAnchor="middle" className="fill-zinc-800 text-[11px] font-semibold dark:fill-zinc-200">
+          あなたの PC
+        </text>
+        <text x="105" y="68" textAnchor="middle" className="fill-zinc-600 font-mono text-[10px] dark:fill-zinc-400">
+          192.168.1.11
+        </text>
+
+        <rect x="36" y="108" width="138" height="68" rx="6" className="fill-rose-50 stroke-rose-400 dark:fill-rose-950/30 dark:stroke-rose-700" strokeWidth="1.5" />
+        <text x="105" y="134" textAnchor="middle" className="fill-zinc-800 text-[11px] font-semibold dark:fill-zinc-200">
+          タブ A
+        </text>
+        <text x="105" y="156" textAnchor="middle" className="fill-rose-800 font-mono text-[14px] font-semibold dark:fill-rose-300">
+          :52341
+        </text>
+
+        <rect x="36" y="196" width="138" height="56" rx="6" className="fill-white stroke-zinc-300 dark:fill-zinc-950 dark:stroke-zinc-700" strokeWidth="1.2" />
+        <text x="105" y="218" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
+          タブ B
+        </text>
+        <text x="105" y="238" textAnchor="middle" className="fill-zinc-500 font-mono text-[12px] dark:fill-zinc-400">
+          :52342
+        </text>
+
+        <rect x="208" y="66" width="224" height="58" rx="6" className="fill-blue-50 stroke-blue-400 dark:fill-blue-950/30 dark:stroke-blue-700" strokeWidth="1.2" />
+        <text x="220" y="81" className="fill-blue-900 text-[10px] font-semibold dark:fill-blue-200">
+          行き
+        </text>
+        <text x="220" y="97" className="fill-zinc-700 font-mono text-[10px] dark:fill-zinc-300">
+          送信元 192.168.1.11:<tspan className="fill-rose-700 font-semibold dark:fill-rose-400">52341</tspan>
+        </text>
+        <text x="220" y="113" className="fill-zinc-700 font-mono text-[10px] dark:fill-zinc-300">
+          宛先 　203.0.113.10:<tspan className="fill-blue-700 font-semibold dark:fill-blue-400">443</tspan>
+        </text>
+        <line x1="176" y1="132" x2="462" y2="132" className="stroke-blue-500" strokeWidth="2" markerEnd="url(#sp-arrow-blue)" />
+
+        <line x1="464" y1="152" x2="178" y2="152" className="stroke-emerald-500" strokeWidth="2" markerEnd="url(#sp-arrow-green)" />
+        <rect x="208" y="160" width="224" height="58" rx="6" className="fill-emerald-50 stroke-emerald-400 dark:fill-emerald-950/30 dark:stroke-emerald-700" strokeWidth="1.2" />
+        <text x="220" y="175" className="fill-emerald-900 text-[10px] font-semibold dark:fill-emerald-200">
+          帰り (入れ替わる)
+        </text>
+        <text x="220" y="191" className="fill-zinc-700 font-mono text-[10px] dark:fill-zinc-300">
+          送信元 203.0.113.10:<tspan className="fill-blue-700 font-semibold dark:fill-blue-400">443</tspan>
+        </text>
+        <text x="220" y="207" className="fill-zinc-700 font-mono text-[10px] dark:fill-zinc-300">
+          宛先 　192.168.1.11:<tspan className="fill-rose-700 font-semibold dark:fill-rose-400">52341</tspan>
+        </text>
+
+        <text x="320" y="246" textAnchor="middle" className="fill-zinc-500 text-[9px] dark:fill-zinc-500">
+          タブ B も同じ 443 につなぐが、送信元は 52342
+        </text>
+
+        <rect x="450" y="30" width="150" height="240" rx="10" className="fill-zinc-50 stroke-zinc-400 dark:fill-zinc-900 dark:stroke-zinc-600" strokeWidth="1.4" />
+        <text x="525" y="52" textAnchor="middle" className="fill-zinc-800 text-[11px] font-semibold dark:fill-zinc-200">
+          サーバ
+        </text>
+        <text x="525" y="68" textAnchor="middle" className="fill-zinc-600 font-mono text-[10px] dark:fill-zinc-400">
+          203.0.113.10
+        </text>
+        <rect x="466" y="108" width="118" height="68" rx="6" className="fill-blue-50 stroke-blue-400 dark:fill-blue-950/30 dark:stroke-blue-700" strokeWidth="1.5" />
+        <text x="525" y="138" textAnchor="middle" className="fill-blue-800 font-mono text-[14px] font-semibold dark:fill-blue-300">
+          443
+        </text>
+        <text x="525" y="158" textAnchor="middle" className="fill-blue-700 text-[9px] dark:fill-blue-400">
+          ずっと待っている
+        </text>
+
+        <text x="310" y="298" textAnchor="middle" className="fill-zinc-600 text-[10px] dark:fill-zinc-400">
+          返事は送信元を宛先にして返すだけ。52341 が書いてあるから、タブ A に戻れる
+        </text>
+
+        <defs>
+          <marker id="sp-arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" className="fill-blue-500" />
+          </marker>
+          <marker id="sp-arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" className="fill-emerald-500" />
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  );
+}
+
 function SectionH2({
   id,
   num,
@@ -948,8 +968,8 @@ function TableOfContents() {
     { id: "aws", num: 2, title: "AWS だとどう見えるか" },
     { id: "localhost", num: 3, title: "localhost:3000 で見る" },
     { id: "dns", num: 4, title: "https://hoge.com と打つと" },
-    { id: "two-meanings", num: 5, title: "もう 1 つの「ポート」" },
-    { id: "firewall", num: 6, title: "「ポートを開ける」とは" },
+    { id: "firewall", num: 5, title: "「ポートを開ける」とは" },
+    { id: "source-port", num: 6, title: "送信元ポート: 返事の戻り先" },
   ];
   return (
     <nav className="rounded-lg border border-zinc-200 bg-zinc-50/60 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900/50">
