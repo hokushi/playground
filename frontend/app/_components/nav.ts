@@ -21,6 +21,7 @@ export const navGroups: NavGroup[] = [
       { href: "/network/firewall", label: "ファイアウォール / FortiGate" },
       { href: "/network/proxy", label: "プロキシとは何か" },
       { href: "/network/vpn", label: "VPN の種類 (IP-VPN ほか)" },
+      { href: "/network/remote-desktop", label: "リモートデスクトップ" },
     ],
   },
   {
