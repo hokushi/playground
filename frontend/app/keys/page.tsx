@@ -423,18 +423,47 @@ export default function KeysPage() {
       </Card>
 
       {/* 送る中身は誰が決めるか */}
-      <Card title="トークンに何を入れるかは、相手が決める">
+      <Card title="トークンに何を入れるかは、受け取る側 (external-api) が決める">
+        <div className="overflow-x-auto rounded border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/40">
+          <p className="mb-2 text-[12.5px] font-semibold text-zinc-900 dark:text-zinc-100">
+            この章の登場人物
+          </p>
+          <table className="w-full min-w-[460px] border-collapse text-[13px]">
+            <tbody className="text-zinc-700 dark:text-zinc-300">
+              <tr className="border-b border-zinc-200 dark:border-zinc-800">
+                <td className="py-1.5 pr-3 font-semibold whitespace-nowrap">
+                  memory-game
+                </td>
+                <td className="py-1.5 pr-3 whitespace-nowrap">送る側 (自分たち)</td>
+                <td className="py-1.5">
+                  JWT を<strong>作って署名し、送る</strong>。作業するのは
+                  <strong>自分たちのサーバ</strong>で、フロントエンドではない
+                  (秘密鍵をブラウザに置けないため)
+                </td>
+              </tr>
+              <tr>
+                <td className="py-1.5 pr-3 font-semibold whitespace-nowrap">
+                  external-api
+                </td>
+                <td className="py-1.5 pr-3 whitespace-nowrap">受け取る側 (相手)</td>
+                <td className="py-1.5">
+                  JWT を<strong>検証して通す / 弾く</strong>。中身の仕様を決めるのもこちら
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <P>
           署名すれば通る、ではない。トークンの中身の仕様を決めるのは
-          <strong>受け取る側</strong>で、API ドキュメントに書いてある。
-          1 つでも食い違えば 401 で弾かれる。
+          <strong>受け取る側 (external-api)</strong> で、API ドキュメントに書いてある。
+          memory-game 側はそれに合わせて作るだけで、1 つでも食い違えば 401 で弾かれる。
         </P>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[520px] border-collapse text-[13.5px]">
             <thead>
               <tr className="border-b border-zinc-200 text-left text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                <th className="py-2 pr-3 font-medium">相手が指定してくる項目</th>
-                <th className="py-2 font-medium">書かれ方の例</th>
+                <th className="py-2 pr-3 font-medium">external-api が指定してくる項目</th>
+                <th className="py-2 font-medium">API ドキュメントでの書かれ方の例</th>
               </tr>
             </thead>
             <tbody className="text-zinc-700 dark:text-zinc-300">
@@ -474,9 +503,9 @@ export default function KeysPage() {
           </table>
         </div>
         <P>
-          こちらが自由に決められるのは、鍵ペアそのものと、
+          memory-game 側で自由に決められるのは、鍵ペアそのものと、
           上限の範囲でどれだけ期限を短くするかくらい。
-          同じ「JWT で認証」でも中身の要求は相手ごとに違う
+          同じ「JWT で認証」でも中身の要求は external-api ごとに違う
           （Google はスコープ必須で最大 1 時間、Salesforce は <Code>sub</Code> にユーザー、
           Snowflake は <Code>iss</Code> が公開鍵の指紋を含む独特な形式、など）。
         </P>
@@ -485,8 +514,12 @@ export default function KeysPage() {
             <thead>
               <tr className="border-b border-zinc-200 text-left text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
                 <th className="py-2 pr-3 font-medium">項目</th>
-                <th className="py-2 pr-3 font-medium">送る側が入れる</th>
-                <th className="py-2 font-medium">受け取る側が確かめる</th>
+                <th className="py-2 pr-3 font-medium">
+                  memory-game (送る側) が入れる
+                </th>
+                <th className="py-2 font-medium">
+                  external-api (受け取る側) が確かめる
+                </th>
               </tr>
             </thead>
             <tbody className="text-zinc-700 dark:text-zinc-300">
@@ -501,15 +534,15 @@ export default function KeysPage() {
                 <td className="py-2 pr-3">
                   <Code>iss</Code>
                 </td>
-                <td className="py-2 pr-3">自分の client_id</td>
-                <td className="py-2">その ID で公開鍵を引く</td>
+                <td className="py-2 pr-3">memory-game の client_id</td>
+                <td className="py-2">その ID で登録済みの公開鍵を引く</td>
               </tr>
               <tr className="border-b border-zinc-100 dark:border-zinc-900">
                 <td className="py-2 pr-3">
                   <Code>aud</Code>
                 </td>
-                <td className="py-2 pr-3">相手が指定した名前</td>
-                <td className="py-2">自分宛かどうか</td>
+                <td className="py-2 pr-3">external-api が指定した名前</td>
+                <td className="py-2">external-api 自身宛のトークンかどうか</td>
               </tr>
               <tr>
                 <td className="py-2 pr-3">
@@ -525,7 +558,8 @@ export default function KeysPage() {
           初回の連携は「仕様どおりに組んで、401 が出たらどこが違うか潰す」作業になる。
           しかも 401 は<strong>署名が違うのか aud が違うのか期限切れなのかを教えてくれない</strong>
           のが普通（攻撃者にヒントを与えないため）。
-          自分でトークンをデコードして、仕様と 1 項目ずつ突き合わせることになる。
+          memory-game 側で自分が作ったトークンをデコードして、
+          API ドキュメントと 1 項目ずつ突き合わせることになる。
         </p>
       </Card>
     </main>
